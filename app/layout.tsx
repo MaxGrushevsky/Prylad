@@ -107,6 +107,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="canonical" href="https://shortlink-qr.com" />
+        <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
         <link rel="alternate" hrefLang="en" href="https://shortlink-qr.com" />
         <link rel="alternate" hrefLang="ru" href="https://shortlink-qr.com/ru" />
         <link rel="alternate" hrefLang="es" href="https://shortlink-qr.com/es" />

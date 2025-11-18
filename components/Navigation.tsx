@@ -249,7 +249,7 @@ export default function Navigation() {
           <div className="mb-6">
             <Link href="/" onClick={() => setIsOpen(false)}>
               <h1 className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-purple-600 bg-clip-text text-transparent">
-                🛠️ Tools
+                🛠️ Tuly
               </h1>
               <p className="text-sm text-gray-500 mt-1">All tools in one place</p>
             </Link>

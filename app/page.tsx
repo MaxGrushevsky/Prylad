@@ -139,7 +139,7 @@ export default function Home() {
         <header className="container mx-auto px-4 py-8 md:py-12">
           <div className="text-center max-w-4xl mx-auto">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 bg-gradient-to-r from-primary-600 to-purple-600 bg-clip-text text-transparent">
-              🛠️ Useful Tools Collection
+              🛠️ Tuly
             </h1>
             <p className="text-lg md:text-xl text-gray-600 leading-relaxed">
               All essential tools for development, design, and data work in one place.
@@ -201,7 +201,7 @@ export default function Home() {
         {/* Footer */}
         <footer className="container mx-auto px-4 py-8 mt-16 border-t border-gray-200/50">
           <div className="text-center text-gray-600">
-            <p className="mb-2 font-medium">© 2024 Useful Tools Collection</p>
+            <p className="mb-2 font-medium">© 2025 Tuly</p>
             <p className="text-sm text-gray-500">
               All tools are free and work in the browser
             </p>

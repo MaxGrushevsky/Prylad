@@ -44,7 +44,7 @@ export default function Layout({ children, title, description }: LayoutProps) {
         {/* Footer */}
         <footer className="container mx-auto px-4 py-8 mt-16 border-t border-gray-200/50">
           <div className="text-center text-gray-600">
-            <p className="mb-2 font-medium">© 2024 Useful Tools Collection</p>
+            <p className="mb-2 font-medium">© 2025 Tuly</p>
             <p className="text-sm text-gray-500">
               All tools are free and work in the browser
             </p>

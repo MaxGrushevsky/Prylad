@@ -30,7 +30,7 @@ export function generatePageMetadata(seo: PageSEO): Metadata {
       title: seo.title,
       description: seo.description,
       url: fullUrl,
-      siteName: 'Useful Tools Collection',
+      siteName: 'Tuly',
       type: 'website',
       locale: 'en_US',
       images: [
