@@ -81,7 +81,8 @@ export default function JWTTokenGeneratorPage() {
       // Combine all parts
       const token = `${encodedHeader}.${encodedPayload}.${signature}`
       setGeneratedToken(token)
-    } catch (error) {.message}`)
+    } catch (error) {
+      // Silent error handling
     }
   }, [header, payload, secret, algorithm, base64UrlEncode, generateHMAC, ])
 
@@ -244,7 +245,7 @@ export default function JWTTokenGeneratorPage() {
                   <strong>Payload:</strong> Contains the claims (data) of the token
                 </p>
                 <p>
-                  <strong>Signature:</strong> Used to verify the token hasn't been tampered with
+                  <strong>Signature:</strong> Used to verify the token hasn&apos;t been tampered with
                 </p>
                 <p className="mt-2">
                   <strong>Common Claims:</strong> iat (issued at), exp (expiration), sub (subject), iss (issuer), aud (audience)
@@ -283,7 +284,7 @@ export default function JWTTokenGeneratorPage() {
             </div>
             <div>
               <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Custom Claims</h3>
-              <p>Store any application-specific metadata (roles, permissions, feature flags). Use namespaces (e.g., <code className="font-mono">"https://example.com/roles"</code>) to avoid collisions.</p>
+              <p>Store any application-specific metadata (roles, permissions, feature flags). Use namespaces (e.g., <code className="font-mono">&quot;https://example.com/roles&quot;</code>) to avoid collisions.</p>
             </div>
           </div>
         </section>

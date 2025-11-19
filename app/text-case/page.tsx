@@ -408,10 +408,10 @@ export default function TextCasePage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
             <div className="space-y-6">
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">What's the difference between camelCase and PascalCase?</h3>
+                <h3 className="font-semibold text-gray-900 mb-2">What&apos;s the difference between camelCase and PascalCase?</h3>
                 <p className="text-gray-700 text-sm">
-                  camelCase starts with a lowercase letter (e.g., "helloWorld"), while PascalCase starts 
-                  with an uppercase letter (e.g., "HelloWorld"). camelCase is used for variables and functions, 
+                  camelCase starts with a lowercase letter (e.g., &quot;helloWorld&quot;), while PascalCase starts 
+                  with an uppercase letter (e.g., &quot;HelloWorld&quot;). camelCase is used for variables and functions, 
                   PascalCase for classes and types.
                 </p>
               </div>

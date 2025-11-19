@@ -38,23 +38,23 @@
   
   <!-- Features -->
   <g transform="translate(250, 360)">
-    <text x="0" y="0" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="500" fill="white" opacity="0.85">
-      ✓ QR Code Generator
+    <text x="0" y="0" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="500" fill="white" opacity="0.85">
+      ✓ 100+ Free Tools
     </text>
-    <text x="0" y="40" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="500" fill="white" opacity="0.85">
-      ✓ Password Generator
+    <text x="0" y="35" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="500" fill="white" opacity="0.85">
+      ✓ Code Formatters
     </text>
-    <text x="0" y="80" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="500" fill="white" opacity="0.85">
-      ✓ Color Tools
+    <text x="0" y="70" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="500" fill="white" opacity="0.85">
+      ✓ Design Tools
     </text>
-    <text x="400" y="0" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="500" fill="white" opacity="0.85">
-      ✓ JSON Formatter
+    <text x="400" y="0" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="500" fill="white" opacity="0.85">
+      ✓ Security Tools
     </text>
-    <text x="400" y="40" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="500" fill="white" opacity="0.85">
-      ✓ Text Utilities
+    <text x="400" y="35" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="500" fill="white" opacity="0.85">
+      ✓ Data Converters
     </text>
-    <text x="400" y="80" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="500" fill="white" opacity="0.85">
-      ✓ Hash Generators
+    <text x="400" y="70" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="500" fill="white" opacity="0.85">
+      ✓ Image Tools
     </text>
   </g>
   

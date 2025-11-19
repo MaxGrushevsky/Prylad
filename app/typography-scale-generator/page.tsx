@@ -41,7 +41,8 @@ export default function TypographyScaleGeneratorPage() {
     return scale.map((item, index) => {
       const level = index - 2
       const varName = level === 0 ? 'base' : level < 0 ? `small-${Math.abs(level)}` : `heading-${level}`
-      return `  --font-size-${varName}: ${item[unit] === 'px' ? item.px + 'px' : item[unit] + unit};`
+      const value = unit === 'px' ? item.px : unit === 'rem' ? item.rem : item.em
+      return `  --font-size-${varName}: ${value}${unit};`
     }).join('\n')
   }, [scale, unit])
 

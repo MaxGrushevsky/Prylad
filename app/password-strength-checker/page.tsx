@@ -308,7 +308,7 @@ export default function PasswordStrengthCheckerPage() {
                 <li>• Use at least 12 characters for better security</li>
                 <li>• Mix uppercase, lowercase, numbers, and symbols</li>
                 <li>• Avoid common words and patterns</li>
-                <li>• Don't reuse passwords across different accounts</li>
+                <li>• Don&apos;t reuse passwords across different accounts</li>
                 <li>• Consider using a password manager</li>
               </ul>
             </div>

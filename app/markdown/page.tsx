@@ -143,7 +143,7 @@ export default function MarkdownPage() {
     // Tables
     html = html.replace(/\|(.+)\|/gim, (match, content) => {
       const cells = content.split('|').map((cell: string) => cell.trim())
-      if (cells.some(cell => cell.match(/^:?-+:?$/))) {
+      if (cells.some((cell: string) => cell.match(/^:?-+:?$/))) {
         return '' // Skip separator rows
       }
       return '<tr>' + cells.map((cell: string) => `<td>${cell}</td>`).join('') + '</tr>'

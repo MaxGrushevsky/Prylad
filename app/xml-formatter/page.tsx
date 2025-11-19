@@ -257,13 +257,9 @@ export default function XMLFormatterPage() {
     URL.revokeObjectURL(url)
   }
 
-  useKeyboardShortcuts([
-    {
-      key: 'Enter',
-      ctrlKey: true,
-      handler: format
-    }
-  ])
+  useKeyboardShortcuts({
+    onEnter: format
+  })
 
   return (
     <Layout
@@ -400,7 +396,7 @@ export default function XMLFormatterPage() {
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">What is XML?</h2>
           <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
             XML (eXtensible Markup Language) is a markup language designed to store and transport data. 
-            It's both human-readable and machine-readable, making it ideal for data exchange between different 
+            It&apos;s both human-readable and machine-readable, making it ideal for data exchange between different 
             systems and applications.
           </p>
           <p className="text-gray-700 dark:text-gray-300 leading-relaxed">

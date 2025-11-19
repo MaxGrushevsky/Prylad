@@ -302,7 +302,7 @@ export default function LoremGeneratorPage() {
                 className="w-4 h-4 accent-primary-600"
               />
               <label htmlFor="start-with-lorem" className="text-sm text-gray-700 cursor-pointer flex-1">
-                Start with "Lorem ipsum"
+                Start with &quot;Lorem ipsum&quot;
               </label>
             </div>
 
@@ -375,14 +375,14 @@ export default function LoremGeneratorPage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-4">What is Lorem Ipsum?</h2>
             <div className="prose prose-gray max-w-none">
               <p className="text-gray-700 leading-relaxed mb-4">
-                Lorem Ipsum is placeholder text commonly used in design, publishing, and web development. It's derived 
+                Lorem Ipsum is placeholder text commonly used in design, publishing, and web development. It&apos;s derived 
                 from a Latin text by Cicero, but the words have been scrambled and modified over time, making it 
                 meaningless while maintaining the appearance of real text. This makes it perfect for demonstrating 
                 layouts, typography, and designs without distracting readers with actual content.
               </p>
               <p className="text-gray-700 leading-relaxed">
                 Designers and developers use Lorem Ipsum to focus attention on visual design rather than content. 
-                When clients see "Lorem ipsum" text, they understand it's placeholder content and focus on layout, 
+                When clients see &quot;Lorem ipsum&quot; text, they understand it&apos;s placeholder content and focus on layout, 
                 colors, spacing, and other design elements instead of reading the actual words.
               </p>
             </div>
@@ -498,12 +498,12 @@ export default function LoremGeneratorPage() {
                 <h3 className="font-semibold text-gray-900 mb-2">Why use Lorem Ipsum instead of real text?</h3>
                 <p className="text-gray-700 text-sm">
                   Lorem Ipsum allows designers and clients to focus on visual design, layout, and typography without 
-                  being distracted by actual content. When people see "Lorem ipsum," they know it's placeholder 
+                  being distracted by actual content. When people see &quot;Lorem ipsum,&quot; they know it&apos;s placeholder 
                   text and focus on design elements instead of reading.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">What's the difference between words and bytes?</h3>
+                <h3 className="font-semibold text-gray-900 mb-2">What&apos;s the difference between words and bytes?</h3>
                 <p className="text-gray-700 text-sm">
                   Words mode generates a specific number of words. Bytes mode generates text up to a specific byte 
                   count, which is useful for testing character limits, database fields, or API payload sizes. 
@@ -513,7 +513,7 @@ export default function LoremGeneratorPage() {
               <div>
                 <h3 className="font-semibold text-gray-900 mb-2">Can I generate lists with Lorem Ipsum?</h3>
                 <p className="text-gray-700 text-sm">
-                  Yes! Choose the "Lists" format to generate ordered (numbered) or unordered (bullet) lists. 
+                  Yes! Choose the &quot;Lists&quot; format to generate ordered (numbered) or unordered (bullet) lists. 
                   Perfect for demonstrating list styles, navigation menus, or content structures.
                 </p>
               </div>

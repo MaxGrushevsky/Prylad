@@ -367,13 +367,13 @@ export default function GradientGeneratorPage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-4">What are CSS Gradients?</h2>
             <div className="prose prose-gray max-w-none">
               <p className="text-gray-700 leading-relaxed mb-4">
-                CSS gradients are smooth transitions between two or more colors. They're a powerful design tool that 
+                CSS gradients are smooth transitions between two or more colors. They&apos;re a powerful design tool that 
                 allows you to create visually appealing backgrounds, buttons, and UI elements without using images. 
                 Gradients can be linear (flowing in a direction) or radial (radiating from a center point).
               </p>
               <p className="text-gray-700 leading-relaxed">
                 Modern web design heavily relies on gradients for creating depth, visual interest, and modern aesthetics. 
-                They're lightweight (no image files needed), scalable, and can be easily customized. Our gradient 
+                They&apos;re lightweight (no image files needed), scalable, and can be easily customized. Our gradient 
                 generator makes it easy to create professional gradients with multiple colors and various directions.
               </p>
             </div>
@@ -431,7 +431,7 @@ export default function GradientGeneratorPage() {
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">🎭 Brand Identity</h3>
                 <p className="text-gray-700 text-sm">
-                  Incorporate gradients into your brand's visual identity. Many modern brands use gradients as a key 
+                  Incorporate gradients into your brand&apos;s visual identity. Many modern brands use gradients as a key 
                   design element.
                 </p>
               </div>
@@ -517,7 +517,7 @@ export default function GradientGeneratorPage() {
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">What's the difference between linear and radial gradients?</h3>
+                <h3 className="font-semibold text-gray-900 mb-2">What&apos;s the difference between linear and radial gradients?</h3>
                 <p className="text-gray-700 text-sm">
                   Linear gradients transition colors along a straight line in a specific direction. Radial gradients 
                   radiate outward from a center point in a circular or elliptical pattern. Choose based on your 
@@ -527,7 +527,7 @@ export default function GradientGeneratorPage() {
               <div>
                 <h3 className="font-semibold text-gray-900 mb-2">Can I use custom angles for linear gradients?</h3>
                 <p className="text-gray-700 text-sm">
-                  Yes! Enable "Use custom angle" and adjust the slider from 0° to 360° for precise control over 
+                  Yes! Enable &quot;Use custom angle&quot; and adjust the slider from 0° to 360° for precise control over 
                   gradient direction. 0° is upward, 90° is rightward, and so on.
                 </p>
               </div>
@@ -548,7 +548,7 @@ export default function GradientGeneratorPage() {
               <div>
                 <h3 className="font-semibold text-gray-900 mb-2">Do you store the generated gradients?</h3>
                 <p className="text-gray-700 text-sm">
-                  No, we don't store any gradients. All generation happens locally in your browser. Your settings 
+                  No, we don&apos;t store any gradients. All generation happens locally in your browser. Your settings 
                   are saved locally for convenience, but we never see or have access to your gradients.
                 </p>
               </div>

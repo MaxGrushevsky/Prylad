@@ -555,7 +555,7 @@ export default function ColorConverterPage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Why Use a Color Converter?</h2>
             <div className="prose prose-gray max-w-none">
               <p className="text-gray-700 leading-relaxed mb-4">
-                Colors can be represented in multiple formats, each with its own advantages and use cases. Whether you're 
+                Colors can be represented in multiple formats, each with its own advantages and use cases. Whether you&apos;re 
                 working with web design (HEX, RGB, HSL), print design (CMYK), or image processing (HSV), you often need 
                 to convert between formats. Manually converting colors is time-consuming and error-prone, especially when 
                 working with complex color values.
@@ -599,7 +599,7 @@ export default function ColorConverterPage() {
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">HSV (Hue, Saturation, Value)</h3>
                 <p className="text-gray-700 text-sm mb-2">
-                  Similar to HSL but uses "value" instead of "lightness". HSV is commonly used in image editing software 
+                  Similar to HSL but uses &quot;value&quot; instead of &quot;lightness&quot;. HSV is commonly used in image editing software 
                   and color pickers.
                 </p>
                 <p className="text-xs text-gray-600"><strong>Used in:</strong> Image editing, color pickers, graphics software</p>
@@ -607,7 +607,7 @@ export default function ColorConverterPage() {
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">CMYK (Cyan, Magenta, Yellow, Key)</h3>
                 <p className="text-gray-700 text-sm mb-2">
-                  CMYK is the subtractive color model used in printing. The "K" stands for key (black). Values are 
+                  CMYK is the subtractive color model used in printing. The &quot;K&quot; stands for key (black). Values are 
                   percentages (0-100%).
                 </p>
                 <p className="text-xs text-gray-600"><strong>Used in:</strong> Print design, professional printing, publishing</p>
@@ -722,18 +722,18 @@ export default function ColorConverterPage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
             <div className="space-y-6">
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">What's the difference between RGB and CMYK?</h3>
+                <h3 className="font-semibold text-gray-900 mb-2">What&apos;s the difference between RGB and CMYK?</h3>
                 <p className="text-gray-700 text-sm">
                   RGB is an additive color model used for screens (red, green, blue light combine to create colors). 
                   CMYK is a subtractive model used for printing (cyan, magenta, yellow, black inks combine). RGB has a 
-                  larger color gamut than CMYK, so some RGB colors can't be accurately printed.
+                  larger color gamut than CMYK, so some RGB colors can&apos;t be accurately printed.
                 </p>
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900 mb-2">Why do I see different colors in print vs screen?</h3>
                 <p className="text-gray-700 text-sm">
                   Screens use RGB (additive, light-based) while printers use CMYK (subtractive, ink-based). The color 
-                  gamuts differ, so some screen colors can't be accurately reproduced in print. Always convert to CMYK 
+                  gamuts differ, so some screen colors can&apos;t be accurately reproduced in print. Always convert to CMYK 
                   and test print samples for important projects.
                 </p>
               </div>

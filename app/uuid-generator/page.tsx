@@ -440,14 +440,14 @@ export default function UUIDGeneratorPage() {
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">💾 Database Primary Keys</h3>
                 <p className="text-gray-700 text-sm">
-                  UUIDs are excellent for primary keys in distributed databases where you can't use auto-incrementing 
+                  UUIDs are excellent for primary keys in distributed databases where you can&apos;t use auto-incrementing 
                   integers. They prevent collisions when merging data from different sources.
                 </p>
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">🌐 API Identifiers</h3>
                 <p className="text-gray-700 text-sm">
-                  Use UUIDs as resource identifiers in REST APIs. They're opaque, don't reveal internal structure, 
+                  Use UUIDs as resource identifiers in REST APIs. They&apos;re opaque, don&apos;t reveal internal structure, 
                   and work well across different systems and services.
                 </p>
               </div>
@@ -540,7 +540,7 @@ export default function UUIDGeneratorPage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
             <div className="space-y-6">
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">What's the difference between UUID v1 and v4?</h3>
+                <h3 className="font-semibold text-gray-900 mb-2">What&apos;s the difference between UUID v1 and v4?</h3>
                 <p className="text-gray-700 text-sm">
                   UUID v4 uses random numbers and is completely unpredictable, making it ideal for most applications. 
                   UUID v1 includes a timestamp and can be sorted chronologically, which is useful for debugging and 
@@ -566,7 +566,7 @@ export default function UUIDGeneratorPage() {
               <div>
                 <h3 className="font-semibold text-gray-900 mb-2">What format should I use?</h3>
                 <p className="text-gray-700 text-sm">
-                  The standard format (with hyphens) is most common and recommended. Use "no dashes" if your system 
+                  The standard format (with hyphens) is most common and recommended. Use &quot;no dashes&quot; if your system 
                   requires it. Uppercase format is sometimes required by certain databases or systems. Braces and 
                   brackets are used in some Microsoft technologies (GUIDs).
                 </p>

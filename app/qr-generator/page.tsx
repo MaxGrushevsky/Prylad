@@ -53,7 +53,7 @@ export default function QRGeneratorPage() {
           <h2 className="text-2xl font-bold text-gray-900 mb-4">How to Use Our QR Code Generator</h2>
           <div className="prose prose-gray max-w-none">
             <p className="text-gray-700 leading-relaxed mb-4">
-              Our free online QR code generator makes it easy to create custom QR codes in seconds. Here's how to use it:
+              Our free online QR code generator makes it easy to create custom QR codes in seconds. Here&apos;s how to use it:
             </p>
             <ol className="list-decimal list-inside space-y-3 text-gray-700">
               <li><strong>Choose QR Code Type:</strong> Select from Text, URL, WiFi, or Email depending on what you want to encode.</li>
@@ -173,7 +173,7 @@ export default function QRGeneratorPage() {
               <div>
                 <h3 className="font-semibold text-gray-900 mb-1">Privacy First</h3>
                 <p className="text-gray-700 text-sm">
-                  All QR code generation happens locally in your browser. We don't store, track, or have 
+                  All QR code generation happens locally in your browser. We don&apos;t store, track, or have 
                   access to any of your data or generated codes.
                 </p>
               </div>
@@ -230,7 +230,7 @@ export default function QRGeneratorPage() {
               <div>
                 <h3 className="font-semibold text-gray-900 mb-1">Optimize for Print</h3>
                 <p className="text-gray-700 text-sm">
-                  When printing QR codes, ensure they're at least 2cm x 2cm (0.8" x 0.8") in size. 
+                  When printing QR codes, ensure they&apos;re at least 2cm x 2cm (0.8&quot; x 0.8&quot;) in size. 
                   Use high-resolution images and avoid compression that might degrade the code quality.
                 </p>
               </div>
@@ -252,12 +252,12 @@ export default function QRGeneratorPage() {
             <div>
               <h3 className="font-semibold text-gray-900 mb-2">Do you store or track my QR codes?</h3>
               <p className="text-gray-700 text-sm">
-                No, we don't store, track, or have access to any QR codes you generate. All processing happens 
+                No, we don&apos;t store, track, or have access to any QR codes you generate. All processing happens 
                 locally in your browser, ensuring complete privacy and security of your data.
               </p>
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900 mb-2">What's the difference between error correction levels?</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">What&apos;s the difference between error correction levels?</h3>
               <p className="text-gray-700 text-sm">
                 Error correction levels determine how much of the QR code can be damaged or obscured while still 
                 remaining scannable. Level L (Low) can recover ~7% damage, M (Medium) ~15%, Q (Quartile) ~25%, 
@@ -267,7 +267,7 @@ export default function QRGeneratorPage() {
             <div>
               <h3 className="font-semibold text-gray-900 mb-2">Can I use custom colors for my QR code?</h3>
               <p className="text-gray-700 text-sm">
-                Yes! You can customize both the QR code color and background color. However, ensure there's sufficient 
+                Yes! You can customize both the QR code color and background color. However, ensure there&apos;s sufficient 
                 contrast between the two colors for reliable scanning. We recommend testing your colored QR codes 
                 before final use.
               </p>
@@ -284,7 +284,7 @@ export default function QRGeneratorPage() {
               <h3 className="font-semibold text-gray-900 mb-2">Can I generate QR codes for WiFi networks?</h3>
               <p className="text-gray-700 text-sm">
                 Yes! Our generator supports WiFi QR codes. Simply select the WiFi option, enter your network name (SSID), 
-                password, security type, and whether it's a hidden network. The generated QR code allows users to connect 
+                password, security type, and whether it&apos;s a hidden network. The generated QR code allows users to connect 
                 to your WiFi network instantly by scanning.
               </p>
             </div>

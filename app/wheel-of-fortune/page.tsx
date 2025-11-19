@@ -554,7 +554,7 @@ export default function WheelOfFortunePage() {
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">🍕 Decision Making</h3>
               <p className="text-gray-700 text-sm">
-                Can't decide what to eat? Where to go? What to watch? Let the wheel decide for you. 
+                Can&apos;t decide what to eat? Where to go? What to watch? Let the wheel decide for you. 
                 Add your options and spin to get a random choice.
               </p>
             </div>
@@ -646,7 +646,7 @@ export default function WheelOfFortunePage() {
                 <h3 className="font-semibold text-gray-900 mb-1">Auto-Save</h3>
                 <p className="text-gray-700 text-sm">
                   Your options and settings are automatically saved to your browser. 
-                  They'll be there when you return.
+                  They&apos;ll be there when you return.
                 </p>
               </div>
             </div>
@@ -684,14 +684,14 @@ export default function WheelOfFortunePage() {
             <div>
               <h3 className="font-semibold text-gray-900 mb-2">Can I save my options?</h3>
               <p className="text-gray-700 text-sm">
-                Yes! Your options and settings are automatically saved to your browser's local storage. 
-                They'll be there when you return to the page.
+                Yes! Your options and settings are automatically saved to your browser&apos;s local storage. 
+                They&apos;ll be there when you return to the page.
               </p>
             </div>
             <div>
               <h3 className="font-semibold text-gray-900 mb-2">How do I use the presets?</h3>
               <p className="text-gray-700 text-sm">
-                Click on any preset button (What to Eat, Where to Go, etc.) to load that preset's 
+                Click on any preset button (What to Eat, Where to Go, etc.) to load that preset&apos;s 
                 options. You can then modify the list or add your own options.
               </p>
             </div>
@@ -705,7 +705,7 @@ export default function WheelOfFortunePage() {
             <div>
               <h3 className="font-semibold text-gray-900 mb-2">Can I export my results?</h3>
               <p className="text-gray-700 text-sm">
-                Yes! Click the "Export" button in the Statistics section to download a text file 
+                Yes! Click the &quot;Export&quot; button in the Statistics section to download a text file 
                 with all your spin history and results.
               </p>
             </div>

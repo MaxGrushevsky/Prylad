@@ -58,7 +58,7 @@ export default function BorderRadiusGeneratorPage() {
     { name: 'Circle', value: 50 },
   ]
 
-  useKeyboardShortcuts([])
+  useKeyboardShortcuts({})
 
   return (
     <Layout
@@ -218,7 +218,7 @@ export default function BorderRadiusGeneratorPage() {
           <div className="prose prose-gray dark:prose-invert max-w-none">
             <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
               The CSS <code className="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded">border-radius</code> property allows you to round the corners of elements. 
-              It's one of the most commonly used CSS properties for creating modern, polished user interfaces. 
+              It&apos;s one of the most commonly used CSS properties for creating modern, polished user interfaces. 
               By controlling the radius of each corner independently or together, you can create everything from 
               subtle rounded corners to perfect circles.
             </p>

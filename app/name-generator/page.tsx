@@ -402,7 +402,7 @@ export default function NameGeneratorPage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Why Use a Name Generator?</h2>
             <div className="prose prose-gray max-w-none">
               <p className="text-gray-700 leading-relaxed mb-4">
-                Whether you're creating characters for a story, developing game personas, brainstorming usernames, 
+                Whether you&apos;re creating characters for a story, developing game personas, brainstorming usernames, 
                 or need placeholder names for testing, a name generator is an invaluable tool. Coming up with unique, 
                 appropriate names can be time-consuming and challenging, especially when you need multiple options 
                 or names that fit a specific theme or style.
@@ -424,7 +424,7 @@ export default function NameGeneratorPage() {
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">📚 Writing & Storytelling</h3>
                 <p className="text-gray-700 text-sm">
                   Create unique character names for novels, short stories, screenplays, and other creative writing 
-                  projects. Choose from modern, classic, fantasy, or sci-fi styles to match your story's setting 
+                  projects. Choose from modern, classic, fantasy, or sci-fi styles to match your story&apos;s setting 
                   and tone.
                 </p>
               </div>
@@ -432,7 +432,7 @@ export default function NameGeneratorPage() {
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">🎮 Gaming & Role-Playing</h3>
                 <p className="text-gray-700 text-sm">
                   Generate character names for video games, tabletop RPGs, or online gaming platforms. Create memorable 
-                  usernames and gamer tags that stand out while fitting your character's personality or game world.
+                  usernames and gamer tags that stand out while fitting your character&apos;s personality or game world.
                 </p>
               </div>
               <div>
@@ -511,7 +511,7 @@ export default function NameGeneratorPage() {
                   <h3 className="font-semibold text-gray-900 mb-1">Gender Options</h3>
                   <p className="text-gray-700 text-sm">
                     Generate male names, female names, or mix both. Perfect for creating diverse character rosters 
-                    or when gender doesn't matter for your use case.
+                    or when gender doesn&apos;t matter for your use case.
                   </p>
                 </div>
               </div>
@@ -579,7 +579,7 @@ export default function NameGeneratorPage() {
               <div>
                 <h3 className="font-semibold text-gray-900 mb-2">How many names can I generate?</h3>
                 <p className="text-gray-700 text-sm">
-                  You can generate up to 50 names or nicknames in a single batch. There's no limit on how many 
+                  You can generate up to 50 names or nicknames in a single batch. There&apos;s no limit on how many 
                   batches you can generate, so you can create as many names as you need.
                 </p>
               </div>
@@ -602,7 +602,6 @@ export default function NameGeneratorPage() {
         </div>
       </div>
     </Layout>
-    </>
   )
 }
 

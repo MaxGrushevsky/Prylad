@@ -159,13 +159,9 @@ export default function SQLFormatterPage() {
     URL.revokeObjectURL(url)
   }
 
-  useKeyboardShortcuts([
-    {
-      key: 'Enter',
-      ctrlKey: true,
-      handler: handleFormat
-    }
-  ])
+  useKeyboardShortcuts({
+    onEnter: handleFormat
+  })
 
   return (
     <Layout

@@ -273,7 +273,7 @@ export default function DecisionGeneratorPage() {
                 </div>
                 {question && (
                   <div className="text-sm text-gray-600 mt-2 italic">
-                    "{question}"
+                    &quot;{question}&quot;
                   </div>
                 )}
               </div>
@@ -368,12 +368,12 @@ export default function DecisionGeneratorPage() {
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Online Decision Generator</h2>
           <div className="prose prose-gray max-w-none">
             <p className="text-gray-700 leading-relaxed mb-4">
-              Can't make up your mind? Our free decision generator helps you get answers to life's questions. 
+              Can&apos;t make up your mind? Our free decision generator helps you get answers to life&apos;s questions. 
               Whether you need a simple yes/no, want to channel the wisdom of a Magic 8 Ball, flip a coin, or 
-              get a random decision, we've got you covered.
+              get a random decision, we&apos;ve got you covered.
             </p>
             <p className="text-gray-700 leading-relaxed">
-              Perfect for making decisions when you're stuck between options, settling debates, or just having 
+              Perfect for making decisions when you&apos;re stuck between options, settling debates, or just having 
               fun. All decision generation happens locally in your browser - your questions and answers remain 
               completely private.
             </p>
@@ -387,7 +387,7 @@ export default function DecisionGeneratorPage() {
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">🤔 Daily Decisions</h3>
               <p className="text-gray-700 text-sm">
-                Can't decide what to eat, what to wear, or which movie to watch? Let our decision generator 
+                Can&apos;t decide what to eat, what to wear, or which movie to watch? Let our decision generator 
                 help you make quick choices without overthinking.
               </p>
             </div>
@@ -408,7 +408,7 @@ export default function DecisionGeneratorPage() {
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">🎯 Breaking Ties</h3>
               <p className="text-gray-700 text-sm">
-                When groups can't agree, use our decision generator to make fair, random choices. Great for 
+                When groups can&apos;t agree, use our decision generator to make fair, random choices. Great for 
                 settling friendly debates or choosing between equal options.
               </p>
             </div>
@@ -416,7 +416,7 @@ export default function DecisionGeneratorPage() {
               <h3 className="text-lg font-semibold text-gray-900 mb-2">📝 Creative Inspiration</h3>
               <p className="text-gray-700 text-sm">
                 Stuck on a creative project? Use random mode to get unexpected answers that might spark new 
-                ideas or perspectives you hadn't considered.
+                ideas or perspectives you hadn&apos;t considered.
               </p>
             </div>
             <div>
@@ -509,7 +509,7 @@ export default function DecisionGeneratorPage() {
               </p>
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900 mb-2">What's the difference between the modes?</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">What&apos;s the difference between the modes?</h3>
               <p className="text-gray-700 text-sm">
                 Yes/No mode provides simple binary answers. Magic 8 Ball gives classic 8 Ball responses. Coin 
                 Flip is purely heads or tails. Random mode provides varied, creative answers for more open-ended 
@@ -527,7 +527,7 @@ export default function DecisionGeneratorPage() {
             <div>
               <h3 className="font-semibold text-gray-900 mb-2">Can I use this for serious decisions?</h3>
               <p className="text-gray-700 text-sm">
-                While our generator provides random answers, it's best used for fun, breaking ties, or as a tool 
+                While our generator provides random answers, it&apos;s best used for fun, breaking ties, or as a tool 
                 to help clarify your own thinking. For serious life decisions, we recommend consulting with 
                 trusted advisors or professionals.
               </p>
@@ -535,21 +535,21 @@ export default function DecisionGeneratorPage() {
             <div>
               <h3 className="font-semibold text-gray-900 mb-2">Is my question history stored?</h3>
               <p className="text-gray-700 text-sm">
-                Question history is stored locally in your browser's memory and is cleared when you close the 
+                Question history is stored locally in your browser&apos;s memory and is cleared when you close the 
                 tab or clear your browser data. We never transmit or store your questions on our servers.
               </p>
             </div>
             <div>
               <h3 className="font-semibold text-gray-900 mb-2">Can I export my question history?</h3>
               <p className="text-gray-700 text-sm">
-                Yes! Click the "Export" button in the statistics section to download your question history as a 
+                Yes! Click the &quot;Export&quot; button in the statistics section to download your question history as a 
                 text file. Perfect for keeping records or analyzing your decision patterns.
               </p>
             </div>
             <div>
               <h3 className="font-semibold text-gray-900 mb-2">How many questions can I ask?</h3>
               <p className="text-gray-700 text-sm">
-                There's no limit! Ask as many questions as you want. The history keeps track of the last 50 
+                There&apos;s no limit! Ask as many questions as you want. The history keeps track of the last 50 
                 questions, and you can export or clear it at any time.
               </p>
             </div>

@@ -26,12 +26,13 @@ const generateData = (type: DataType, count: number, options?: Record<string, an
       case 'name':
         data.push(`${firstNames[Math.floor(Math.random() * firstNames.length)]} ${lastNames[Math.floor(Math.random() * lastNames.length)]}`)
         break
-      case 'email':
+      case 'email': {
         const firstName = firstNames[Math.floor(Math.random() * firstNames.length)].toLowerCase()
         const lastName = lastNames[Math.floor(Math.random() * lastNames.length)].toLowerCase()
-        const domain = domains[Math.floor(Math.random() * domains.length)]
-        data.push(`${firstName}.${lastName}@${domain}`)
+        const emailDomain = domains[Math.floor(Math.random() * domains.length)]
+        data.push(`${firstName}.${lastName}@${emailDomain}`)
         break
+      }
       case 'phone':
         data.push(`+1-${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 9000) + 1000}`)
         break
@@ -53,7 +54,7 @@ const generateData = (type: DataType, count: number, options?: Record<string, an
         const max = options?.max ?? 100
         data.push(Math.floor(Math.random() * (max - min + 1)) + min)
         break
-      case 'text':
+      case 'text': {
         const words = ['lorem', 'ipsum', 'dolor', 'sit', 'amet', 'consectetur', 'adipiscing', 'elit', 'sed', 'do', 'eiusmod', 'tempor', 'incididunt']
         const wordCount = options?.wordCount ?? 5
         const textWords: string[] = []
@@ -62,6 +63,7 @@ const generateData = (type: DataType, count: number, options?: Record<string, an
         }
         data.push(textWords.join(' '))
         break
+      }
       case 'uuid':
         data.push('xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
           const r = Math.random() * 16 | 0
@@ -69,12 +71,14 @@ const generateData = (type: DataType, count: number, options?: Record<string, an
           return v.toString(16)
         }))
         break
-      case 'url':
+      case 'url': {
         const protocol = Math.random() > 0.5 ? 'https' : 'http'
-        const domain = domains[Math.floor(Math.random() * domains.length)]
-        const path = Math.random() > 0.5 ? `/${words[Math.floor(Math.random() * words.length)]}` : ''
-        data.push(`${protocol}://${domain}${path}`)
+        const urlDomain = domains[Math.floor(Math.random() * domains.length)]
+        const urlWords = ['lorem', 'ipsum', 'dolor', 'sit', 'amet', 'consectetur', 'adipiscing', 'elit', 'sed', 'do', 'eiusmod', 'tempor', 'incididunt']
+        const path = Math.random() > 0.5 ? `/${urlWords[Math.floor(Math.random() * urlWords.length)]}` : ''
+        data.push(`${protocol}://${urlDomain}${path}`)
         break
+      }
       case 'ip':
         data.push(`${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`)
         break

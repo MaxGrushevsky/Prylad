@@ -54,7 +54,7 @@ export default function CSSAnimationGeneratorPage() {
   const [keyframes, setKeyframes] = useState('from { opacity: 0; }\nto { opacity: 1; }')
   const [duration, setDuration] = useState(1)
   const [delay, setDelay] = useState(0)
-  const [iteration, setIteration] = useState(1)
+  const [iteration, setIteration] = useState<number | 'infinite'>(1)
   const [direction, setDirection] = useState<'normal' | 'reverse' | 'alternate' | 'alternate-reverse'>('normal')
   const [easing, setEasing] = useState<Easing>('ease')
   const [fillMode, setFillMode] = useState<'none' | 'forwards' | 'backwards' | 'both'>('none')
@@ -201,7 +201,7 @@ export default function CSSAnimationGeneratorPage() {
                 </label>
                 <select
                   value={iteration}
-                  onChange={(e) => setIteration(e.target.value === 'infinite' ? 'infinite' : parseInt(e.target.value))}
+                  onChange={(e) => setIteration(e.target.value === 'infinite' ? 'infinite' : parseInt(e.target.value) || 1)}
                   className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 >
                   <option value={1}>1</option>

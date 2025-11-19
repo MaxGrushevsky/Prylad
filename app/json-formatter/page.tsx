@@ -388,13 +388,13 @@ export default function JSONFormatterPage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-4">What is JSON?</h2>
             <div className="prose prose-gray max-w-none">
               <p className="text-gray-700 leading-relaxed mb-4">
-                JSON (JavaScript Object Notation) is a lightweight data-interchange format that's easy for humans 
-                to read and write, and easy for machines to parse and generate. It's based on a subset of JavaScript 
+                JSON (JavaScript Object Notation) is a lightweight data-interchange format that&apos;s easy for humans 
+                to read and write, and easy for machines to parse and generate. It&apos;s based on a subset of JavaScript 
                 and is commonly used for transmitting data in web applications, APIs, and configuration files.
               </p>
               <p className="text-gray-700 leading-relaxed">
                 JSON is language-independent but uses conventions familiar to programmers of C-family languages. 
-                It's built on two structures: a collection of name/value pairs (objects) and an ordered list of values (arrays). 
+                It&apos;s built on two structures: a collection of name/value pairs (objects) and an ordered list of values (arrays). 
                 Properly formatted JSON is essential for readability, debugging, and maintaining code quality.
               </p>
             </div>
@@ -507,7 +507,7 @@ export default function JSONFormatterPage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
             <div className="space-y-6">
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">What's the difference between formatting and minifying?</h3>
+                <h3 className="font-semibold text-gray-900 mb-2">What&apos;s the difference between formatting and minifying?</h3>
                 <p className="text-gray-700 text-sm">
                   Formatting adds indentation and line breaks to make JSON readable. Minifying removes all 
                   unnecessary whitespace to reduce file size. Use formatting for development and minifying 

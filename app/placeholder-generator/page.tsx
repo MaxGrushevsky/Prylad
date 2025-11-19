@@ -627,7 +627,7 @@ export default function PlaceholderGeneratorPage() {
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">What's the maximum size I can generate?</h3>
+                <h3 className="font-semibold text-gray-900 mb-2">What&apos;s the maximum size I can generate?</h3>
                 <p className="text-gray-700 text-sm">
                   You can generate placeholders from 50px to 4000px in both width and height. This covers 
                   everything from icons to large hero images and banners.
@@ -644,8 +644,8 @@ export default function PlaceholderGeneratorPage() {
                 <h3 className="font-semibold text-gray-900 mb-2">Can I use the placeholder URL directly in my code?</h3>
                 <p className="text-gray-700 text-sm">
                   The generated URL is a data URL (base64-encoded image). You can use it directly in HTML 
-                  img tags or CSS, but it's quite long. For production, download the image and host it 
-                  separately, or use our "Copy HTML" or "Copy CSS" buttons for ready-to-use code snippets.
+                  img tags or CSS, but it&apos;s quite long. For production, download the image and host it 
+                  separately, or use our &quot;Copy HTML&quot; or &quot;Copy CSS&quot; buttons for ready-to-use code snippets.
                 </p>
               </div>
             </div>

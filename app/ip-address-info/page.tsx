@@ -72,7 +72,7 @@ export default function IPAddressInfoPage() {
         lon: data.longitude,
         postal: data.postal
       })
-    } catch (error) {.message}`)
+    } catch (error) {
       setInfo(null)
     } finally {
       setLoading(false)
@@ -127,7 +127,7 @@ export default function IPAddressInfoPage() {
                 </button>
               </div>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                Enter an IP address to lookup or click "My IP" to get your current IP
+                Enter an IP address to lookup or click &quot;My IP&quot; to get your current IP
               </p>
             </div>
 

@@ -234,7 +234,7 @@ export default function SlugGeneratorPage() {
                 A URL slug is the part of a URL that identifies a specific page or resource in a human-readable 
                 format. Slugs are typically derived from the page title or content and are used in URLs to make 
                 them more descriptive and SEO-friendly. For example, in the URL <code className="bg-gray-100 px-2 py-1 rounded">https://example.com/blog/my-awesome-post</code>, 
-                "my-awesome-post" is the slug.
+                &quot;my-awesome-post&quot; is the slug.
               </p>
               <p className="text-gray-700 leading-relaxed">
                 Good slugs are lowercase, use hyphens or underscores to separate words, remove special characters, 
@@ -289,7 +289,7 @@ export default function SlugGeneratorPage() {
                   <h3 className="font-semibold text-gray-900 mb-1">Keep It Short and Descriptive</h3>
                   <p className="text-gray-700 text-sm">
                     Slugs should be concise but descriptive. Aim for 3-5 words that accurately represent the content. 
-                    Avoid unnecessary words like "the", "a", "an" unless they're essential.
+                    Avoid unnecessary words like &quot;the&quot;, &quot;a&quot;, &quot;an&quot; unless they&apos;re essential.
                   </p>
                 </div>
               </div>
@@ -378,7 +378,7 @@ export default function SlugGeneratorPage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
             <div className="space-y-6">
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">What's the best separator for URL slugs?</h3>
+                <h3 className="font-semibold text-gray-900 mb-2">What&apos;s the best separator for URL slugs?</h3>
                 <p className="text-gray-700 text-sm">
                   Hyphens (-) are generally recommended for URL slugs because search engines treat them as word 
                   separators. Underscores (_) are acceptable for database field names or when following specific 

@@ -280,10 +280,10 @@ export default function TransliterationPage() {
             <div className="prose prose-gray max-w-none">
               <ol className="list-decimal list-inside space-y-3 text-gray-700">
                 <li><strong>Choose Direction:</strong> Select whether you want to convert from Cyrillic to Latin or from Latin to Cyrillic.</li>
-                <li><strong>Enable Auto-Transliterate:</strong> Check the "Auto-transliterate" option to see results in real-time as you type, or uncheck it to transliterate manually.</li>
+                <li><strong>Enable Auto-Transliterate:</strong> Check the &quot;Auto-transliterate&quot; option to see results in real-time as you type, or uncheck it to transliterate manually.</li>
                 <li><strong>Enter Your Text:</strong> Type or paste the text you want to transliterate in the input field.</li>
-                <li><strong>Review Results:</strong> The transliterated text appears automatically (if auto-transliterate is enabled) or after clicking "Transliterate".</li>
-                <li><strong>Copy or Export:</strong> Click "Copy" to copy the result to your clipboard, or "Export" to save it as a text file.</li>
+                <li><strong>Review Results:</strong> The transliterated text appears automatically (if auto-transliterate is enabled) or after clicking &quot;Transliterate&quot;.</li>
+                <li><strong>Copy or Export:</strong> Click &quot;Copy&quot; to copy the result to your clipboard, or &quot;Export&quot; to save it as a text file.</li>
               </ol>
             </div>
           </section>
@@ -328,12 +328,12 @@ export default function TransliterationPage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
             <div className="space-y-6">
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">What's the difference between transliteration and translation?</h3>
+                <h3 className="font-semibold text-gray-900 mb-2">What&apos;s the difference between transliteration and translation?</h3>
                 <p className="text-gray-700 text-sm">
                   Transliteration converts text from one writing system to another (e.g., Cyrillic to Latin), 
                   representing sounds or characters. Translation converts meaning between languages. For example, 
-                  "Привет" transliterates to "Privet" (same meaning, different script), while it translates to 
-                  "Hello" (different language).
+                  &quot;Привет&quot; transliterates to &quot;Privet&quot; (same meaning, different script), while it translates to 
+                  &quot;Hello&quot; (different language).
                 </p>
               </div>
               <div>

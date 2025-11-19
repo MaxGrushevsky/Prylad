@@ -144,7 +144,7 @@ export default function Navigation() {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
-  const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null)
   const scrollRestoredRef = useRef(false)
   const { theme, toggleTheme } = useTheme()
   

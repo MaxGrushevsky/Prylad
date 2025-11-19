@@ -90,7 +90,7 @@ export default function DiceRollerPage() {
   }
 
   const flipCoin = () => {
-    const result = Math.random() < 0.5 ? 'heads' : 'tails'
+    const result: 'heads' | 'tails' = Math.random() < 0.5 ? 'heads' : 'tails'
     setCoinResult(result)
     setCoinHistory(prev => [result, ...prev].slice(0, 20)) // Keep last 20 flips
   }
@@ -442,7 +442,7 @@ export default function DiceRollerPage() {
             <p className="text-gray-700 leading-relaxed mb-4">
               Our free online dice roller is perfect for D&D, Pathfinder, and other tabletop role-playing games. 
               Roll multiple dice types simultaneously, add bonuses, track your roll history, and view statistics. 
-              Whether you're playing D&D 5e, rolling for attacks, skill checks, or damage, our dice roller has you covered.
+              Whether you&apos;re playing D&D 5e, rolling for attacks, skill checks, or damage, our dice roller has you covered.
             </p>
             <p className="text-gray-700 leading-relaxed">
               All dice rolling happens locally in your browser - no internet connection required after loading. 
@@ -493,7 +493,7 @@ export default function DiceRollerPage() {
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">🌐 Online Gaming</h3>
               <p className="text-gray-700 text-sm">
-                Perfect for online D&D sessions, virtual tabletop games, or when you don't have physical dice. 
+                Perfect for online D&D sessions, virtual tabletop games, or when you don&apos;t have physical dice. 
                 Works on any device with a web browser.
               </p>
             </div>
@@ -601,7 +601,7 @@ export default function DiceRollerPage() {
             <div>
               <h3 className="font-semibold text-gray-900 mb-2">Is my roll history stored?</h3>
               <p className="text-gray-700 text-sm">
-                Roll history is stored locally in your browser's memory and is cleared when you close the tab 
+                Roll history is stored locally in your browser&apos;s memory and is cleared when you close the tab 
                 or clear your browser data. We never transmit or store your rolls on our servers.
               </p>
             </div>
@@ -613,7 +613,7 @@ export default function DiceRollerPage() {
               </p>
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900 mb-2">What's the difference between presets?</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">What&apos;s the difference between presets?</h3>
               <p className="text-gray-700 text-sm">
                 Presets configure common dice combinations: d20 for basic rolls, d6 for damage, D&D Attack for 
                 attack rolls with +5 bonus, and D&D Skill for skill checks with +3 bonus. Custom lets you 

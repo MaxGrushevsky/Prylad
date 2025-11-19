@@ -276,12 +276,12 @@ export default function PalindromeCheckerPage() {
             <div className="prose prose-gray max-w-none">
               <p className="text-gray-700 leading-relaxed mb-4">
                 A palindrome is a word, phrase, number, or sequence of characters that reads the same forwards and 
-                backwards. The term comes from the Greek words "palin" (again) and "dromos" (way, direction), 
-                meaning "running back again."
+                backwards. The term comes from the Greek words &quot;palin&quot; (again) and &quot;dromos&quot; (way, direction), 
+                meaning &quot;running back again.&quot;
               </p>
               <p className="text-gray-700 leading-relaxed">
-                Famous examples include words like "radar," "level," and "civic," as well as phrases like 
-                "A man a plan a canal Panama" and "Never odd or even." Palindromes can be found in many languages 
+                Famous examples include words like &quot;radar,&quot; &quot;level,&quot; and &quot;civic,&quot; as well as phrases like 
+                &quot;A man a plan a canal Panama&quot; and &quot;Never odd or even.&quot; Palindromes can be found in many languages 
                 and are often used in wordplay, puzzles, and literature.
               </p>
             </div>
@@ -293,7 +293,7 @@ export default function PalindromeCheckerPage() {
             <div className="prose prose-gray max-w-none">
               <ol className="list-decimal list-inside space-y-3 text-gray-700">
                 <li><strong>Set Options:</strong> Choose which characters to ignore: case, spaces, punctuation, or numbers.</li>
-                <li><strong>Enable Auto-Check:</strong> Check the "Auto-check" option to see results in real-time as you type.</li>
+                <li><strong>Enable Auto-Check:</strong> Check the &quot;Auto-check&quot; option to see results in real-time as you type.</li>
                 <li><strong>Enter Your Text:</strong> Type or paste the text you want to check in the input field.</li>
                 <li><strong>Review Results:</strong> See if your text is a palindrome, along with the cleaned and reversed versions.</li>
                 <li><strong>Try Examples:</strong> Click on example palindromes to see how they work with different options.</li>
@@ -345,15 +345,15 @@ export default function PalindromeCheckerPage() {
                 <h3 className="font-semibold text-gray-900 mb-2">What makes a text a palindrome?</h3>
                 <p className="text-gray-700 text-sm">
                   A text is a palindrome if it reads the same forwards and backwards after applying your 
-                  selected options (ignoring case, spaces, punctuation, etc.). For example, "A man a plan 
-                  a canal Panama" is a palindrome when spaces and case are ignored.
+                  selected options (ignoring case, spaces, punctuation, etc.). For example, &quot;A man a plan 
+                  a canal Panama&quot; is a palindrome when spaces and case are ignored.
                 </p>
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900 mb-2">Why are there options to ignore certain characters?</h3>
                 <p className="text-gray-700 text-sm">
                   Different contexts require different palindrome definitions. Sometimes you want to check 
-                  if text is a palindrome ignoring spaces and punctuation (like "A man a plan a canal Panama"), 
+                  if text is a palindrome ignoring spaces and punctuation (like &quot;A man a plan a canal Panama&quot;), 
                   while other times you want exact character-by-character matching.
                 </p>
               </div>
@@ -365,11 +365,11 @@ export default function PalindromeCheckerPage() {
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">What's the longest palindrome?</h3>
+                <h3 className="font-semibold text-gray-900 mb-2">What&apos;s the longest palindrome?</h3>
                 <p className="text-gray-700 text-sm">
-                  The longest single-word palindrome in English is "tattarrattat" (12 letters), coined by 
+                  The longest single-word palindrome in English is &quot;tattarrattat&quot; (12 letters), coined by 
                   James Joyce. The longest palindromic phrase is much longer and depends on how you define 
-                  "phrase" and which characters you ignore.
+                  &quot;phrase&quot; and which characters you ignore.
                 </p>
               </div>
             </div>

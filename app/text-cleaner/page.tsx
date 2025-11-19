@@ -25,7 +25,7 @@ export default function TextCleanerPage() {
         cleaned = input.replace(/\s/g, '')
         break
       case 'duplicates':
-        cleaned = [...new Set(input.split('\n'))].join('\n')
+        cleaned = Array.from(new Set(input.split('\n'))).join('\n')
         break
       case 'emptyLines':
         cleaned = input.split('\n').filter(line => line.trim()).join('\n')
@@ -43,13 +43,13 @@ export default function TextCleanerPage() {
         cleaned = input.replace(/[a-zA-Z]/g, '')
         break
       case 'all':
-        cleaned = input
+        const lines = input
           .replace(/\s+/g, ' ')
           .trim()
           .split('\n')
           .filter(line => line.trim())
           .map(line => line.trim())
-        cleaned = [...new Set(cleaned)].join('\n')
+        cleaned = Array.from(new Set(lines)).join('\n')
         break
       default:
         cleaned = input
@@ -327,17 +327,17 @@ export default function TextCleanerPage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
             <div className="space-y-6">
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">What's the difference between "Remove extra spaces" and "Remove all spaces"?</h3>
+                <h3 className="font-semibold text-gray-900 mb-2">What&apos;s the difference between &quot;Remove extra spaces&quot; and &quot;Remove all spaces&quot;?</h3>
                 <p className="text-gray-700 text-sm">
-                  "Remove extra spaces" replaces multiple consecutive spaces with a single space and trims 
-                  leading/trailing spaces. "Remove all spaces" removes every space character from the text, 
+                  &quot;Remove extra spaces&quot; replaces multiple consecutive spaces with a single space and trims 
+                  leading/trailing spaces. &quot;Remove all spaces&quot; removes every space character from the text, 
                   including single spaces between words.
                 </p>
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900 mb-2">Can I combine multiple cleaning operations?</h3>
                 <p className="text-gray-700 text-sm">
-                  Yes! Use the "Clean all" option to apply multiple cleaning operations at once: remove 
+                  Yes! Use the &quot;Clean all&quot; option to apply multiple cleaning operations at once: remove 
                   extra spaces, trim lines, remove empty lines, and remove duplicates. You can also apply 
                   operations sequentially.
                 </p>

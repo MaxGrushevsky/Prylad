@@ -358,7 +358,7 @@ export default function PasswordGeneratorPage() {
           <li>Adjust the password length slider (recommended: 16+ characters)</li>
           <li>Select character types: uppercase, lowercase, numbers, symbols</li>
           <li>Optionally exclude similar characters (I, l, 1, O, 0) for better readability</li>
-          <li>Click "Generate" or press Enter to create passwords</li>
+          <li>Click &quot;Generate&quot; or press Enter to create passwords</li>
           <li>Use the strength meter to verify password security</li>
           <li>Copy passwords to clipboard or export to file</li>
         </ul>
@@ -759,7 +759,7 @@ export default function PasswordGeneratorPage() {
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Why Use a Password Generator?</h2>
           <div className="prose prose-gray max-w-none">
             <p className="text-gray-700 leading-relaxed mb-4">
-              In today's digital age, strong passwords are your first line of defense against cyber attacks. 
+              In today&apos;s digital age, strong passwords are your first line of defense against cyber attacks. 
               Weak passwords are one of the leading causes of data breaches, with studies showing that over 80% 
               of hacking-related breaches involve compromised or weak credentials.
             </p>
@@ -973,15 +973,15 @@ export default function PasswordGeneratorPage() {
                   <h4 className="font-semibold text-gray-900 mb-1">Dictionary Attacks</h4>
                   <p className="text-gray-700 text-sm">
                     Attackers use lists of common passwords, words from dictionaries, and previously leaked passwords. 
-                    This is why "password123" or "qwerty" are extremely weak - they're among the first passwords tried. 
-                    Our generator creates truly random passwords that won't appear in any dictionary.
+                    This is why &quot;password123&quot; or &quot;qwerty&quot; are extremely weak - they&apos;re among the first passwords tried. 
+                    Our generator creates truly random passwords that won&apos;t appear in any dictionary.
                   </p>
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-900 mb-1">Rainbow Table Attacks</h4>
                   <p className="text-gray-700 text-sm">
                     Pre-computed tables of password hashes allow attackers to quickly look up common passwords. However, 
-                    modern systems use "salting" (adding random data) to make rainbow tables ineffective. Strong, unique 
+                    modern systems use &quot;salting&quot; (adding random data) to make rainbow tables ineffective. Strong, unique 
                     passwords remain the best defense.
                   </p>
                 </div>
@@ -1034,8 +1034,8 @@ export default function PasswordGeneratorPage() {
                 <li><strong>Use strong, unique passwords:</strong> Generate different passwords for each account using our tool.</li>
                 <li><strong>Enable two-factor authentication (2FA):</strong> Adds an extra layer of security even if your password is compromised.</li>
                 <li><strong>Use a password manager:</strong> Securely store and manage all your passwords without having to remember them.</li>
-                <li><strong>Be cautious with password reset:</strong> Ensure your email and phone accounts are well-protected, as they're often used for password resets.</li>
-                <li><strong>Monitor for breaches:</strong> Use services like "Have I Been Pwned" to check if your accounts have been compromised.</li>
+                <li><strong>Be cautious with password reset:</strong> Ensure your email and phone accounts are well-protected, as they&apos;re often used for password resets.</li>
+                <li><strong>Monitor for breaches:</strong> Use services like &quot;Have I Been Pwned&quot; to check if your accounts have been compromised.</li>
                 <li><strong>Update passwords periodically:</strong> Especially for sensitive accounts, change passwords if you suspect any compromise.</li>
                 <li><strong>Never share passwords:</strong> Legitimate services will never ask for your password via email or phone.</li>
                 <li><strong>Check for HTTPS:</strong> Always ensure websites use HTTPS (secure connection) before entering passwords.</li>
@@ -1046,7 +1046,7 @@ export default function PasswordGeneratorPage() {
               <ul className="list-disc list-inside space-y-2 text-gray-700 text-sm">
                 <li>Using personal information (names, birthdays, addresses) that attackers can research</li>
                 <li>Creating passwords based on dictionary words or common phrases</li>
-                <li>Using simple patterns like "123456" or "qwerty"</li>
+                <li>Using simple patterns like &quot;123456&quot; or &quot;qwerty&quot;</li>
                 <li>Reusing the same password across multiple accounts</li>
                 <li>Writing passwords down in insecure locations</li>
                 <li>Sharing passwords with others, even trusted individuals</li>
@@ -1105,7 +1105,7 @@ export default function PasswordGeneratorPage() {
               <p className="text-gray-700 text-sm">
                 The crack time estimate assumes a modern attacker using specialized hardware capable of approximately 
                 1 billion password guesses per second. This is a realistic estimate for sophisticated attacks, 
-                though actual times may vary based on the attacker's resources and methods.
+                though actual times may vary based on the attacker&apos;s resources and methods.
               </p>
             </div>
             <div>
@@ -1113,7 +1113,7 @@ export default function PasswordGeneratorPage() {
               <p className="text-gray-700 text-sm">
                 Yes! Generated passwords work with any service that accepts passwords. However, always check the 
                 specific requirements of each service - some may have length limits, character restrictions, or 
-                other requirements that you'll need to adjust for.
+                other requirements that you&apos;ll need to adjust for.
               </p>
             </div>
           </div>

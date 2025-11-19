@@ -38,7 +38,7 @@ const getFlagDescription = (flag: RegexFlag): string => {
 export default function RegexTesterPage() {
   const [pattern, setPattern] = useState('')
   const [text, setText] = useState('Hello world! Email: test@example.com and another: user@domain.org')
-  const [flags, setFlags] = useState<Set<RegexFlag>>(new Set(['g']))
+  const [flags, setFlags] = useState<Set<RegexFlag>>(new Set<RegexFlag>(['g']))
   const [matches, setMatches] = useState<MatchResult[]>([])
   const [error, setError] = useState<string | null>(null)
   const [autoTest, setAutoTest] = useState(true)
@@ -141,7 +141,7 @@ export default function RegexTesterPage() {
 
   const loadExample = (example: typeof regexExamples[0]) => {
     setPattern(example.pattern)
-    setFlags(new Set(['g']))
+    setFlags(new Set<RegexFlag>(['g']))
   }
 
   const copyPattern = () => {

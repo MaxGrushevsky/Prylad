@@ -100,7 +100,7 @@ export default function HashGeneratorPage() {
       setHash(hashHex)
       setTotalGenerated(prev => prev + 1)
     } catch (error) {
-      setHash('Error generating hash').message}`)
+      setHash('Error generating hash')
     }
   }, [text, algorithm, useHMAC, secretKey, ])
 
@@ -339,9 +339,9 @@ export default function HashGeneratorPage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-4">What is a Hash Function?</h2>
             <div className="prose prose-gray max-w-none">
               <p className="text-gray-700 leading-relaxed mb-4">
-                A hash function is a mathematical algorithm that takes an input (or "message") and returns a 
+                A hash function is a mathematical algorithm that takes an input (or &quot;message&quot;) and returns a 
                 fixed-size string of bytes. The output, known as the hash value or digest, is typically a 
-                hexadecimal string that appears random. Hash functions are one-way functions - it's easy to 
+                hexadecimal string that appears random. Hash functions are one-way functions - it&apos;s easy to 
                 compute the hash from the input, but nearly impossible to reverse the process.
               </p>
               <p className="text-gray-700 leading-relaxed">
@@ -359,7 +359,7 @@ export default function HashGeneratorPage() {
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">MD5 (128 bits)</h3>
                 <p className="text-gray-700 text-sm mb-2">
-                  MD5 produces a 128-bit hash value. It's fast but cryptographically broken and vulnerable to 
+                  MD5 produces a 128-bit hash value. It&apos;s fast but cryptographically broken and vulnerable to 
                   collision attacks. Not recommended for security purposes.
                 </p>
                 <p className="text-xs text-gray-600"><strong>Use for:</strong> Checksums, non-security applications</p>
@@ -367,7 +367,7 @@ export default function HashGeneratorPage() {
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">SHA-1 (160 bits)</h3>
                 <p className="text-gray-700 text-sm mb-2">
-                  SHA-1 produces a 160-bit hash value. It's deprecated due to security vulnerabilities and 
+                  SHA-1 produces a 160-bit hash value. It&apos;s deprecated due to security vulnerabilities and 
                   collision attacks. Not recommended for new applications.
                 </p>
                 <p className="text-xs text-gray-600"><strong>Use for:</strong> Legacy systems, non-security applications</p>
@@ -375,7 +375,7 @@ export default function HashGeneratorPage() {
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">SHA-256 (256 bits)</h3>
                 <p className="text-gray-700 text-sm mb-2">
-                  SHA-256 is part of the SHA-2 family and produces a 256-bit hash. It's secure, widely used, 
+                  SHA-256 is part of the SHA-2 family and produces a 256-bit hash. It&apos;s secure, widely used, 
                   and recommended for most applications including blockchain and digital signatures.
                 </p>
                 <p className="text-xs text-gray-600"><strong>Use for:</strong> Security, blockchain, digital signatures</p>
@@ -498,12 +498,12 @@ export default function HashGeneratorPage() {
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-3">What Are Hash Functions?</h3>
                 <p className="text-gray-700 text-sm mb-3">
-                  A cryptographic hash function is a mathematical algorithm that takes an input (or "message") and returns 
+                  A cryptographic hash function is a mathematical algorithm that takes an input (or &quot;message&quot;) and returns 
                   a fixed-size string of bytes. The output, called a hash value or digest, appears random and is unique to 
                   the input data. Even a tiny change in the input produces a completely different hash.
                 </p>
                 <p className="text-gray-700 text-sm">
-                  Hash functions are one-way functions - you can easily compute the hash from the input, but it's 
+                  Hash functions are one-way functions - you can easily compute the hash from the input, but it&apos;s 
                   computationally infeasible to reverse the process and determine the original input from the hash. 
                   This property makes them ideal for password storage, data integrity verification, and digital signatures.
                 </p>
@@ -529,7 +529,7 @@ export default function HashGeneratorPage() {
                     <h4 className="font-semibold text-gray-900 mb-1">Avalanche Effect</h4>
                     <p className="text-gray-700 text-sm">
                       A small change in input (even a single bit) produces a dramatically different hash. This ensures 
-                      that similar inputs don't produce similar hashes, preventing pattern-based attacks.
+                      that similar inputs don&apos;t produce similar hashes, preventing pattern-based attacks.
                     </p>
                   </div>
                   <div>
@@ -549,7 +549,7 @@ export default function HashGeneratorPage() {
                     <h4 className="font-semibold text-gray-900 mb-1">MD5 (Message Digest 5)</h4>
                     <p className="text-gray-700 text-sm mb-2">
                       Produces a 128-bit (16-byte) hash. MD5 is now considered cryptographically broken and unsuitable 
-                      for security purposes due to collision vulnerabilities discovered in 2004. However, it's still 
+                      for security purposes due to collision vulnerabilities discovered in 2004. However, it&apos;s still 
                       useful for non-cryptographic purposes like checksums and data integrity verification in non-adversarial 
                       environments.
                     </p>
@@ -561,7 +561,7 @@ export default function HashGeneratorPage() {
                     <h4 className="font-semibold text-gray-900 mb-1">SHA-1 (Secure Hash Algorithm 1)</h4>
                     <p className="text-gray-700 text-sm mb-2">
                       Produces a 160-bit (20-byte) hash. SHA-1 was deprecated by NIST in 2011 due to theoretical collision 
-                      attacks. While still widely used, it's being phased out in favor of SHA-2 and SHA-3 for new applications.
+                      attacks. While still widely used, it&apos;s being phased out in favor of SHA-2 and SHA-3 for new applications.
                     </p>
                     <p className="text-gray-600 text-xs italic">
                       ⚠️ Deprecated - use SHA-256 or higher for new projects
@@ -571,7 +571,7 @@ export default function HashGeneratorPage() {
                     <h4 className="font-semibold text-gray-900 mb-1">SHA-256 (SHA-2 Family)</h4>
                     <p className="text-gray-700 text-sm">
                       Produces a 256-bit (32-byte) hash. Part of the SHA-2 family, SHA-256 is currently the most widely 
-                      used secure hash algorithm. It's recommended by security experts and used in Bitcoin, SSL/TLS 
+                      used secure hash algorithm. It&apos;s recommended by security experts and used in Bitcoin, SSL/TLS 
                       certificates, and many other security-critical applications. SHA-256 provides excellent security 
                       and performance balance.
                     </p>
@@ -588,7 +588,7 @@ export default function HashGeneratorPage() {
                     <h4 className="font-semibold text-gray-900 mb-1">SHA-512 (SHA-2 Family)</h4>
                     <p className="text-gray-700 text-sm">
                       Produces a 512-bit (64-byte) hash. The largest output in the SHA-2 family, SHA-512 provides the 
-                      highest level of security. While computationally more expensive than SHA-256, it's still fast enough 
+                      highest level of security. While computationally more expensive than SHA-256, it&apos;s still fast enough 
                       for most applications and offers maximum security for sensitive data.
                     </p>
                   </div>
@@ -598,7 +598,7 @@ export default function HashGeneratorPage() {
                 <h3 className="text-lg font-semibold text-gray-900 mb-3">Common Use Cases for Hash Functions</h3>
                 <ul className="list-disc list-inside space-y-2 text-gray-700 text-sm">
                   <li><strong>Password Storage:</strong> Websites store password hashes instead of plain text passwords. When you log in, your password is hashed and compared to the stored hash.</li>
-                  <li><strong>Data Integrity:</strong> Verify that files haven't been corrupted or tampered with by comparing their hashes before and after transmission.</li>
+                  <li><strong>Data Integrity:</strong> Verify that files haven&apos;t been corrupted or tampered with by comparing their hashes before and after transmission.</li>
                   <li><strong>Digital Signatures:</strong> Hash functions are used in digital signature algorithms to create compact, verifiable signatures.</li>
                   <li><strong>Blockchain:</strong> Cryptocurrencies like Bitcoin use hash functions extensively for mining, transaction verification, and maintaining the blockchain.</li>
                   <li><strong>Deduplication:</strong> Identify duplicate files or data by comparing their hashes.</li>
@@ -647,7 +647,7 @@ export default function HashGeneratorPage() {
                 <p className="text-gray-700 text-sm">
                   For security purposes, use SHA-256 or SHA-512. SHA-256 is widely used and provides excellent 
                   security. SHA-512 offers even higher security. Avoid MD5 and SHA-1 for security-critical 
-                  applications as they're vulnerable to attacks.
+                  applications as they&apos;re vulnerable to attacks.
                 </p>
               </div>
               <div>
@@ -660,14 +660,14 @@ export default function HashGeneratorPage() {
               <div>
                 <h3 className="font-semibold text-gray-900 mb-2">Is MD5 secure?</h3>
                 <p className="text-gray-700 text-sm">
-                  No, MD5 is not secure for cryptographic purposes. It's vulnerable to collision attacks and 
+                  No, MD5 is not secure for cryptographic purposes. It&apos;s vulnerable to collision attacks and 
                   should not be used for security-sensitive applications. Use SHA-256 or SHA-512 instead.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">What's the difference between hash and encryption?</h3>
+                <h3 className="font-semibold text-gray-900 mb-2">What&apos;s the difference between hash and encryption?</h3>
                 <p className="text-gray-700 text-sm">
-                  Hashing is one-way - you can't get the original data back. Encryption is two-way - you can 
+                  Hashing is one-way - you can&apos;t get the original data back. Encryption is two-way - you can 
                   decrypt encrypted data with the key. Use hashing for passwords and data integrity. Use 
                   encryption for data that needs to be recovered.
                 </p>

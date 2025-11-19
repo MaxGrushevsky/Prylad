@@ -289,7 +289,7 @@ export default function TextShadowGeneratorPage() {
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">What is CSS Text Shadow?</h2>
           <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
             The CSS <code className="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded">text-shadow</code> property adds shadow effects to text. 
-            It's perfect for creating depth, emphasis, and visual hierarchy in typography. You can add multiple shadows 
+            It&apos;s perfect for creating depth, emphasis, and visual hierarchy in typography. You can add multiple shadows 
             to create complex text effects.
           </p>
           <p className="text-gray-700 dark:text-gray-300 leading-relaxed">

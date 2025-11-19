@@ -187,13 +187,9 @@ export default function CSVJSONConverterPage() {
     URL.revokeObjectURL(url)
   }
 
-  useKeyboardShortcuts([
-    {
-      key: 'Enter',
-      ctrlKey: true,
-      handler: handleConvert
-    }
-  ])
+  useKeyboardShortcuts({
+    onEnter: handleConvert
+  })
 
   return (
     <Layout
@@ -350,7 +346,7 @@ export default function CSVJSONConverterPage() {
               used in spreadsheets, databases, and data exchange between applications.
             </p>
             <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-              <strong>JSON (JavaScript Object Notation)</strong> is a lightweight data-interchange format that's 
+              <strong>JSON (JavaScript Object Notation)</strong> is a lightweight data-interchange format that&apos;s 
               easy for humans to read and write, and easy for machines to parse and generate. JSON is the standard 
               format for APIs and modern web applications.
             </p>

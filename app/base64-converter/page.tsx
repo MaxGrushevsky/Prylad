@@ -387,12 +387,12 @@ export default function Base64ConverterPage() {
             <div className="prose prose-gray max-w-none">
               <p className="text-gray-700 leading-relaxed mb-4">
                 Base64 is a binary-to-text encoding scheme that represents binary data in an ASCII string format. 
-                It's commonly used to encode data that needs to be stored or transferred over media designed to 
+                It&apos;s commonly used to encode data that needs to be stored or transferred over media designed to 
                 deal with text. Base64 encoding converts binary data into a string of 64 characters (A-Z, a-z, 0-9, +, /).
               </p>
               <p className="text-gray-700 leading-relaxed">
                 Base64 encoding increases the size of the data by approximately 33%, but it ensures that the data 
-                can be safely transmitted through text-based protocols like email, JSON, XML, or URLs. It's widely 
+                can be safely transmitted through text-based protocols like email, JSON, XML, or URLs. It&apos;s widely 
                 used in web development, data storage, and API communications.
               </p>
             </div>
@@ -420,7 +420,7 @@ export default function Base64ConverterPage() {
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">🔐 Data Storage</h3>
                 <p className="text-gray-700 text-sm">
                   Store binary data in text-based storage systems like databases, configuration files, or JSON 
-                  documents that don't support binary data natively.
+                  documents that don&apos;t support binary data natively.
                 </p>
               </div>
               <div>
@@ -505,7 +505,7 @@ export default function Base64ConverterPage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
             <div className="space-y-6">
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">What's the difference between standard and URL-safe Base64?</h3>
+                <h3 className="font-semibold text-gray-900 mb-2">What&apos;s the difference between standard and URL-safe Base64?</h3>
                 <p className="text-gray-700 text-sm">
                   Standard Base64 uses + and / characters, which need URL encoding in URLs. URL-safe Base64 
                   replaces + with - and / with _, making it safe to use directly in URLs without additional encoding.
@@ -528,7 +528,7 @@ export default function Base64ConverterPage() {
               <div>
                 <h3 className="font-semibold text-gray-900 mb-2">Is Base64 encoding secure?</h3>
                 <p className="text-gray-700 text-sm">
-                  Base64 is an encoding scheme, not encryption. It doesn't provide security or privacy - it's 
+                  Base64 is an encoding scheme, not encryption. It doesn&apos;t provide security or privacy - it&apos;s 
                   just a way to represent binary data as text. Anyone can decode Base64-encoded data.
                 </p>
               </div>

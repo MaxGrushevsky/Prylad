@@ -195,7 +195,7 @@ export default function WordCounterPage() {
             <div className="prose prose-gray max-w-none">
               <p className="text-gray-700 leading-relaxed mb-4">
                 Word and character counting is essential for writers, students, content creators, and developers. 
-                Whether you're writing an article with a word limit, creating social media posts with character 
+                Whether you&apos;re writing an article with a word limit, creating social media posts with character 
                 restrictions, or analyzing text data, knowing the exact word and character count is crucial.
               </p>
               <p className="text-gray-700 leading-relaxed">
@@ -321,9 +321,9 @@ export default function WordCounterPage() {
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">What's the difference between characters and characters (no spaces)?</h3>
+                <h3 className="font-semibold text-gray-900 mb-2">What&apos;s the difference between characters and characters (no spaces)?</h3>
                 <p className="text-gray-700 text-sm">
-                  "Characters" includes all characters including spaces, while "Characters (no spaces)" excludes 
+                  &quot;Characters&quot; includes all characters including spaces, while &quot;Characters (no spaces)&quot; excludes 
                   all whitespace. The no-spaces count is useful for platforms with strict character limits or 
                   when calculating actual content length.
                 </p>

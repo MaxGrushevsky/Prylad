@@ -314,7 +314,7 @@ export default function URLEncoderPage() {
                 When you see characters like <code className="bg-gray-100 px-2 py-1 rounded">%20</code> (space), 
                 <code className="bg-gray-100 px-2 py-1 rounded">%3D</code> (=), or <code className="bg-gray-100 px-2 py-1 rounded">%C3%A9</code> (é), 
                 these are URL-encoded characters. Each special character is replaced with a percent sign (%) followed by two hexadecimal digits 
-                representing the character's ASCII or Unicode value.
+                representing the character&apos;s ASCII or Unicode value.
               </p>
               <p className="text-gray-700 leading-relaxed">
                 Our free URL encoder/decoder tool makes it easy to convert between encoded and decoded formats, helping developers, 
@@ -328,13 +328,13 @@ export default function URLEncoderPage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-4">How to Use Our URL Encoder/Decoder</h2>
             <div className="prose prose-gray max-w-none">
               <p className="text-gray-700 leading-relaxed mb-4">
-                Our tool is simple and intuitive. Here's how to use it:
+                Our tool is simple and intuitive. Here&apos;s how to use it:
               </p>
               <ol className="list-decimal list-inside space-y-3 text-gray-700">
                 <li><strong>Choose Encoding Type:</strong> Select between <code className="bg-gray-100 px-2 py-1 rounded">encodeURIComponent</code> (for URL parameters) or <code className="bg-gray-100 px-2 py-1 rounded">encodeURI</code> (for full URLs).</li>
                 <li><strong>Enter Your Text:</strong> Paste or type the text or URL you want to encode or decode in the input field.</li>
-                <li><strong>Encode or Decode:</strong> Click "Encode" to convert text to URL-encoded format, "Decode" to convert encoded URLs back to readable text, or "Auto" to automatically detect and process.</li>
-                <li><strong>Copy Results:</strong> Click the "Copy" button to copy the encoded or decoded result to your clipboard.</li>
+                <li><strong>Encode or Decode:</strong> Click &quot;Encode&quot; to convert text to URL-encoded format, &quot;Decode&quot; to convert encoded URLs back to readable text, or &quot;Auto&quot; to automatically detect and process.</li>
+                <li><strong>Copy Results:</strong> Click the &quot;Copy&quot; button to copy the encoded or decoded result to your clipboard.</li>
                 <li><strong>Try Examples:</strong> Use the example buttons to see how different types of URLs are encoded and decoded.</li>
               </ol>
             </div>
@@ -398,7 +398,7 @@ export default function URLEncoderPage() {
                 <div>
                   <p className="font-semibold mb-2">encodeURIComponent:</p>
                   <ul className="list-disc list-inside space-y-1 ml-4">
-                    <li>Encodes <strong>all</strong> special characters except: <code className="bg-gray-100 px-1 rounded">A-Z a-z 0-9 - _ . ! ~ * ' ( )</code></li>
+                    <li>Encodes <strong>all</strong> special characters except: <code className="bg-gray-100 px-1 rounded">A-Z a-z 0-9 - _ . ! ~ * &apos; ( )</code></li>
                     <li>Use for encoding <strong>URL parameters</strong> (values after <code className="bg-gray-100 px-1 rounded">=</code> in query strings)</li>
                     <li>Example: <code className="bg-gray-100 px-2 py-1 rounded">hello world</code> → <code className="bg-gray-100 px-2 py-1 rounded">hello%20world</code></li>
                   </ul>

@@ -156,13 +156,9 @@ export default function JWTDecoderPage() {
     URL.revokeObjectURL(url)
   }
 
-  useKeyboardShortcuts([
-    {
-      key: 'Enter',
-      ctrlKey: true,
-      handler: handleDecode
-    }
-  ])
+  useKeyboardShortcuts({
+    onEnter: handleDecode
+  })
 
   const claims = decoded?.valid && decoded.payload ? getClaimInfo(decoded.payload) : null
   const expired = claims?.exp ? isExpired(claims.exp) : null
@@ -356,7 +352,7 @@ export default function JWTDecoderPage() {
           </p>
           <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
             JWTs are commonly used for authentication and authorization in web applications and APIs. They allow 
-            stateless authentication, meaning the server doesn't need to store session information.
+            stateless authentication, meaning the server doesn&apos;t need to store session information.
           </p>
         </section>
 
@@ -383,7 +379,7 @@ export default function JWTDecoderPage() {
             </div>
             <div>
               <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">3. Signature</h3>
-              <p className="text-sm">Used to verify that the token hasn't been tampered with. Created by encoding the header and payload and signing with a secret key.</p>
+              <p className="text-sm">Used to verify that the token hasn&apos;t been tampered with. Created by encoding the header and payload and signing with a secret key.</p>
             </div>
           </div>
         </section>
@@ -437,8 +433,6 @@ export default function JWTDecoderPage() {
           </ul>
         </section>
       </div>
-
-      <Toast toast={toast} onClose={hideToast} />
     </Layout>
   )
 }

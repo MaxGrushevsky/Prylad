@@ -89,7 +89,7 @@ export default function DomainAgeCheckerPage() {
         status: undefined
       })
       
-    } catch (error) {.message}`)
+    } catch (error) {
       setInfo(null)
     } finally {
       setLoading(false)
@@ -111,7 +111,7 @@ export default function DomainAgeCheckerPage() {
       registrar: 'Example Registrar Inc.',
       expirationDate: '2025-01-15',
       status: 'Active'
-    })')
+    })
   }
 
   return (

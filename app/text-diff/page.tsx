@@ -364,12 +364,12 @@ export default function TextDiffPage() {
             <div className="prose prose-gray max-w-none">
               <p className="text-gray-700 leading-relaxed mb-4">
                 Text diff (difference) is a comparison tool that identifies changes between two versions of text. 
-                It's an essential utility for developers, writers, editors, and anyone who needs to track changes 
+                It&apos;s an essential utility for developers, writers, editors, and anyone who needs to track changes 
                 in documents, code, or any text-based content.
               </p>
               <p className="text-gray-700 leading-relaxed">
                 Our free online text diff tool allows you to compare two texts and see exactly what has been added, 
-                removed, or modified. Whether you're reviewing code changes, comparing document versions, or tracking 
+                removed, or modified. Whether you&apos;re reviewing code changes, comparing document versions, or tracking 
                 edits, our tool makes it easy to spot differences quickly and accurately.
               </p>
             </div>
@@ -381,9 +381,9 @@ export default function TextDiffPage() {
             <div className="prose prose-gray max-w-none">
               <ol className="list-decimal list-inside space-y-3 text-gray-700">
                 <li><strong>Choose Comparison Mode:</strong> Select line-by-line, word-by-word, or character-by-character comparison depending on your needs.</li>
-                <li><strong>Set Options:</strong> Enable "Ignore whitespace" to compare texts without considering spaces, or "Ignore case" to compare without considering letter case.</li>
+                <li><strong>Set Options:</strong> Enable &quot;Ignore whitespace&quot; to compare texts without considering spaces, or &quot;Ignore case&quot; to compare without considering letter case.</li>
                 <li><strong>Enter Your Texts:</strong> Paste or type the original text in the first field and the modified text in the second field.</li>
-                <li><strong>Compare:</strong> Click "Compare" to see the differences highlighted. Added content is marked with <span className="font-mono bg-green-100 px-1 rounded">+</span>, removed content with <span className="font-mono bg-red-100 px-1 rounded">-</span>.</li>
+                <li><strong>Compare:</strong> Click &quot;Compare&quot; to see the differences highlighted. Added content is marked with <span className="font-mono bg-green-100 px-1 rounded">+</span>, removed content with <span className="font-mono bg-red-100 px-1 rounded">-</span>.</li>
                 <li><strong>Review Statistics:</strong> Check the statistics panel to see how many lines/words/characters were added, removed, modified, or unchanged.</li>
                 <li><strong>Export Results:</strong> Copy the diff to your clipboard or export it to a text file for documentation or further analysis.</li>
               </ol>
@@ -430,7 +430,7 @@ export default function TextDiffPage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
             <div className="space-y-6">
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">What's the difference between comparison modes?</h3>
+                <h3 className="font-semibold text-gray-900 mb-2">What&apos;s the difference between comparison modes?</h3>
                 <p className="text-gray-700 text-sm">
                   <strong>Line-by-line:</strong> Compares entire lines, best for code or structured text. 
                   <strong>Word-by-word:</strong> Compares individual words, useful for prose and documents. 
@@ -438,16 +438,16 @@ export default function TextDiffPage() {
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">When should I use "Ignore whitespace"?</h3>
+                <h3 className="font-semibold text-gray-900 mb-2">When should I use &quot;Ignore whitespace&quot;?</h3>
                 <p className="text-gray-700 text-sm">
                   Use this option when you want to compare content without considering spaces, tabs, or line breaks. 
-                  Useful when formatting differences don't matter, only the actual content.
+                  Useful when formatting differences don&apos;t matter, only the actual content.
                 </p>
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900 mb-2">Can I export the diff results?</h3>
                 <p className="text-gray-700 text-sm">
-                  Yes! Click the "Export" button to download the diff as a text file. This is useful for 
+                  Yes! Click the &quot;Export&quot; button to download the diff as a text file. This is useful for 
                   documentation, sharing with team members, or keeping a record of changes.
                 </p>
               </div>

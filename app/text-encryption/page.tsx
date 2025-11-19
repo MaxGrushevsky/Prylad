@@ -201,7 +201,7 @@ export default function TextEncryptionPage() {
   const loadExample = (example: typeof encryptionExamples[0]) => {
     setMethod(example.method as EncryptionMethod)
     setText(example.text)
-    if ('shift' in example) {
+    if ('shift' in example && example.shift !== undefined) {
       setCaesarShift(example.shift)
     }
     setOperation('encrypt')
@@ -441,7 +441,7 @@ export default function TextEncryptionPage() {
                 {result && (
                   <div className="flex gap-2">
                     <button
-                      onClick={copyToClipboard}
+                      onClick={copyResult}
                       className="px-3 py-1 bg-primary-600 text-white text-sm rounded-lg hover:bg-primary-700 transition-colors"
                     >
                       Copy

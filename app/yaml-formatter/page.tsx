@@ -369,13 +369,9 @@ export default function YAMLFormatterPage() {
     URL.revokeObjectURL(url)
   }
 
-  useKeyboardShortcuts([
-    {
-      key: 'Enter',
-      ctrlKey: true,
-      handler: format
-    }
-  ])
+  useKeyboardShortcuts({
+    onEnter: format
+  })
 
   return (
     <Layout
@@ -522,13 +518,13 @@ export default function YAMLFormatterPage() {
         <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">What is YAML?</h2>
           <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
-            YAML (YAML Ain't Markup Language) is a human-readable data serialization standard. It's commonly 
+            YAML (YAML Ain&apos;t Markup Language) is a human-readable data serialization standard. It&apos;s commonly 
             used for configuration files, data exchange, and storing structured data. YAML emphasizes readability 
             and simplicity, using indentation to represent structure.
           </p>
           <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
             YAML is widely used in DevOps, CI/CD pipelines, container orchestration (Docker Compose, Kubernetes), 
-            and modern application configuration. It's more readable than JSON and more flexible than XML.
+            and modern application configuration. It&apos;s more readable than JSON and more flexible than XML.
           </p>
         </section>
 

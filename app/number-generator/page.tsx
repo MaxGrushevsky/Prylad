@@ -561,10 +561,10 @@ export default function NumberGeneratorPage() {
               <h3 className="text-lg font-semibold text-gray-900 mb-3">Understanding Duplicates</h3>
               <p className="text-gray-700 text-sm mb-3">
                 When duplicates are allowed, the same number can appear multiple times. This follows the principle of 
-                "sampling with replacement" - each generation is independent, and previous results don't affect future ones.
+                &quot;sampling with replacement&quot; - each generation is independent, and previous results don&apos;t affect future ones.
               </p>
               <p className="text-gray-700 text-sm">
-                When duplicates are disabled, each number appears at most once. This is "sampling without replacement" 
+                When duplicates are disabled, each number appears at most once. This is &quot;sampling without replacement&quot; 
                 and is useful for lotteries, unique ID generation, or when you need distinct values. Note that you cannot 
                 generate more unique numbers than your range allows (max - min + 1).
               </p>
@@ -574,7 +574,7 @@ export default function NumberGeneratorPage() {
               <p className="text-gray-700 text-sm">
                 As you generate more numbers, the actual distribution will converge toward the theoretical uniform 
                 distribution. With small samples, you might see apparent patterns or biases, but these are just 
-                statistical fluctuations. True randomness doesn't guarantee uniform distribution in small samples - 
+                statistical fluctuations. True randomness doesn&apos;t guarantee uniform distribution in small samples - 
                 it guarantees unpredictability.
               </p>
             </div>
@@ -601,10 +601,10 @@ export default function NumberGeneratorPage() {
               </p>
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900 mb-2">What's the difference between sorting options?</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">What&apos;s the difference between sorting options?</h3>
               <p className="text-gray-700 text-sm">
-                "No sorting" keeps numbers in the order they were generated. "Ascending" sorts from lowest to 
-                highest. "Descending" sorts from highest to lowest. Sorting is useful for lotteries, statistics, 
+                &quot;No sorting&quot; keeps numbers in the order they were generated. &quot;Ascending&quot; sorts from lowest to 
+                highest. &quot;Descending&quot; sorts from highest to lowest. Sorting is useful for lotteries, statistics, 
                 or when you need organized results.
               </p>
             </div>

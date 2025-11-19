@@ -586,7 +586,7 @@ export default function ColorGeneratorPage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Why Use a Color Generator?</h2>
             <div className="prose prose-gray max-w-none">
               <p className="text-gray-700 leading-relaxed mb-4">
-                Colors are fundamental to design, branding, and visual communication. Whether you're working on a 
+                Colors are fundamental to design, branding, and visual communication. Whether you&apos;re working on a 
                 website, mobile app, graphic design project, or just need inspiration, having access to a diverse 
                 palette of colors is essential. Coming up with the perfect color scheme can be challenging, especially 
                 when you need multiple harmonious colors or want to explore different color moods and styles.
@@ -685,7 +685,7 @@ export default function ColorGeneratorPage() {
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">🎭 Brand Identity</h3>
                 <p className="text-gray-700 text-sm">
                   Explore color options for logos, brand guidelines, and marketing materials. Find colors that 
-                  represent your brand's personality and values.
+                  represent your brand&apos;s personality and values.
                 </p>
               </div>
               <div>
@@ -845,7 +845,7 @@ export default function ColorGeneratorPage() {
                     <h4 className="font-semibold text-gray-900 mb-1">Monochromatic Colors</h4>
                     <p className="text-gray-700 text-sm">
                       Variations in lightness and saturation of a single hue. Monochromatic schemes are elegant and 
-                      sophisticated, creating a sense of unity and simplicity. They're ideal for minimalist designs or 
+                      sophisticated, creating a sense of unity and simplicity. They&apos;re ideal for minimalist designs or 
                       when you want to create depth through shading.
                     </p>
                   </div>
@@ -885,11 +885,11 @@ export default function ColorGeneratorPage() {
                 <h3 className="font-semibold text-gray-900 mb-2">Can I use these colors for commercial projects?</h3>
                 <p className="text-gray-700 text-sm">
                   Yes! All generated colors are free to use for any purpose, including commercial projects. Colors 
-                  themselves cannot be copyrighted, so you're free to use them however you like.
+                  themselves cannot be copyrighted, so you&apos;re free to use them however you like.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">What's the difference between HEX, RGB, and HSL?</h3>
+                <h3 className="font-semibold text-gray-900 mb-2">What&apos;s the difference between HEX, RGB, and HSL?</h3>
                 <p className="text-gray-700 text-sm">
                   HEX is a compact hexadecimal representation (#RRGGBB), RGB uses decimal values (0-255) for each 
                   channel, and HSL represents colors using hue, saturation, and lightness. All three represent the 
@@ -900,7 +900,7 @@ export default function ColorGeneratorPage() {
                 <h3 className="font-semibold text-gray-900 mb-2">How many colors can I generate at once?</h3>
                 <p className="text-gray-700 text-sm">
                   You can generate palettes with 2-20 colors in a single batch. If you need more, simply generate 
-                  another palette. There's no limit on the total number of colors you can generate.
+                  another palette. There&apos;s no limit on the total number of colors you can generate.
                 </p>
               </div>
               <div>
