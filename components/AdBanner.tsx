@@ -1,28 +1,63 @@
 'use client'
 
+import { useEffect } from 'react'
+
 interface AdBannerProps {
   position: 'top' | 'bottom' | 'sidebar'
 }
 
-export default function AdBanner({ position }: AdBannerProps) {
-  // Here will be integration with ad networks (Google AdSense, Yandex Direct, etc.)
-  // Currently a placeholder for demonstration
+declare global {
+  interface Window {
+    adsbygoogle: any[]
+  }
+}
 
-  const getAdSize = () => {
-    switch (position) {
-      case 'top':
-      case 'bottom':
-        return 'h-20 md:h-28' // Horizontal banner
-      case 'sidebar':
-        return 'h-96 w-full' // Vertical banner
-      default:
-        return 'h-20'
+export default function AdBanner({ position }: AdBannerProps) {
+  useEffect(() => {
+    try {
+      // Initialize AdSense ads
+      window.adsbygoogle = window.adsbygoogle || []
+      window.adsbygoogle.push({})
+    } catch (err) {
+      console.error('AdSense error:', err)
     }
+  }, [])
+
+  // Show AdSense for top position
+  if (position === 'top') {
+    return (
+      <div className="w-full flex justify-center items-center my-4" role="banner" aria-label="Advertisement">
+        <ins
+          className="adsbygoogle"
+          style={{ display: 'block' }}
+          data-ad-client="ca-pub-3205919903681434"
+          data-ad-slot="1790047243"
+          data-ad-format="auto"
+          data-full-width-responsive="true"
+        />
+      </div>
+    )
   }
 
+  // Show AdSense for bottom position
+  if (position === 'bottom') {
+    return (
+      <div className="w-full flex justify-center items-center my-4" role="banner" aria-label="Advertisement">
+        <ins
+          className="adsbygoogle"
+          style={{ display: 'block' }}
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-3205919903681434"
+          data-ad-slot="2911557228"
+        />
+      </div>
+    )
+  }
+
+  // Placeholder for sidebar position
   return (
     <div
-      className={`w-full ${getAdSize()} bg-gradient-to-r from-gray-50 to-gray-100 border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center transition-opacity hover:opacity-90`}
+      className="w-full h-96 bg-gradient-to-r from-gray-50 to-gray-100 border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center transition-opacity hover:opacity-90"
       role="banner"
       aria-label="Advertisement"
     >
