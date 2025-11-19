@@ -9,7 +9,7 @@ export interface PageSEO {
 }
 
 export function generatePageMetadata(seo: PageSEO): Metadata {
-  const baseUrl = 'https://shortlink-qr.com'
+  const baseUrl = 'https://prylad.pro'
   const fullUrl = `${baseUrl}${seo.path}`
   
   const keywords = seo.keywords || []

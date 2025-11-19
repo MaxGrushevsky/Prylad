@@ -7,7 +7,7 @@ import { Analytics } from '@vercel/analytics/next'
 const inter = Inter({ subsets: ['latin', 'cyrillic'] })
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://shortlink-qr.com'),
+  metadataBase: new URL('https://prylad.pro'),
   title: {
     default: 'Prylad - Free Online Generators, Converters & Utilities',
     template: '%s | Prylad'
@@ -50,8 +50,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    alternateLocale: ['ru_RU', 'es_ES', 'fr_FR', 'de_DE', 'zh_CN', 'ja_JP'],
-    url: 'https://shortlink-qr.com',
+    url: 'https://prylad.pro',
     siteName: 'Prylad',
     title: 'Prylad - Free Online Generators, Converters & Utilities',
     description: 'Free online tools for development, design, and data work. QR codes, passwords, colors, JSON, text utilities and more. All tools work in your browser.',
@@ -82,20 +81,11 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: 'your-google-verification-code',
+    google: '0qz8454fxihYk_A5ciGziuC4ByYZi7JyxMbR-nWLWSc',
     yandex: 'your-yandex-verification-code',
   },
   alternates: {
-    canonical: 'https://shortlink-qr.com',
-    languages: {
-      'en': 'https://shortlink-qr.com',
-      'ru': 'https://shortlink-qr.com/ru',
-      'es': 'https://shortlink-qr.com/es',
-      'fr': 'https://shortlink-qr.com/fr',
-      'de': 'https://shortlink-qr.com/de',
-      'zh': 'https://shortlink-qr.com/zh',
-      'ja': 'https://shortlink-qr.com/ja',
-    },
+    canonical: 'https://prylad.pro',
   },
   category: 'Technology',
 }
@@ -108,20 +98,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="canonical" href="https://shortlink-qr.com" />
+        <link rel="canonical" href="https://prylad.pro" />
         <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
-        <link rel="alternate" hrefLang="en" href="https://shortlink-qr.com" />
-        <link rel="alternate" hrefLang="ru" href="https://shortlink-qr.com/ru" />
-        <link rel="alternate" hrefLang="es" href="https://shortlink-qr.com/es" />
-        <link rel="alternate" hrefLang="fr" href="https://shortlink-qr.com/fr" />
-        <link rel="alternate" hrefLang="de" href="https://shortlink-qr.com/de" />
-        <link rel="alternate" hrefLang="zh" href="https://shortlink-qr.com/zh" />
-        <link rel="alternate" hrefLang="ja" href="https://shortlink-qr.com/ja" />
-        <link rel="alternate" hrefLang="x-default" href="https://shortlink-qr.com" />
         <meta name="theme-color" content="#0ea5e9" />
+        <meta name="google-site-verification" content="0qz8454fxihYk_A5ciGziuC4ByYZi7JyxMbR-nWLWSc" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="Prylad" />
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3205919903681434"
+          crossOrigin="anonymous"
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -130,7 +118,7 @@ export default function RootLayout({
               "@type": "WebApplication",
               "name": "Prylad",
               "description": "Free online tools: generators, converters, text utilities and more. All tools work in the browser.",
-              "url": "https://shortlink-qr.com",
+              "url": "https://prylad.pro",
               "applicationCategory": "UtilityApplication",
               "operatingSystem": "Any",
               "offers": {
@@ -163,10 +151,10 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "WebSite",
               "name": "Prylad",
-              "url": "https://shortlink-qr.com",
+              "url": "https://prylad.pro",
               "potentialAction": {
                 "@type": "SearchAction",
-                "target": "https://shortlink-qr.com/search?q={search_term_string}",
+                "target": "https://prylad.pro/search?q={search_term_string}",
                 "query-input": "required name=search_term_string"
               }
             })
