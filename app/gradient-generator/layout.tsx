@@ -26,3 +26,4 @@ export default function GradientGeneratorLayout({
   return <>{children}</>
 }
 
+

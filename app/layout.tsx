@@ -1,14 +1,15 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import { ThemeProvider } from '@/contexts/ThemeContext'
 
 const inter = Inter({ subsets: ['latin', 'cyrillic'] })
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://shortlink-qr.com'),
   title: {
-    default: 'Tuly - Free Online Generators, Converters & Utilities',
-    template: '%s | Tuly'
+    default: 'Prylad - Free Online Generators, Converters & Utilities',
+    template: '%s | Prylad'
   },
   description: 'Free online tools: QR code generator, password generator, color generator, UUID, converters, text utilities, JSON formatter, CSS/JS minifier and more. All tools work in the browser. No registration required.',
   keywords: [
@@ -37,9 +38,9 @@ export const metadata: Metadata = {
     'gradient generator',
     'color palette generator'
   ],
-  authors: [{ name: 'Tuly' }],
-  creator: 'Tuly',
-  publisher: 'Tuly',
+  authors: [{ name: 'Prylad' }],
+  creator: 'Prylad',
+  publisher: 'Prylad',
   formatDetection: {
     email: false,
     address: false,
@@ -50,21 +51,21 @@ export const metadata: Metadata = {
     locale: 'en_US',
     alternateLocale: ['ru_RU', 'es_ES', 'fr_FR', 'de_DE', 'zh_CN', 'ja_JP'],
     url: 'https://shortlink-qr.com',
-    siteName: 'Tuly',
-    title: 'Tuly - Free Online Generators, Converters & Utilities',
+    siteName: 'Prylad',
+    title: 'Prylad - Free Online Generators, Converters & Utilities',
     description: 'Free online tools for development, design, and data work. QR codes, passwords, colors, JSON, text utilities and more. All tools work in your browser.',
     images: [
       {
         url: '/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'Tuly',
+        alt: 'Prylad',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Tuly - Free Online Tools',
+    title: 'Prylad - Free Online Tools',
     description: 'Free online tools: QR codes, passwords, colors, JSON, text utilities and more. All tools work in your browser.',
     images: ['/og-image.jpg'],
   },
@@ -119,14 +120,14 @@ export default function RootLayout({
         <meta name="theme-color" content="#0ea5e9" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="Tuly" />
+        <meta name="apple-mobile-web-app-title" content="Prylad" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebApplication",
-              "name": "Tuly",
+              "name": "Prylad",
               "description": "Free online tools: generators, converters, text utilities and more. All tools work in the browser.",
               "url": "https://shortlink-qr.com",
               "applicationCategory": "UtilityApplication",
@@ -160,7 +161,7 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebSite",
-              "name": "Tuly",
+              "name": "Prylad",
               "url": "https://shortlink-qr.com",
               "potentialAction": {
                 "@type": "SearchAction",
@@ -171,7 +172,11 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <ThemeProvider>
+          {children}
+        </ThemeProvider>
+      </body>
     </html>
   )
 }

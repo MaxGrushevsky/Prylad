@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react'
 import Layout from '@/components/Layout'
+import FileDropZone from '@/components/FileDropZone'
 
 type ASCIIStyle = 'simple' | 'medium' | 'complex' | 'blocks' | 'dots' | 'shades'
 type TextAlign = 'left' | 'center' | 'right'
@@ -30,7 +31,6 @@ export default function ASCIIArtPage() {
   const [error, setError] = useState<string | null>(null)
   const [totalGenerated, setTotalGenerated] = useState(0)
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const generateASCIIFromText = useCallback(() => {
     if (!text.trim()) {
@@ -144,7 +144,10 @@ export default function ASCIIArtPage() {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
+    handleFileSelect(file)
+  }
 
+  const handleFileSelect = (file: File) => {
     // Validate file size (max 10MB)
     if (file.size > 10 * 1024 * 1024) {
       setError('File size must be less than 10MB')
@@ -312,13 +315,21 @@ ${useColor ? result : result.replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
             {mode === 'image' && (
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">Upload Image</label>
-                <input
-                  ref={fileInputRef}
-                  type="file"
+                <FileDropZone
+                  onFileSelect={handleFileSelect}
                   accept="image/*"
-                  onChange={handleImageUpload}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500"
-                />
+                  maxSize={10 * 1024 * 1024}
+                >
+                  <div className="text-center py-4">
+                    <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <p className="mt-2 text-sm text-gray-600">
+                      <span className="font-semibold">Click to upload</span> or drag and drop
+                    </p>
+                    <p className="mt-1 text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                  </div>
+                </FileDropZone>
                 {error && (
                   <p className="mt-2 text-sm text-red-600">{error}</p>
                 )}

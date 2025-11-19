@@ -3,6 +3,9 @@
 import { useState, useCallback, useEffect } from 'react'
 import Layout from '@/components/Layout'
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
+import { useHistory } from '@/hooks/useHistory'
+import HistoryPanel from '@/components/HistoryPanel'
+import Tooltip from '@/components/Tooltip'
 
 export default function PasswordGeneratorPage() {
   const [length, setLength] = useState(16)
@@ -23,6 +26,7 @@ export default function PasswordGeneratorPage() {
     numbers: 0,
     symbols: 0
   })
+  const { history, addToHistory, removeFromHistory, clearHistory } = useHistory<string>('password-history', 20)
 
   const generatePasswordWithSettings = useCallback((
     pwdLength: number,
@@ -76,6 +80,9 @@ export default function PasswordGeneratorPage() {
     setPassword(newPasswords[0])
     calculateStrengthWithSettings(newPasswords[0], upper, lower, numbers, symbols, excludeSim, pwdLength)
     
+    // Add to history
+    addToHistory(newPasswords[0], `Length: ${pwdLength}`)
+    
     // Calculate password statistics
     const stats = {
       uppercase: (newPasswords[0].match(/[A-Z]/g) || []).length,
@@ -84,7 +91,20 @@ export default function PasswordGeneratorPage() {
       symbols: (newPasswords[0].match(/[^a-zA-Z0-9]/g) || []).length
     }
     setPasswordStats(stats)
-  }, [count])
+  }, [count, addToHistory])
+
+  const selectFromHistory = useCallback((pwd: string) => {
+    setPassword(pwd)
+    calculateStrength(pwd)
+    // Recalculate stats
+    const stats = {
+      uppercase: (pwd.match(/[A-Z]/g) || []).length,
+      lowercase: (pwd.match(/[a-z]/g) || []).length,
+      numbers: (pwd.match(/[0-9]/g) || []).length,
+      symbols: (pwd.match(/[^a-zA-Z0-9]/g) || []).length
+    }
+    setPasswordStats(stats)
+  }, [])
 
   const generatePassword = useCallback((single: boolean = false) => {
     generatePasswordWithSettings(length, includeUppercase, includeLowercase, includeNumbers, includeSymbols, excludeSimilar, single ? 1 : count)
@@ -236,12 +256,21 @@ export default function PasswordGeneratorPage() {
     generatePasswordWithSettings(presetLength, presetUpper, presetLower, presetNumbers, presetSymbols, presetExcludeSimilar, count)
   }
 
-  const copyToClipboard = (pwd?: string) => {
-    navigator.clipboard.writeText(pwd || password)
+  const copyToClipboard = async (pwd?: string) => {
+    try {
+      await navigator.clipboard.writeText(pwd || password)
+    } catch (err) {
+      // Failed to copy
+    }
   }
 
-  const copyAll = () => {
-    navigator.clipboard.writeText(passwords.join('\n'))
+  const copyAll = async () => {
+    if (passwords.length === 0) return
+    try {
+      await navigator.clipboard.writeText(passwords.join('\n'))
+    } catch (err) {
+      // Failed to copy
+    }
   }
 
 
@@ -321,11 +350,60 @@ export default function PasswordGeneratorPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  const helpContent = (
+    <div className="space-y-6 text-gray-700 dark:text-gray-300">
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">How to Use</h3>
+        <ul className="list-disc list-inside space-y-2 text-sm">
+          <li>Adjust the password length slider (recommended: 16+ characters)</li>
+          <li>Select character types: uppercase, lowercase, numbers, symbols</li>
+          <li>Optionally exclude similar characters (I, l, 1, O, 0) for better readability</li>
+          <li>Click "Generate" or press Enter to create passwords</li>
+          <li>Use the strength meter to verify password security</li>
+          <li>Copy passwords to clipboard or export to file</li>
+        </ul>
+      </div>
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">Password Strength</h3>
+        <p className="text-sm mb-2">
+          Password strength is calculated based on length, character variety, and randomness. 
+          The entropy value shows how unpredictable your password is.
+        </p>
+        <ul className="list-disc list-inside space-y-1 text-sm">
+          <li><strong>Weak:</strong> Less than 50 bits entropy - easily crackable</li>
+          <li><strong>Medium:</strong> 50-80 bits - reasonable for low-security accounts</li>
+          <li><strong>Strong:</strong> 80-100 bits - good for most accounts</li>
+          <li><strong>Very Strong:</strong> 100+ bits - recommended for sensitive accounts</li>
+        </ul>
+      </div>
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">Keyboard Shortcuts</h3>
+        <ul className="list-disc list-inside space-y-1 text-sm">
+          <li><kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-xs">Enter</kbd> - Generate password</li>
+          <li><kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-xs">Ctrl+S</kbd> / <kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-xs">Cmd+S</kbd> - Export to file</li>
+          <li><kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-xs">Ctrl+L</kbd> / <kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-xs">Cmd+L</kbd> - Clear all</li>
+        </ul>
+      </div>
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">Best Practices</h3>
+        <ul className="list-disc list-inside space-y-1 text-sm">
+          <li>Use different passwords for each account</li>
+          <li>Enable two-factor authentication when available</li>
+          <li>Use a password manager to store passwords securely</li>
+          <li>Never share passwords with anyone</li>
+          <li>Change passwords if you suspect a breach</li>
+        </ul>
+      </div>
+    </div>
+  )
+
   return (
-    <Layout
-      title="🔐 Password Generator"
-      description="Create secure, strong passwords with customizable settings. Generate random passwords with uppercase, lowercase, numbers, and symbols. Free online password generator with strength meter."
-    >
+    <>
+      <Layout
+        title="🔐 Password Generator"
+        description="Create secure, strong passwords with customizable settings. Generate random passwords with uppercase, lowercase, numbers, and symbols. Free online password generator with strength meter."
+        helpContent={helpContent}
+      >
       <div className="max-w-4xl mx-auto">
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
           {/* Presets */}
@@ -334,39 +412,54 @@ export default function PasswordGeneratorPage() {
               Quick Presets
             </label>
             <div className="flex flex-wrap gap-3 justify-center">
-              <button
-                onClick={() => applyPreset('strong')}
-                className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-              >
-                🔒 Strong (20 chars)
-              </button>
-              <button
-                onClick={() => applyPreset('pin')}
-                className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-              >
-                🔢 PIN (6 digits)
-              </button>
-              <button
-                onClick={() => applyPreset('memorable')}
-                className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-              >
-                💭 Memorable (12 chars)
-              </button>
-              <button
-                onClick={() => applyPreset('all')}
-                className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-              >
-                ⚡ Maximum (32 chars)
-              </button>
+              <Tooltip content="Strong password: 20 characters, all types" position="top">
+                <button
+                  onClick={() => applyPreset('strong')}
+                  className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                >
+                  🔒 Strong (20 chars)
+                </button>
+              </Tooltip>
+              <Tooltip content="PIN code: 6 digits only" position="top">
+                <button
+                  onClick={() => applyPreset('pin')}
+                  className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                >
+                  🔢 PIN (6 digits)
+                </button>
+              </Tooltip>
+              <Tooltip content="Memorable: 12 chars, letters and numbers" position="top">
+                <button
+                  onClick={() => applyPreset('memorable')}
+                  className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                >
+                  💭 Memorable (12 chars)
+                </button>
+              </Tooltip>
+              <Tooltip content="Maximum security: 32 characters, all types" position="top">
+                <button
+                  onClick={() => applyPreset('all')}
+                  className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                >
+                  ⚡ Maximum (32 chars)
+                </button>
+              </Tooltip>
             </div>
           </div>
 
           {/* Settings */}
           <div className="space-y-6 mb-8">
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-3">
-                Length: <span className="text-primary-600 font-bold">{length}</span>
-              </label>
+              <div className="flex items-center gap-2 mb-3">
+                <label className="block text-sm font-semibold text-gray-700">
+                  Length: <span className="text-primary-600 font-bold">{length}</span>
+                </label>
+                <Tooltip content="Longer passwords are exponentially stronger. Recommended: 16+ characters for important accounts." position="top">
+                  <svg className="w-4 h-4 text-gray-400 cursor-help" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </Tooltip>
+              </div>
               <input
                 type="range"
                 min="4"
@@ -428,9 +521,11 @@ export default function PasswordGeneratorPage() {
                 onChange={(e) => setExcludeSimilar(e.target.checked)}
                 className="w-4 h-4 accent-primary-600"
               />
-              <label htmlFor="exclude-similar" className="text-sm text-gray-700 cursor-pointer">
-                Exclude similar characters (0, O, 1, l, I)
-              </label>
+              <Tooltip content="Excludes confusing characters like 0/O, 1/l/I for better readability" position="right">
+                <label htmlFor="exclude-similar" className="text-sm text-gray-700 cursor-pointer">
+                  Exclude similar characters (0, O, 1, l, I)
+                </label>
+              </Tooltip>
             </div>
 
             <div className="space-y-2">
@@ -448,40 +543,50 @@ export default function PasswordGeneratorPage() {
               </div>
               {count > 1 && (
                 <div className="flex gap-2">
-                  <button
-                    onClick={() => setCount(10)}
-                    className="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded transition-colors"
-                  >
-                    10
-                  </button>
-                  <button
-                    onClick={() => setCount(50)}
-                    className="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded transition-colors"
-                  >
-                    50
-                  </button>
-                  <button
-                    onClick={() => setCount(100)}
-                    className="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded transition-colors"
-                  >
-                    100
-                  </button>
-                  <button
-                    onClick={() => setCount(500)}
-                    className="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded transition-colors"
-                  >
-                    500
-                  </button>
+                  <Tooltip content="Generate 10 passwords" position="top">
+                    <button
+                      onClick={() => setCount(10)}
+                      className="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded transition-colors"
+                    >
+                      10
+                    </button>
+                  </Tooltip>
+                  <Tooltip content="Generate 50 passwords" position="top">
+                    <button
+                      onClick={() => setCount(50)}
+                      className="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded transition-colors"
+                    >
+                      50
+                    </button>
+                  </Tooltip>
+                  <Tooltip content="Generate 100 passwords" position="top">
+                    <button
+                      onClick={() => setCount(100)}
+                      className="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded transition-colors"
+                    >
+                      100
+                    </button>
+                  </Tooltip>
+                  <Tooltip content="Generate 500 passwords" position="top">
+                    <button
+                      onClick={() => setCount(500)}
+                      className="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded transition-colors"
+                    >
+                      500
+                    </button>
+                  </Tooltip>
                 </div>
               )}
             </div>
 
-            <button
-              onClick={() => generatePassword(false)}
-              className="w-full bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold py-3 px-6 rounded-xl hover:from-primary-700 hover:to-primary-800 transition-all shadow-lg"
-            >
-              Generate {count > 1 ? `${count} Passwords` : 'Password'}
-            </button>
+            <Tooltip content="Press Enter to generate" position="top">
+              <button
+                onClick={() => generatePassword(false)}
+                className="w-full bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold py-3 px-6 rounded-xl hover:from-primary-700 hover:to-primary-800 transition-all shadow-lg"
+              >
+                Generate {count > 1 ? `${count} Passwords` : 'Password'}
+              </button>
+            </Tooltip>
           </div>
 
           {/* Result */}
@@ -492,21 +597,24 @@ export default function PasswordGeneratorPage() {
                   <div className="flex items-center gap-3 flex-wrap">
                     <code className="flex-1 text-lg font-mono break-all min-w-0">{password}</code>
                     <div className="flex gap-2">
-                      <button
-                        onClick={exportToFile}
-                        className="bg-gray-600 text-white px-3 py-2 rounded-lg hover:bg-gray-700 transition-colors flex items-center gap-1"
-                        title="Export to file"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                        </svg>
-                      </button>
-                      <button
-                        onClick={() => copyToClipboard()}
-                        className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors"
-                      >
-                        Copy
-                      </button>
+                      <Tooltip content="Export to file (Ctrl+S / Cmd+S)" position="top">
+                        <button
+                          onClick={exportToFile}
+                          className="bg-gray-600 text-white px-3 py-2 rounded-lg hover:bg-gray-700 transition-colors flex items-center gap-1"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                          </svg>
+                        </button>
+                      </Tooltip>
+                      <Tooltip content="Copy password to clipboard" position="top">
+                        <button
+                          onClick={() => copyToClipboard()}
+                          className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors"
+                        >
+                          Copy
+                        </button>
+                      </Tooltip>
                     </div>
                   </div>
                 </div>
@@ -515,33 +623,39 @@ export default function PasswordGeneratorPage() {
                   <div className="flex justify-between items-center flex-wrap gap-2">
                     <h3 className="font-semibold text-gray-900">Generated Passwords:</h3>
                     <div className="flex gap-2">
-                      <button
-                        onClick={exportToFile}
-                        className="text-sm bg-gray-600 text-white px-3 py-1 rounded-lg hover:bg-gray-700 transition-colors flex items-center gap-1"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                        </svg>
-                        Export
-                      </button>
-                      <button
-                        onClick={copyAll}
-                        className="text-sm bg-primary-600 text-white px-3 py-1 rounded-lg hover:bg-primary-700 transition-colors"
-                      >
-                        Copy All
-                      </button>
+                      <Tooltip content="Export all passwords to file" position="top">
+                        <button
+                          onClick={exportToFile}
+                          className="text-sm bg-gray-600 text-white px-3 py-1 rounded-lg hover:bg-gray-700 transition-colors flex items-center gap-1"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                          </svg>
+                          Export
+                        </button>
+                      </Tooltip>
+                      <Tooltip content="Copy all passwords to clipboard" position="top">
+                        <button
+                          onClick={copyAll}
+                          className="text-sm bg-primary-600 text-white px-3 py-1 rounded-lg hover:bg-primary-700 transition-colors"
+                        >
+                          Copy All
+                        </button>
+                      </Tooltip>
                     </div>
                   </div>
                   <div className="space-y-2 max-h-64 overflow-y-auto">
                     {passwords.map((pwd, index) => (
                       <div key={index} className="bg-gray-50 rounded-lg p-3 border border-gray-200 flex items-center gap-3">
                         <code className="flex-1 text-sm font-mono break-all">{pwd}</code>
-                        <button
-                          onClick={() => copyToClipboard(pwd)}
-                          className="text-gray-500 hover:text-primary-600 transition-colors text-sm"
-                        >
-                          📋
-                        </button>
+                        <Tooltip content="Copy this password" position="left">
+                          <button
+                            onClick={() => copyToClipboard(pwd)}
+                            className="text-gray-500 hover:text-primary-600 transition-colors text-sm"
+                          >
+                            📋
+                          </button>
+                        </Tooltip>
                       </div>
                     ))}
                   </div>
@@ -625,6 +739,17 @@ export default function PasswordGeneratorPage() {
             </div>
           )}
         </div>
+
+        {/* History Panel */}
+        <HistoryPanel
+          history={history}
+          onSelect={selectFromHistory}
+          onRemove={removeFromHistory}
+          onClear={clearHistory}
+          formatItem={(pwd) => pwd.substring(0, 20) + (pwd.length > 20 ? '...' : '')}
+          title="Generated Passwords"
+          maxDisplay={10}
+        />
       </div>
 
       {/* SEO Content */}
@@ -995,6 +1120,7 @@ export default function PasswordGeneratorPage() {
         </section>
       </div>
     </Layout>
+    </>
   )
 }
 

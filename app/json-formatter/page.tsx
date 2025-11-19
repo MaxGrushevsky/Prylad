@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Layout from '@/components/Layout'
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
 
 type IndentSize = 2 | 4 | 'tab'
 type Action = 'format' | 'minify' | 'validate'
@@ -130,8 +131,12 @@ export default function JSONFormatterPage() {
     }
   }, [input, validateJSON])
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text)
+    } catch (err) {
+      // Failed to copy
+    }
   }
 
   const exportToFile = () => {
@@ -153,6 +158,13 @@ export default function JSONFormatterPage() {
     setError('')
     setIsValid(null)
   }
+
+  // Keyboard shortcuts
+  useKeyboardShortcuts({
+    onEnter: () => format(),
+    onSave: () => exportToFile(),
+    onClear: () => clearAll()
+  })
 
   const getStats = () => {
     if (!output) return null
@@ -191,8 +203,9 @@ export default function JSONFormatterPage() {
   const stats = getStats()
 
   return (
-    <Layout
-      title="📋 JSON Formatter & Validator"
+    <>
+      <Layout
+        title="📋 JSON Formatter & Validator"
       description="Format, minify, and validate JSON online. Free JSON formatter with syntax highlighting, auto-format, key sorting, and export options."
     >
       <div className="max-w-7xl mx-auto">
@@ -529,6 +542,7 @@ export default function JSONFormatterPage() {
         </div>
       </div>
     </Layout>
+    </>
   )
 }
 

@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import Layout from '@/components/Layout'
-
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
 type CodeType = 'css' | 'js' | 'json' | 'html'
 type Action = 'minify' | 'beautify'
 
@@ -303,8 +303,7 @@ export default function MinifierPage() {
     if (!output) return
     try {
       await navigator.clipboard.writeText(output)
-    } catch (e) {
-      console.error('Failed to copy')
+    } catch (err) {
     }
   }
 
@@ -332,6 +331,13 @@ export default function MinifierPage() {
     setError(null)
   }
 
+  // Keyboard shortcuts
+  useKeyboardShortcuts({
+    onEnter: () => process(),
+    onSave: () => exportToFile(),
+    onClear: () => clearAll()
+  })
+
   const getStats = () => {
     if (!input) return null
     const inputSize = new Blob([input]).size
@@ -352,8 +358,9 @@ export default function MinifierPage() {
   const stats = getStats()
 
   return (
-    <Layout
-      title="⚡ Code Minifier & Beautifier - Minify and Format CSS, JS, JSON, HTML Online"
+    <>
+      <Layout
+        title="⚡ Code Minifier & Beautifier - Minify and Format CSS, JS, JSON, HTML Online"
       description="Minify and beautify CSS, JavaScript, JSON, and HTML code online for free. Reduce file size, improve performance, and format code with proper indentation. Perfect for web development."
     >
       <div className="max-w-6xl mx-auto space-y-6">
@@ -659,5 +666,6 @@ export default function MinifierPage() {
         </div>
       </div>
     </Layout>
+    </>
   )
 }

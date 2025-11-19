@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useCallback } from 'react'
 import Layout from '@/components/Layout'
-
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
 export default function WordCounterPage() {
   const [text, setText] = useState('')
 
@@ -42,8 +42,11 @@ export default function WordCounterPage() {
     }
   }, [text])
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text)
+    } catch (err) {
+    }
   }
 
   const exportToFile = () => {
@@ -63,8 +66,15 @@ export default function WordCounterPage() {
     setText('')
   }
 
+  // Keyboard shortcuts
+  useKeyboardShortcuts({
+    onSave: () => exportToFile(),
+    onClear: () => clearText()
+  })
+
   return (
-    <Layout
+    <>
+      <Layout
       title="🔢 Word & Character Counter"
       description="Count words, characters, paragraphs, sentences, and more. Free online word counter with detailed statistics, reading time, and export options."
     >
@@ -338,6 +348,7 @@ export default function WordCounterPage() {
         </div>
       </div>
     </Layout>
+    </>
   )
 }
 

@@ -27,3 +27,4 @@ export default function MemeGeneratorLayout({
   return <>{children}</>
 }
 
+

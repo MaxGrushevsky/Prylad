@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import Layout from '@/components/Layout'
 import FileDropZone from '@/components/FileDropZone'
-
 type Mode = 'text' | 'image'
 type Format = 'standard' | 'url-safe'
 
@@ -16,7 +15,6 @@ export default function Base64ConverterPage() {
   const [imagePreview, setImagePreview] = useState('')
   const [error, setError] = useState('')
   const [totalOperations, setTotalOperations] = useState(0)
-
   const encodeText = useCallback((input: string, fmt: Format): string => {
     try {
       const encoded = btoa(unescape(encodeURIComponent(input)))
@@ -122,8 +120,11 @@ export default function Base64ConverterPage() {
     document.body.removeChild(link)
   }
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text)
+    } catch (err) {
+    }
   }
 
   const exportToFile = () => {
@@ -151,8 +152,9 @@ export default function Base64ConverterPage() {
   const sizeIncrease = text ? ((base64Size / textSize - 1) * 100).toFixed(1) : '0'
 
   return (
-    <Layout
-      title="📦 Base64 Encoder/Decoder"
+    <>
+      <Layout
+        title="📦 Base64 Encoder/Decoder"
       description="Encode and decode text and images to Base64 format. Free online Base64 converter with URL-safe encoding, auto-convert, and image support."
     >
       <div className="max-w-6xl mx-auto">
@@ -542,6 +544,7 @@ export default function Base64ConverterPage() {
         </div>
       </div>
     </Layout>
+    </>
   )
 }
 

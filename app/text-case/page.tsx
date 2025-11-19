@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import Layout from '@/components/Layout'
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
-
 type CaseType = 'uppercase' | 'lowercase' | 'title' | 'sentence' | 'camel' | 'pascal' | 'snake' | 'kebab' | 'constant' | 'alternating' | 'inverse'
 
 export default function TextCasePage() {
@@ -11,7 +10,6 @@ export default function TextCasePage() {
   const [result, setResult] = useState('')
   const [selectedCase, setSelectedCase] = useState<CaseType | null>(null)
   const [totalTransforms, setTotalTransforms] = useState(0)
-
   const transform = useCallback((type: CaseType) => {
     if (!text.trim()) {
       setResult('')
@@ -93,8 +91,11 @@ export default function TextCasePage() {
     setTotalTransforms(prev => prev + 1)
   }, [text])
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text)
+    } catch (err) {
+    }
   }
 
   const exportToFile = () => {
@@ -121,7 +122,8 @@ export default function TextCasePage() {
   })
 
   return (
-    <Layout
+    <>
+      <Layout
       title="⌨️ Text Case Converter"
       description="Convert text to different cases: UPPERCASE, lowercase, Title Case, camelCase, snake_case, kebab-case, and more. Free online text case converter."
     >
@@ -433,6 +435,7 @@ export default function TextCasePage() {
         </div>
       </div>
     </Layout>
+    </>
   )
 }
 

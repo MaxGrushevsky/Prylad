@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import Layout from '@/components/Layout'
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
+import { useHistory } from '@/hooks/useHistory'
+import HistoryPanel from '@/components/HistoryPanel'
 
 type UUIDFormat = 'standard' | 'no-dashes' | 'uppercase' | 'braces' | 'brackets'
 type UUIDVersion = 'v4' | 'v1'
@@ -13,6 +15,7 @@ export default function UUIDGeneratorPage() {
   const [version, setVersion] = useState<UUIDVersion>('v4')
   const [format, setFormat] = useState<UUIDFormat>('standard')
   const [totalGenerated, setTotalGenerated] = useState(0)
+  const { history, addToHistory, removeFromHistory, clearHistory } = useHistory<string>('uuid-history', 20)
 
   const generateUUID = useCallback((ver: UUIDVersion): string => {
     let uuid: string
@@ -60,14 +63,32 @@ export default function UUIDGeneratorPage() {
     })
     setUuids(newUuids)
     setTotalGenerated(prev => prev + newUuids.length)
-  }, [count, version, format, generateUUID, formatUUID])
+    
+    // Add to history
+    newUuids.forEach(uuid => {
+      addToHistory(uuid, `${version.toUpperCase()} - ${format}`)
+    })
+  }, [count, version, format, generateUUID, formatUUID, addToHistory])
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
+  const selectFromHistory = useCallback((uuid: string) => {
+    setUuids([uuid])
+  }, [])
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text)
+    } catch (err) {
+      // Failed to copy
+    }
   }
 
-  const copyAll = () => {
-    navigator.clipboard.writeText(uuids.join('\n'))
+  const copyAll = async () => {
+    if (uuids.length === 0) return
+    try {
+      await navigator.clipboard.writeText(uuids.join('\n'))
+    } catch (err) {
+      // Failed to copy
+    }
   }
 
   const exportToFile = () => {
@@ -145,10 +166,11 @@ export default function UUIDGeneratorPage() {
   }, [])
 
   return (
-    <Layout
-      title="🆔 UUID/GUID Generator"
-      description="Generate unique identifiers (UUID/GUID) in multiple formats. Support for UUID v1 (time-based) and v4 (random). Free online UUID generator with export options."
-    >
+    <>
+      <Layout
+        title="🆔 UUID/GUID Generator"
+        description="Generate unique identifiers (UUID/GUID) in multiple formats. Support for UUID v1 (time-based) and v4 (random). Free online UUID generator with export options."
+      >
       <div className="max-w-4xl mx-auto">
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 mb-6">
           <div className="space-y-6">
@@ -566,8 +588,22 @@ export default function UUIDGeneratorPage() {
             </div>
           </section>
         </div>
+
+        {/* History Panel */}
+        <div className="max-w-4xl mx-auto mt-6">
+          <HistoryPanel
+            history={history}
+            onSelect={selectFromHistory}
+            onRemove={removeFromHistory}
+            onClear={clearHistory}
+            formatItem={(uuid) => uuid}
+            title="Generated UUIDs"
+            maxDisplay={10}
+          />
+        </div>
       </div>
     </Layout>
+    </>
   )
 }
 

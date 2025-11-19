@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Layout from '@/components/Layout'
-
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
 type Algorithm = 'md5' | 'sha1' | 'sha256' | 'sha384' | 'sha512'
 
 export default function HashGeneratorPage() {
@@ -10,8 +10,9 @@ export default function HashGeneratorPage() {
   const [algorithm, setAlgorithm] = useState<Algorithm>('sha256')
   const [hash, setHash] = useState('')
   const [autoHash, setAutoHash] = useState(true)
+  const [useHMAC, setUseHMAC] = useState(false)
+  const [secretKey, setSecretKey] = useState('')
   const [totalGenerated, setTotalGenerated] = useState(0)
-
   // MD5 implementation using a simple hash (not cryptographically secure)
   // Note: For production MD5, use crypto-js library
   const generateMD5 = (str: string): string => {
@@ -33,6 +34,40 @@ export default function HashGeneratorPage() {
     }
 
     try {
+      // HMAC mode
+      if (useHMAC) {
+        if (!secretKey.trim()) {
+          return
+        }
+
+        if (algorithm === 'md5') {
+          return
+        }
+
+        const encoder = new TextEncoder()
+        const keyData = encoder.encode(secretKey)
+        const messageData = encoder.encode(text)
+
+        // Import key for HMAC
+        const hashAlg = algorithm === 'sha1' ? 'SHA-1' : algorithm === 'sha256' ? 'SHA-256' : algorithm === 'sha384' ? 'SHA-384' : 'SHA-512'
+        const cryptoKey = await crypto.subtle.importKey(
+          'raw',
+          keyData,
+          { name: 'HMAC', hash: hashAlg },
+          false,
+          ['sign']
+        )
+
+        // Sign (generate HMAC)
+        const signature = await crypto.subtle.sign('HMAC', cryptoKey, messageData)
+        const hashArray = Array.from(new Uint8Array(signature))
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+        setHash(hashHex)
+        setTotalGenerated(prev => prev + 1)
+        return
+      }
+
+      // Regular hash mode
       if (algorithm === 'md5') {
         setHash(generateMD5(text))
         setTotalGenerated(prev => prev + 1)
@@ -65,38 +100,52 @@ export default function HashGeneratorPage() {
       setHash(hashHex)
       setTotalGenerated(prev => prev + 1)
     } catch (error) {
-      setHash('Error generating hash')
+      setHash('Error generating hash').message}`)
     }
-  }, [text, algorithm])
+  }, [text, algorithm, useHMAC, secretKey, ])
 
-  // Auto-hash on text or algorithm change
+  // Auto-hash on text, algorithm, HMAC mode, or secret key change
   useEffect(() => {
-    if (autoHash && text.trim()) {
+    if (autoHash && text.trim() && (!useHMAC || secretKey.trim())) {
       const timer = setTimeout(() => {
         generateHash()
       }, 300)
       return () => clearTimeout(timer)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [text, algorithm, autoHash])
+  }, [text, algorithm, autoHash, useHMAC, secretKey])
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text)
+    } catch (err) {
+    }
   }
 
   const exportToFile = () => {
     if (!hash) return
-    const content = `Algorithm: ${algorithm.toUpperCase()}\nInput: ${text}\nHash: ${hash}`
+    const mode = useHMAC ? 'HMAC' : 'Hash'
+    const content = `Algorithm: ${algorithm.toUpperCase()}\nMode: ${mode}\n${useHMAC ? `Secret Key: ${secretKey}\n` : ''}Input: ${text}\n${mode}: ${hash}`
     const blob = new Blob([content], { type: 'text/plain' })
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
-    link.download = `hash-${algorithm}-${Date.now()}.txt`
+    link.download = `${useHMAC ? 'hmac' : 'hash'}-${algorithm}-${Date.now()}.txt`
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
     URL.revokeObjectURL(url)
   }
+
+  // Keyboard shortcuts
+  useKeyboardShortcuts({
+    onEnter: () => generateHash(),
+    onSave: () => exportToFile(),
+    onClear: () => {
+      setText('')
+      setHash('')
+    }
+  })
 
   const getHashInfo = () => {
     if (!hash) return null
@@ -110,9 +159,10 @@ export default function HashGeneratorPage() {
   const hashInfo = getHashInfo()
 
   return (
-    <Layout
-      title="🔐 Hash Generator (MD5, SHA)"
-      description="Generate cryptographic hashes: MD5, SHA-1, SHA-256, SHA-384, SHA-512. Free online hash generator with auto-hash and export options."
+    <>
+      <Layout
+        title="🔐 Hash Generator (MD5, SHA, HMAC)"
+      description="Generate cryptographic hashes and HMAC: MD5, SHA-1, SHA-256, SHA-384, SHA-512. Free online hash generator with auto-hash and export options."
     >
       <div className="max-w-6xl mx-auto">
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 mb-6">
@@ -143,18 +193,61 @@ export default function HashGeneratorPage() {
             </div>
 
             {/* Options */}
-            <div className="flex items-center gap-2 p-4 bg-gray-50 rounded-xl border border-gray-200">
-              <input
-                type="checkbox"
-                id="auto-hash"
-                checked={autoHash}
-                onChange={(e) => setAutoHash(e.target.checked)}
-                className="w-4 h-4 accent-primary-600"
-              />
-              <label htmlFor="auto-hash" className="text-sm text-gray-700 cursor-pointer flex-1">
-                Auto-generate hash as you type
-              </label>
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                <input
+                  type="checkbox"
+                  id="auto-hash"
+                  checked={autoHash}
+                  onChange={(e) => setAutoHash(e.target.checked)}
+                  className="w-4 h-4 accent-primary-600"
+                />
+                <label htmlFor="auto-hash" className="text-sm text-gray-700 cursor-pointer flex-1">
+                  Auto-generate hash as you type
+                </label>
+              </div>
+              <div className="flex items-center gap-2 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                <input
+                  type="checkbox"
+                  id="use-hmac"
+                  checked={useHMAC}
+                  onChange={(e) => {
+                    setUseHMAC(e.target.checked)
+                    if (e.target.checked && algorithm === 'md5') {
+                      setAlgorithm('sha256')
+                    }
+                  }}
+                  className="w-4 h-4 accent-primary-600"
+                />
+                <label htmlFor="use-hmac" className="text-sm text-gray-700 cursor-pointer flex-1">
+                  Use HMAC (Hash-based Message Authentication Code)
+                </label>
+              </div>
             </div>
+
+            {/* Secret Key Input (for HMAC) */}
+            {useHMAC && (
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Secret Key (for HMAC):
+                </label>
+                <input
+                  type="text"
+                  value={secretKey}
+                  onChange={(e) => setSecretKey(e.target.value)}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 font-mono text-sm"
+                  placeholder="Enter secret key for HMAC..."
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  HMAC requires a secret key. The same message with different keys produces different hashes.
+                </p>
+                {useHMAC && algorithm === 'md5' && (
+                  <p className="text-xs text-red-600 mt-1">
+                    ⚠️ HMAC is not supported for MD5. Please select SHA-1, SHA-256, SHA-384, or SHA-512.
+                  </p>
+                )}
+              </div>
+            )}
 
             {/* Input */}
             <div>
@@ -176,10 +269,10 @@ export default function HashGeneratorPage() {
             {!autoHash && (
               <button
                 onClick={generateHash}
-                disabled={!text.trim()}
+                disabled={!text.trim() || (useHMAC && !secretKey.trim())}
                 className="w-full bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold py-3 px-6 rounded-xl hover:from-primary-700 hover:to-primary-800 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Generate Hash
+                Generate {useHMAC ? 'HMAC' : 'Hash'}
               </button>
             )}
 
@@ -188,7 +281,7 @@ export default function HashGeneratorPage() {
               <div className="space-y-4">
                 <div className="flex justify-between items-center flex-wrap gap-2">
                   <label className="block text-sm font-semibold text-gray-700">
-                    {algorithm.toUpperCase()} Hash:
+                    {algorithm.toUpperCase()} {useHMAC ? 'HMAC' : 'Hash'}:
                   </label>
                   <div className="flex gap-2">
                     <button
@@ -592,6 +685,7 @@ export default function HashGeneratorPage() {
         </div>
       </div>
     </Layout>
+    </>
   )
 }
 

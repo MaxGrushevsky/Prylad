@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Layout from '@/components/Layout'
-
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
 type Separator = '-' | '_' | ''
 
 export default function SlugGeneratorPage() {
@@ -13,7 +13,6 @@ export default function SlugGeneratorPage() {
   const [removeSpecialChars, setRemoveSpecialChars] = useState(true)
   const [autoGenerate, setAutoGenerate] = useState(true)
   const [totalGenerated, setTotalGenerated] = useState(0)
-
   const generate = useCallback(() => {
     if (!input.trim()) {
       setSlug('')
@@ -58,8 +57,11 @@ export default function SlugGeneratorPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [input, separator, lowercase, removeSpecialChars, autoGenerate])
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text)
+    } catch (err) {
+    }
   }
 
   const exportToFile = () => {
@@ -75,9 +77,20 @@ export default function SlugGeneratorPage() {
     URL.revokeObjectURL(url)
   }
 
+  // Keyboard shortcuts
+  useKeyboardShortcuts({
+    onEnter: () => generate(),
+    onSave: () => exportToFile(),
+    onClear: () => {
+      setInput('')
+      setSlug('')
+    }
+  })
+
   return (
-    <Layout
-      title="🔗 URL Slug Generator"
+    <>
+      <Layout
+        title="🔗 URL Slug Generator"
       description="Generate URL-friendly slugs from text. Create SEO-friendly slugs for URLs, filenames, and identifiers. Free online slug generator with customizable options."
     >
       <div className="max-w-6xl mx-auto">
@@ -401,6 +414,7 @@ export default function SlugGeneratorPage() {
         </div>
       </div>
     </Layout>
+    </>
   )
 }
 

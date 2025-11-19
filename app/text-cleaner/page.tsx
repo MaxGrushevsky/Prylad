@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import Layout from '@/components/Layout'
-
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
 type CleanType = 'spaces' | 'allSpaces' | 'duplicates' | 'emptyLines' | 'trim' | 'specialChars' | 'numbers' | 'letters' | 'all'
 
 export default function TextCleanerPage() {
@@ -10,7 +10,6 @@ export default function TextCleanerPage() {
   const [result, setResult] = useState('')
   const [selectedClean, setSelectedClean] = useState<CleanType | null>(null)
   const [totalCleaned, setTotalCleaned] = useState(0)
-
   const clean = useCallback((type: CleanType) => {
     if (!input.trim()) {
       setResult('')
@@ -60,8 +59,11 @@ export default function TextCleanerPage() {
     setTotalCleaned(prev => prev + 1)
   }, [input])
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text)
+    } catch (err) {
+    }
   }
 
   const exportToFile = () => {
@@ -88,11 +90,22 @@ export default function TextCleanerPage() {
     }
   }
 
+  // Keyboard shortcuts
+  useKeyboardShortcuts({
+    onSave: () => exportToFile(),
+    onClear: () => {
+      setInput('')
+      setResult('')
+      setSelectedClean(null)
+    }
+  })
+
   const stats = getStats()
 
   return (
-    <Layout
-      title="🧹 Text Cleaner"
+    <>
+      <Layout
+        title="🧹 Text Cleaner"
       description="Clean and format text: remove spaces, duplicate lines, empty lines, special characters, and more. Free online text cleaning tool."
     >
       <div className="max-w-6xl mx-auto">
@@ -341,6 +354,7 @@ export default function TextCleanerPage() {
         </div>
       </div>
     </Layout>
+    </>
   )
 }
 

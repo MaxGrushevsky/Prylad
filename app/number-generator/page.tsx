@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Layout from '@/components/Layout'
-
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
 type SortOrder = 'none' | 'asc' | 'desc'
 type Preset = 'lottery' | 'range' | 'custom'
 
@@ -15,7 +15,6 @@ export default function NumberGeneratorPage() {
   const [results, setResults] = useState<number[]>([])
   const [totalGenerated, setTotalGenerated] = useState(0)
   const [preset, setPreset] = useState<Preset>('custom')
-
   const applyPreset = useCallback((presetType: Preset) => {
     setPreset(presetType)
     switch (presetType) {
@@ -41,12 +40,10 @@ export default function NumberGeneratorPage() {
 
   const generate = useCallback(() => {
     if (min >= max) {
-      alert('Minimum must be less than maximum')
       return
     }
 
     if (!allowDuplicates && count > (max - min + 1)) {
-      alert('Cannot generate unique numbers. Increase the range or decrease the count.')
       return
     }
 
@@ -70,14 +67,21 @@ export default function NumberGeneratorPage() {
 
     setResults(sortedNumbers)
     setTotalGenerated(prev => prev + sortedNumbers.length)
-  }, [min, max, count, allowDuplicates, sortOrder])
+  }, [min, max, count, allowDuplicates, sortOrder, ])
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text)
+    } catch (err) {
+    }
   }
 
-  const copyAll = () => {
-    navigator.clipboard.writeText(results.join(', '))
+  const copyAll = async () => {
+    if (results.length === 0) return
+    try {
+      await navigator.clipboard.writeText(results.join(', '))
+    } catch (err) {
+    }
   }
 
   const exportToFile = () => {
@@ -94,6 +98,15 @@ export default function NumberGeneratorPage() {
     document.body.removeChild(link)
     URL.revokeObjectURL(url)
   }
+
+  // Keyboard shortcuts
+  useKeyboardShortcuts({
+    onEnter: () => generate(),
+    onSave: () => exportToFile(),
+    onClear: () => {
+      setResults([])
+    }
+  })
 
   // Save settings to localStorage
   useEffect(() => {
@@ -127,10 +140,11 @@ export default function NumberGeneratorPage() {
   }, [])
 
   return (
-    <Layout
-      title="🎲 Random Number Generator"
-      description="Generate random numbers for lotteries, games, testing, and more. Free online random number generator with customizable range, sorting, and export options."
-    >
+    <>
+      <Layout
+        title="🎲 Random Number Generator"
+        description="Generate random numbers for lotteries, games, testing, and more. Free online random number generator with customizable range, sorting, and export options."
+      >
       <div className="max-w-4xl mx-auto">
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 mb-6">
           {/* Presets */}
@@ -628,6 +642,7 @@ export default function NumberGeneratorPage() {
         </section>
       </div>
     </Layout>
+    </>
   )
 }
 

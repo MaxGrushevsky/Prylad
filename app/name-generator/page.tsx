@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Layout from '@/components/Layout'
-
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
 type NameStyle = 'modern' | 'classic' | 'fantasy' | 'sci-fi'
 type Gender = 'any' | 'male' | 'female'
 
@@ -48,7 +48,6 @@ export default function NameGeneratorPage() {
   const [count, setCount] = useState(5)
   const [results, setResults] = useState<string[]>([])
   const [totalGenerated, setTotalGenerated] = useState(0)
-
   const generate = useCallback(() => {
     if (type === 'full') {
       const newNames = Array.from({ length: count }, () => {
@@ -84,12 +83,19 @@ export default function NameGeneratorPage() {
     }
   }, [type, nameStyle, gender, nicknameStyle, includeNumbers, count])
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text)
+    } catch (err) {
+    }
   }
 
-  const copyAll = () => {
-    navigator.clipboard.writeText(results.join('\n'))
+  const copyAll = async () => {
+    if (results.length === 0) return
+    try {
+      await navigator.clipboard.writeText(results.join('\n'))
+    } catch (err) {
+    }
   }
 
   const exportToFile = () => {
@@ -106,6 +112,15 @@ export default function NameGeneratorPage() {
     document.body.removeChild(link)
     URL.revokeObjectURL(url)
   }
+
+  // Keyboard shortcuts
+  useKeyboardShortcuts({
+    onEnter: () => generate(),
+    onSave: () => exportToFile(),
+    onClear: () => {
+      setResults([])
+    }
+  })
 
   // Save settings to localStorage
   useEffect(() => {
@@ -587,6 +602,7 @@ export default function NameGeneratorPage() {
         </div>
       </div>
     </Layout>
+    </>
   )
 }
 

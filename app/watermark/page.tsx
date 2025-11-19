@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 import Layout from '@/components/Layout'
+import FileDropZone from '@/components/FileDropZone'
 
 type WatermarkPosition = 'center' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
 type WatermarkType = 'text' | 'image'
@@ -40,6 +41,10 @@ export default function WatermarkPage() {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
+    handleFileSelect(file)
+  }
+
+  const handleFileSelect = (file: File) => {
     if (file.size > 8 * 1024 * 1024) {
       setError('Please upload images smaller than 8MB')
       return
@@ -260,12 +265,21 @@ export default function WatermarkPage() {
             <div className="space-y-6">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">Upload Image</label>
-                <input
-                  type="file"
+                <FileDropZone
+                  onFileSelect={handleFileSelect}
                   accept="image/*"
-                  onChange={handleImageUpload}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg"
-                />
+                  maxSize={8 * 1024 * 1024}
+                >
+                  <div className="text-center py-4">
+                    <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <p className="mt-2 text-sm text-gray-600">
+                      <span className="font-semibold">Click to upload</span> or drag and drop
+                    </p>
+                    <p className="mt-1 text-xs text-gray-500">PNG, JPG, GIF up to 8MB</p>
+                  </div>
+                </FileDropZone>
                 {error && <p className="text-sm text-red-600 mt-2">{error}</p>}
               </div>
 

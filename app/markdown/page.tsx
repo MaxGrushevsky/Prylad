@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import Layout from '@/components/Layout'
-
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
 interface MarkdownStats {
   words: number
   characters: number
@@ -91,7 +91,6 @@ export default function MarkdownPage() {
   const [markdown, setMarkdown] = useState('# Heading\n\n**Bold text** and *italic*')
   const [autoPreview, setAutoPreview] = useState(true)
   const [totalRendered, setTotalRendered] = useState(0)
-
   const parseMarkdown = useCallback((text: string): string => {
     let html = text
 
@@ -221,19 +220,17 @@ export default function MarkdownPage() {
     setStats(getStats(markdown))
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const copyToClipboard = async () => {
+  const copyMarkdown = async () => {
     try {
       await navigator.clipboard.writeText(markdown)
-    } catch (e) {
-      console.error('Failed to copy')
+    } catch (err) {
     }
   }
 
-  const copyPreview = async () => {
+  const copyHtml = async () => {
     try {
       await navigator.clipboard.writeText(preview)
-    } catch (e) {
-      console.error('Failed to copy')
+    } catch (err) {
     }
   }
 
@@ -285,9 +282,16 @@ ${preview}
     setStats(getStats(''))
   }
 
+  // Keyboard shortcuts
+  useKeyboardShortcuts({
+    onSave: () => exportToFile(),
+    onClear: () => clearAll()
+  })
+
   return (
-    <Layout
-      title="📄 Markdown Editor & Preview - Real-time Markdown Preview Online"
+    <>
+      <Layout
+        title="📄 Markdown Editor & Preview - Real-time Markdown Preview Online"
       description="Edit and preview Markdown in real-time. Free online Markdown editor with live preview, syntax highlighting, export to HTML, and comprehensive formatting support. Perfect for writing documentation, README files, and formatted text."
     >
       <div className="max-w-7xl mx-auto space-y-6">
@@ -325,7 +329,7 @@ ${preview}
                 <label className="block text-sm font-semibold text-gray-700">Markdown Source</label>
                 <div className="flex gap-2">
                   <button
-                    onClick={copyToClipboard}
+                    onClick={copyMarkdown}
                     className="px-3 py-1 bg-gray-600 text-white text-sm rounded-lg hover:bg-gray-700 transition-colors"
                   >
                     Copy
@@ -397,7 +401,7 @@ ${preview}
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold">Preview</h2>
               <button
-                onClick={copyPreview}
+                onClick={copyHtml}
                 className="px-3 py-1 bg-gray-600 text-white text-sm rounded-lg hover:bg-gray-700 transition-colors"
               >
                 Copy HTML
@@ -607,5 +611,6 @@ ${preview}
         </div>
       </div>
     </Layout>
+    </>
   )
 }

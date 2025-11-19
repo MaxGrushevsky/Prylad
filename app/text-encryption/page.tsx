@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import Layout from '@/components/Layout'
-
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
 type EncryptionMethod = 'caesar' | 'base64' | 'rot13' | 'atbash' | 'xor' | 'vigenere'
 
 interface EncryptionStats {
@@ -29,7 +29,6 @@ export default function TextEncryptionPage() {
   const [autoProcess, setAutoProcess] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [totalOperations, setTotalOperations] = useState(0)
-
   const caesarCipher = useCallback((str: string, shift: number, encrypt: boolean): string => {
     const actualShift = encrypt ? shift : -shift
     return str.split('').map(char => {
@@ -179,11 +178,11 @@ export default function TextEncryptionPage() {
 
   const stats = getStats()
 
-  const copyToClipboard = async () => {
+  const copyResult = async () => {
+    if (!result) return
     try {
       await navigator.clipboard.writeText(result)
-    } catch (e) {
-      console.error('Failed to copy')
+    } catch (err) {
     }
   }
 
@@ -214,9 +213,17 @@ export default function TextEncryptionPage() {
     setError(null)
   }
 
+  // Keyboard shortcuts
+  useKeyboardShortcuts({
+    onEnter: () => process(),
+    onSave: () => exportToFile(),
+    onClear: () => clearAll()
+  })
+
   return (
-    <Layout
-      title="🔒 Text Encryption & Decryption - Secure Text Cipher Online"
+    <>
+      <Layout
+        title="🔒 Text Encryption & Decryption - Secure Text Cipher Online"
       description="Encrypt and decrypt text using multiple methods: Caesar cipher, ROT13, Atbash, XOR, Vigenère, and Base64. Free online text encryption tool with real-time processing. Perfect for learning cryptography and securing messages."
     >
       <div className="max-w-6xl mx-auto space-y-6">
@@ -706,5 +713,6 @@ export default function TextEncryptionPage() {
         </div>
       </div>
     </Layout>
+    </>
   )
 }

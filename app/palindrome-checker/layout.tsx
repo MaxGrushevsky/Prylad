@@ -26,3 +26,4 @@ export default function PalindromeCheckerLayout({
   return <>{children}</>
 }
 
+

@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import QRCode from 'qrcode'
-
 interface QRCodeOptions {
   color: {
     dark: string
@@ -13,11 +12,6 @@ interface QRCodeOptions {
   errorCorrectionLevel: 'L' | 'M' | 'Q' | 'H'
 }
 
-interface ToastState {
-  message: string
-  type: 'success' | 'error' | 'info'
-}
-
 type QRType = 'text' | 'url' | 'wifi' | 'email'
 
 export default function QRCodeGenerator() {
@@ -25,7 +19,6 @@ export default function QRCodeGenerator() {
   const [text, setText] = useState('')
   const [qrCodeUrl, setQrCodeUrl] = useState<string>('')
   const [isGenerating, setIsGenerating] = useState(false)
-  const [toast, setToast] = useState<ToastState | null>(null)
   const [options, setOptions] = useState<QRCodeOptions>({
     color: {
       dark: '#000000',
@@ -94,14 +87,13 @@ export default function QRCodeGenerator() {
         setQrCodeUrl(dataUrl)
       } catch (error) {
         console.error('Error generating QR code:', error)
-        setToast({ message: 'Error generating QR code', type: 'error' })
       } finally {
         setIsGenerating(false)
       }
     }, 300)
 
     return () => clearTimeout(timer)
-  }, [getQRContent, options])
+  }, [getQRContent, options, ])
 
   const downloadQRCode = useCallback(() => {
     if (!qrCodeUrl) return
@@ -111,11 +103,9 @@ export default function QRCodeGenerator() {
       link.download = `qr-code-${Date.now()}.png`
       link.href = qrCodeUrl
       link.click()
-      setToast({ message: 'QR code downloaded successfully!', type: 'success' })
     } catch (error) {
-      setToast({ message: 'Error downloading', type: 'error' })
     }
-  }, [qrCodeUrl])
+  }, [qrCodeUrl, ])
 
   const copyToClipboard = useCallback(async () => {
     if (!qrCodeUrl) return
@@ -127,7 +117,6 @@ export default function QRCodeGenerator() {
       await navigator.clipboard.write([
         new ClipboardItem({ 'image/png': blob })
       ])
-      setToast({ message: 'QR code copied to clipboard!', type: 'success' })
     } catch (error) {
       // Fallback for older browsers
       try {
@@ -143,16 +132,14 @@ export default function QRCodeGenerator() {
               await navigator.clipboard.write([
                 new ClipboardItem({ 'image/png': blob })
               ])
-              setToast({ message: 'QR code copied!', type: 'success' })
             }
           })
         }
         img.src = qrCodeUrl
       } catch (fallbackError) {
-        setToast({ message: 'Copying is not supported in your browser', type: 'error' })
       }
     }
-  }, [qrCodeUrl])
+  }, [qrCodeUrl, ])
 
   const handleColorChange = useCallback((type: 'dark' | 'light', color: string) => {
     setOptions((prev) => ({
@@ -551,30 +538,6 @@ export default function QRCodeGenerator() {
         </div>
       </div>
 
-      {/* Toast notifications */}
-      {toast && (
-        <div className="fixed bottom-4 right-4 z-50 animate-slide-in">
-          <div
-            className={`${
-              toast.type === 'success' ? 'bg-green-500' :
-              toast.type === 'error' ? 'bg-red-500' :
-              'bg-blue-500'
-            } text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 min-w-[300px] max-w-md`}
-            role="alert"
-          >
-            <span className="flex-1 font-medium">{toast.message}</span>
-            <button
-              onClick={() => setToast(null)}
-              className="text-white/80 hover:text-white transition-colors p-1"
-              aria-label="Close notification"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      )}
-    </>
+      </>
   )
 }
