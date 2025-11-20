@@ -374,7 +374,6 @@ Generated: ${new Date().toLocaleString()}
         description="Convert time between different timezones accurately. See current time in multiple timezones, calculate time differences, and handle DST automatically. Free online timezone converter with 50+ timezones."
         breadcrumbs={breadcrumbs}
       >
-    >
       <div className="max-w-6xl mx-auto space-y-6">
         <div className="grid lg:grid-cols-2 gap-6">
           {/* Input */}

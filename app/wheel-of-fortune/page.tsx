@@ -435,7 +435,6 @@ export default function WheelOfFortunePage() {
         description="Free online wheel of fortune spinner. Make random decisions, choose what to eat, where to go, or pick from any list. Customizable options, spin history, and statistics. Perfect for decision making, games, and fun."
         breadcrumbs={breadcrumbs}
       >
-    >
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Presets */}
         <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">

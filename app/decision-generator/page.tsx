@@ -247,7 +247,6 @@ export default function DecisionGeneratorPage() {
         description="Get answers to your questions with Yes/No, Magic 8 Ball, Coin Flip, and Random decision generators. Free online decision maker with history tracking and statistics."
         breadcrumbs={breadcrumbs}
       >
-    >
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
           <div className="space-y-6">

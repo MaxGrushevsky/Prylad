@@ -188,7 +188,6 @@ export default function HTTPStatusCodesPage() {
         description="Complete reference of HTTP status codes with descriptions, use cases, and examples. Search and filter by category."
         breadcrumbs={breadcrumbs}
       >
-    >
       <div className="max-w-6xl mx-auto">
         <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 mb-6 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
           <div className="space-y-6">

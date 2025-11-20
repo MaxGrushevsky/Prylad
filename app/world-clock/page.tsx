@@ -304,7 +304,6 @@ export default function WorldClockPage() {
         description="View current time in cities around the world. Compare timezones, see UTC offsets, dates, and day of week. Free world clock with real-time updates. Perfect for scheduling meetings and coordinating across timezones."
         breadcrumbs={breadcrumbs}
       >
-    >
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Controls */}
         <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 space-y-6">

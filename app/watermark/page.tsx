@@ -203,6 +203,8 @@ export default function WatermarkPage() {
       }, 300)
       return () => clearTimeout(timeoutId)
     }
+  }, [autoApply, image, applyWatermark])
+
   // SEO data
   const toolPath = '/watermark'
   const toolName = 'Watermark Generator'
@@ -279,26 +281,6 @@ export default function WatermarkPage() {
     )
   ]
 
-  }, [
-    autoApply,
-    image,
-    watermarkText,
-    fontSize,
-    fontFamily,
-    fontWeight,
-    opacity,
-    color,
-    rotation,
-    tileWatermark,
-    tileSpacing,
-    position,
-    margin,
-    watermarkType,
-    watermarkImage,
-    watermarkScale,
-    applyWatermark
-  ])
-
   const downloadImage = () => {
     if (!canvasRef.current) return
     const link = document.createElement('a')
@@ -332,7 +314,6 @@ export default function WatermarkPage() {
         description="Add professional watermarks to your images online. Customize text or image watermarks, opacity, rotation, tiling, and more. All processing happens in your browser."
         breadcrumbs={breadcrumbs}
       >
-    >
       <div className="max-w-6xl mx-auto space-y-8">
         <div className="grid lg:grid-cols-2 gap-6">
           <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 space-y-6">

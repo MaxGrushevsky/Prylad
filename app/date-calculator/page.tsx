@@ -541,7 +541,6 @@ Generated: ${new Date().toLocaleString()}
         description="Calculate the difference between two dates, add/subtract time from dates, and calculate exact age in years, months, days, hours, minutes, and seconds. Free online date and age calculator with detailed breakdowns."
         breadcrumbs={breadcrumbs}
       >
-    >
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Tabs */}
         <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-2 mb-6 border border-gray-100 dark:border-gray-700">

@@ -274,7 +274,6 @@ export default function QRReaderPage() {
         description="Scan and decode QR codes from uploaded images online for free. Read QR codes containing text, URLs, WiFi credentials, and more. No registration required."
         breadcrumbs={breadcrumbs}
       >
-    >
       <div className="max-w-6xl mx-auto">
         <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 mb-6">
           <div className="space-y-6">

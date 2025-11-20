@@ -220,7 +220,6 @@ export default function TransliterationPage() {
         description="Convert between Cyrillic and Latin scripts online for free. Real-time transliteration with auto-convert option. Export results. No registration required."
         breadcrumbs={breadcrumbs}
       >
-    >
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Main Tool */}
         <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 space-y-6">

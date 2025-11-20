@@ -260,7 +260,6 @@ export default function DiceRollerPage() {
         description="Roll dice for D&D, tabletop games, and more. Free online dice roller with multiple dice types, bonuses, history tracking, and statistics. Perfect for D&D 5e, Pathfinder, and other RPGs."
         breadcrumbs={breadcrumbs}
       >
-    >
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Quick Roll Dice */}
         <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">

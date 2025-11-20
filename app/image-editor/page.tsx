@@ -464,7 +464,6 @@ export default function ImageEditorPage() {
         description="Resize, rotate, flip, and compress images online for free. Change image dimensions, rotate by any angle, flip horizontally/vertically, and compress with quality control. Support for JPEG, PNG, and WebP formats. No registration required."
         breadcrumbs={breadcrumbs}
       >
-    >
       <div className="max-w-7xl mx-auto">
         <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 mb-6">
           <div className="space-y-6">

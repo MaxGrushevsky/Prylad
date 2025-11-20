@@ -211,7 +211,6 @@ export default function ColorBlindnessSimulatorPage() {
         description="Simulate color blindness to test image accessibility. Preview how images look with different types of color vision deficiency."
         breadcrumbs={breadcrumbs}
       >
-    >
       <div className="max-w-6xl mx-auto">
         <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 mb-6 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
           <div className="space-y-6">
