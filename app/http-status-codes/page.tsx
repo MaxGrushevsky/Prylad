@@ -2,6 +2,10 @@
 
 import { useState, useMemo } from 'react'
 import Layout from '@/components/Layout'
+import StructuredData from '@/components/StructuredData'
+import RelatedTools from '@/components/RelatedTools'
+import { generateFAQSchema, generateHowToSchema, generateSoftwareApplicationSchema } from '@/lib/structured-data'
+import { generateBreadcrumbs, getRelatedTools } from '@/lib/seo-helpers'
 
 interface StatusCode {
   code: number
@@ -78,40 +82,120 @@ export default function HTTPStatusCodesPage() {
   const getCategoryColor = (category: string) => {
     switch (category) {
       case '1xx':
-        return 'bg-blue-100 text-blue-800 border-blue-200'
+        return 'bg-blue-100 text-blue-800 border-blue-200 dark:border-blue-800'
       case '2xx':
-        return 'bg-green-100 text-green-800 border-green-200'
+        return 'bg-green-100 text-green-800 border-green-200 dark:border-green-800'
       case '3xx':
         return 'bg-yellow-100 text-yellow-800 border-yellow-200'
       case '4xx':
-        return 'bg-red-100 text-red-800 border-red-200'
+        return 'bg-red-100 text-red-800 border-red-200 dark:border-red-800'
       case '5xx':
-        return 'bg-purple-100 text-purple-800 border-purple-200'
+        return 'bg-purple-100 text-purple-800 border-purple-200 dark:border-purple-800'
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200'
+        return 'bg-gray-100 text-gray-800 border-gray-200 dark:border-gray-700'
     }
   }
 
   const getCodeColor = (code: number) => {
     if (code >= 200 && code < 300) return 'text-green-600'
     if (code >= 300 && code < 400) return 'text-yellow-600'
-    if (code >= 400 && code < 500) return 'text-red-600'
+    if (code >= 400 && code < 500) return 'text-red-600 dark:text-red-400'
     if (code >= 500) return 'text-purple-600'
     return 'text-blue-600'
   }
 
+  // SEO data
+  const toolPath = '/http-status-codes'
+  const toolName = 'HTTP Status Codes Reference'
+  const category = 'code'
+  const breadcrumbs = generateBreadcrumbs(toolName, toolPath, category)
+  const relatedTools = getRelatedTools(toolPath, category, 6)
+
+  // FAQ data
+  const faqs = [
+    {
+      question: "What are HTTP status codes?",
+      answer: "HTTP status codes are three-digit numbers returned by web servers to indicate the result of an HTTP request. They communicate whether a request was successful, redirected, had a client error, or encountered a server error."
+    },
+    {
+      question: "What do the different status code categories mean?",
+      answer: "Status codes are grouped into categories: 1xx (Informational), 2xx (Success), 3xx (Redirection), 4xx (Client Error), and 5xx (Server Error). Each category indicates a different type of response."
+    },
+    {
+      question: "What is the most common HTTP status code?",
+      answer: "200 OK is the most common success status code, indicating that a request was successful. 404 Not Found is the most common error code, indicating a resource was not found."
+    },
+    {
+      question: "What's the difference between 301 and 302 redirects?",
+      answer: "301 (Moved Permanently) indicates a permanent redirect - search engines should update their indexes. 302 (Found) indicates a temporary redirect - the original URL should remain indexed."
+    },
+    {
+      question: "When should I use 400 vs 500 status codes?",
+      answer: "Use 4xx codes (like 400 Bad Request) for client errors - problems with the request itself. Use 5xx codes (like 500 Internal Server Error) for server errors - problems on the server side."
+    },
+    {
+      question: "Is this HTTP status codes reference free?",
+      answer: "Yes, completely free! This is a comprehensive reference tool with search and filter functionality. No registration required."
+    }
+  ]
+
+  // HowTo steps
+  const howToSteps = [
+    {
+      name: "Browse Status Codes",
+      text: "Scroll through the complete list of HTTP status codes organized by category (1xx, 2xx, 3xx, 4xx, 5xx). Each code includes name, description, and use case."
+    },
+    {
+      name: "Search for Specific Codes",
+      text: "Use the search box to find status codes by number, name, or description. For example, search '404' or 'Not Found' to find the 404 status code."
+    },
+    {
+      name: "Filter by Category",
+      text: "Click on category buttons (1xx, 2xx, 3xx, 4xx, 5xx) to filter status codes by type. This helps you find codes relevant to your needs."
+    },
+    {
+      name: "View Details",
+      text: "Click on any status code to view detailed information including description, use case, and example scenarios."
+    },
+    {
+      name: "Use in Development",
+      text: "Reference this guide when implementing HTTP responses in your APIs, web applications, or when debugging HTTP issues."
+    }
+  ]
+
+  // Structured data
+  const structuredData = [
+    generateFAQSchema(faqs),
+    generateHowToSchema(
+      "How to Use HTTP Status Codes Reference",
+      "Learn how to use our comprehensive HTTP status codes reference to find the right status code for your web development needs.",
+      howToSteps,
+      "PT2M"
+    ),
+    generateSoftwareApplicationSchema(
+      "HTTP Status Codes Reference",
+      "Complete reference of HTTP status codes with descriptions, use cases, and examples. Search and filter by category. Free online reference tool.",
+      "https://prylad.pro/http-status-codes",
+      "WebApplication"
+    )
+  ]
+
   return (
-    <Layout
-      title="📡 HTTP Status Codes"
-      description="Complete reference of HTTP status codes with descriptions, use cases, and examples. Search and filter by category."
+    <>
+      <StructuredData data={structuredData} />
+      <Layout
+        title="📡 HTTP Status Codes"
+        description="Complete reference of HTTP status codes with descriptions, use cases, and examples. Search and filter by category."
+        breadcrumbs={breadcrumbs}
+      >
     >
       <div className="max-w-6xl mx-auto">
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 mb-6">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 mb-6 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
           <div className="space-y-6">
             {/* Search and Filter */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   Search
                 </label>
                 <input
@@ -119,17 +203,17 @@ export default function HTTPStatusCodesPage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search by code, name, or description..."
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   Category
                 </label>
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value as typeof selectedCategory)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                 >
                   <option value="all">All Categories</option>
                   <option value="1xx">1xx Informational</option>
@@ -142,7 +226,7 @@ export default function HTTPStatusCodesPage() {
             </div>
 
             {/* Results Count */}
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-gray-600 dark:text-gray-400">
               Showing <span className="font-semibold text-primary-600">{filteredCodes.length}</span> of {statusCodes.length} status codes
             </div>
 
@@ -151,7 +235,7 @@ export default function HTTPStatusCodesPage() {
               {filteredCodes.map((code) => (
                 <div
                   key={code.code}
-                  className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                  className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
@@ -159,20 +243,20 @@ export default function HTTPStatusCodesPage() {
                         <span className={`text-2xl font-bold ${getCodeColor(code.code)}`}>
                           {code.code}
                         </span>
-                        <h3 className="text-lg font-semibold text-gray-900">{code.name}</h3>
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{code.name}</h3>
                         <span className={`px-2 py-1 rounded text-xs font-medium border ${getCategoryColor(code.category)}`}>
                           {code.category}
                         </span>
                       </div>
-                      <p className="text-gray-700 mb-2">{code.description}</p>
-                      <div className="bg-gray-50 rounded p-2 mb-2">
-                        <p className="text-sm text-gray-600">
+                      <p className="text-gray-700 dark:text-gray-300 mb-2">{code.description}</p>
+                      <div className="bg-gray-50 dark:bg-gray-800 rounded p-2 mb-2">
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
                           <span className="font-medium">Use case:</span> {code.useCase}
                         </p>
                         {code.example && (
-                          <p className="text-sm text-gray-600 mt-1">
+                          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                             <span className="font-medium">Example:</span>{' '}
-                            <code className="bg-white px-1 py-0.5 rounded text-xs font-mono">{code.example}</code>
+                            <code className="bg-white dark:bg-gray-800 px-1 py-0.5 rounded text-xs font-mono">{code.example}</code>
                           </p>
                         )}
                       </div>
@@ -184,7 +268,7 @@ export default function HTTPStatusCodesPage() {
 
             {filteredCodes.length === 0 && (
               <div className="text-center py-12">
-                <p className="text-gray-500 text-lg">No status codes found</p>
+                <p className="text-gray-500 dark:text-gray-400 text-lg">No status codes found</p>
                 <p className="text-gray-400 text-sm mt-2">Try adjusting your search or filter</p>
               </div>
             )}
@@ -192,9 +276,9 @@ export default function HTTPStatusCodesPage() {
         </div>
 
         {/* Info */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 border border-gray-100">
-          <h3 className="font-semibold text-gray-900 mb-3">About HTTP Status Codes</h3>
-          <div className="space-y-2 text-sm text-gray-600">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+          <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">About HTTP Status Codes</h3>
+          <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
             <p>
               HTTP status codes are three-digit numbers returned by a server to indicate the result of a request.
               They are grouped into five categories:
@@ -203,13 +287,18 @@ export default function HTTPStatusCodesPage() {
               <li><strong className="text-blue-600">1xx Informational:</strong> Request received, continuing process</li>
               <li><strong className="text-green-600">2xx Success:</strong> Request successfully received, understood, and accepted</li>
               <li><strong className="text-yellow-600">3xx Redirection:</strong> Further action needs to be taken to complete the request</li>
-              <li><strong className="text-red-600">4xx Client Error:</strong> Request contains bad syntax or cannot be fulfilled</li>
+              <li><strong className="text-red-600 dark:text-red-400">4xx Client Error:</strong> Request contains bad syntax or cannot be fulfilled</li>
               <li><strong className="text-purple-600">5xx Server Error:</strong> Server failed to fulfill a valid request</li>
             </ul>
           </div>
         </div>
       </div>
+      {/* Related Tools */}
+      {relatedTools.length > 0 && (
+        <RelatedTools tools={relatedTools} title="Related Code Tools" />
+      )}
     </Layout>
+    </>
   )
 }
 

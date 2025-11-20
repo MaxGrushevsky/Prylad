@@ -2,7 +2,12 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Layout from '@/components/Layout'
+import StructuredData from '@/components/StructuredData'
+import RelatedTools from '@/components/RelatedTools'
+import SEOContent from '@/components/SEOContent'
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
+import { generateFAQSchema, generateHowToSchema, generateSoftwareApplicationSchema } from '@/lib/structured-data'
+import { generateBreadcrumbs, getRelatedTools } from '@/lib/seo-helpers'
 
 type IndentSize = 2 | 4 | 'tab'
 type Action = 'format' | 'minify' | 'validate'
@@ -16,6 +21,82 @@ export default function JSONFormatterPage() {
   const [autoFormat, setAutoFormat] = useState(false)
   const [isValid, setIsValid] = useState<boolean | null>(null)
   const [totalOperations, setTotalOperations] = useState(0)
+
+  // SEO data
+  const toolPath = '/json-formatter'
+  const toolName = 'JSON Formatter'
+  const category = 'code'
+  const breadcrumbs = generateBreadcrumbs(toolName, toolPath, category)
+  const relatedTools = getRelatedTools(toolPath, category, 6)
+
+  // FAQ data
+  const faqs = [
+    {
+      question: "Is the JSON formatter free to use?",
+      answer: "Yes, absolutely! Our JSON formatter is completely free to use. There are no hidden fees, subscriptions, or usage limits. You can format, minify, and validate as much JSON as you need."
+    },
+    {
+      question: "Do you store or have access to my JSON data?",
+      answer: "No, absolutely not. All JSON processing happens entirely in your browser. We never see, store, transmit, or have any access to your JSON data. Your privacy is completely protected."
+    },
+    {
+      question: "What is JSON formatting?",
+      answer: "JSON formatting (also called JSON beautification or JSON prettification) is the process of adding indentation, line breaks, and proper spacing to JSON data to make it more readable and easier to understand."
+    },
+    {
+      question: "What is JSON minification?",
+      answer: "JSON minification is the process of removing all unnecessary whitespace, line breaks, and indentation from JSON data to reduce its file size. This is useful for production environments where smaller file sizes improve performance."
+    },
+    {
+      question: "Can I validate JSON syntax?",
+      answer: "Yes! Our tool automatically validates JSON syntax as you type. It will highlight any errors and provide detailed error messages to help you fix issues in your JSON data."
+    },
+    {
+      question: "What file format can I export to?",
+      answer: "You can export formatted or minified JSON to a .json text file. The exported file maintains the exact formatting you see in the output area."
+    }
+  ]
+
+  // HowTo steps
+  const howToSteps = [
+    {
+      name: "Paste or Type JSON",
+      text: "Enter your JSON data into the input area. You can paste JSON from any source or type it directly."
+    },
+    {
+      name: "Choose Action",
+      text: "Select what you want to do: Format (beautify), Minify (compress), or Validate (check syntax)."
+    },
+    {
+      name: "Customize Settings",
+      text: "Adjust indentation size (2 spaces, 4 spaces, or tabs) and optionally enable key sorting for formatted output."
+    },
+    {
+      name: "View Results",
+      text: "See the formatted, minified, or validation results in the output area. Any errors will be highlighted."
+    },
+    {
+      name: "Copy or Export",
+      text: "Copy the result to your clipboard or export it to a JSON file for use in your projects."
+    }
+  ]
+
+  // Structured data
+  const structuredData = [
+    generateFAQSchema(faqs),
+    generateHowToSchema(
+      "How to Format and Validate JSON",
+      "Learn how to format, minify, and validate JSON data using our free online JSON formatter tool.",
+      howToSteps,
+      "PT2M"
+    ),
+    generateSoftwareApplicationSchema(
+      "JSON Formatter",
+      "Free online JSON formatter, validator, and minifier. Format, validate, and minify JSON data with customizable settings.",
+      "https://prylad.pro/json-formatter",
+      "UtilityApplication"
+    )
+  ]
 
   const formatJSON = useCallback((jsonString: string, indent: IndentSize, sort: boolean): string => {
     try {
@@ -204,12 +285,14 @@ export default function JSONFormatterPage() {
 
   return (
     <>
+      <StructuredData data={structuredData} />
       <Layout
         title="📋 JSON Formatter & Validator"
-      description="Format, minify, and validate JSON online. Free JSON formatter with syntax highlighting, auto-format, key sorting, and export options."
-    >
+        description="Format, minify, and validate JSON online. Free JSON formatter with syntax highlighting, auto-format, key sorting, and export options."
+        breadcrumbs={breadcrumbs}
+      >
       <div className="max-w-7xl mx-auto">
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 mb-6">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 mb-6 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
           <div className="space-y-6">
             {/* Action Buttons */}
             <div className="flex flex-wrap gap-3">
@@ -240,7 +323,7 @@ export default function JSONFormatterPage() {
             </div>
 
             {/* Options */}
-            <div className="grid md:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+            <div className="grid md:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
               <div className="flex items-center gap-2">
                 <input
                   type="checkbox"
@@ -249,7 +332,7 @@ export default function JSONFormatterPage() {
                   onChange={(e) => setAutoFormat(e.target.checked)}
                   className="w-4 h-4 accent-primary-600"
                 />
-                <label htmlFor="auto-format" className="text-sm text-gray-700 cursor-pointer">
+                <label htmlFor="auto-format" className="text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
                   Auto-format on type
                 </label>
               </div>
@@ -261,16 +344,16 @@ export default function JSONFormatterPage() {
                   onChange={(e) => setSortKeys(e.target.checked)}
                   className="w-4 h-4 accent-primary-600"
                 />
-                <label htmlFor="sort-keys" className="text-sm text-gray-700 cursor-pointer">
+                <label htmlFor="sort-keys" className="text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
                   Sort keys alphabetically
                 </label>
               </div>
               <div>
-                <label className="block text-xs text-gray-600 mb-1">Indent Size:</label>
+                <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">Indent Size:</label>
                 <select
                   value={indentSize}
                   onChange={(e) => setIndentSize(e.target.value as IndentSize)}
-                  className="w-full px-3 py-1 border border-gray-200 rounded text-sm"
+                  className="w-full px-3 py-1 border border-gray-200 dark:border-gray-700 rounded text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                 >
                   <option value={2}>2 spaces</option>
                   <option value={4}>4 spaces</option>
@@ -283,8 +366,8 @@ export default function JSONFormatterPage() {
             {isValid !== null && (
               <div className={`p-3 rounded-lg border ${
                 isValid 
-                  ? 'bg-green-50 border-green-200 text-green-700' 
-                  : 'bg-red-50 border-red-200 text-red-700'
+                  ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-700' 
+                  : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400'
               }`}>
                 <div className="flex items-center gap-2">
                   <span className="text-lg">{isValid ? '✓' : '✗'}</span>
@@ -297,7 +380,7 @@ export default function JSONFormatterPage() {
 
             {/* Error Message */}
             {error && (
-              <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+              <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-sm">
                 {error}
               </div>
             )}
@@ -306,9 +389,9 @@ export default function JSONFormatterPage() {
             <div className="grid md:grid-cols-2 gap-4">
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <label className="block text-sm font-semibold text-gray-700">Input JSON:</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Input JSON:</label>
                   {input && (
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
                       {input.length} characters
                     </span>
                   )}
@@ -316,13 +399,13 @@ export default function JSONFormatterPage() {
                 <textarea
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  className="w-full h-96 px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 resize-none font-mono text-sm"
+                  className="w-full h-96 px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 resize-none font-mono text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                   placeholder='{"key": "value", "array": [1, 2, 3]}'
                 />
               </div>
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <label className="block text-sm font-semibold text-gray-700">Result:</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Result:</label>
                   <div className="flex gap-2">
                     {output && (
                       <>
@@ -348,7 +431,7 @@ export default function JSONFormatterPage() {
                 <textarea
                   value={output}
                   readOnly
-                  className="w-full h-96 px-4 py-3 border-2 border-gray-200 rounded-lg bg-gray-50 resize-none font-mono text-sm"
+                  className="w-full h-96 px-4 py-3 border-2 border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-800 resize-none font-mono text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                   placeholder="Formatted JSON will appear here..."
                 />
               </div>
@@ -356,25 +439,25 @@ export default function JSONFormatterPage() {
 
             {/* Statistics */}
             {stats && (
-              <div className="grid grid-cols-3 gap-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="grid grid-cols-3 gap-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
                 <div>
-                  <div className="text-xs text-gray-600 mb-1">File Size</div>
-                  <div className="font-bold text-gray-900">{stats.size} bytes</div>
+                  <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">File Size</div>
+                  <div className="font-bold text-gray-900 dark:text-gray-100">{stats.size} bytes</div>
                 </div>
                 <div>
-                  <div className="text-xs text-gray-600 mb-1">Total Keys</div>
-                  <div className="font-bold text-gray-900">{stats.keys}</div>
+                  <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">Total Keys</div>
+                  <div className="font-bold text-gray-900 dark:text-gray-100">{stats.keys}</div>
                 </div>
                 <div>
-                  <div className="text-xs text-gray-600 mb-1">Max Depth</div>
-                  <div className="font-bold text-gray-900">{stats.depth}</div>
+                  <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">Max Depth</div>
+                  <div className="font-bold text-gray-900 dark:text-gray-100">{stats.depth}</div>
                 </div>
               </div>
             )}
 
             {/* Statistics */}
             {totalOperations > 0 && (
-              <div className="text-center text-sm text-gray-600 pt-2 border-t border-gray-200">
+              <div className="text-center text-sm text-gray-600 dark:text-gray-400 pt-2 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
                 Total operations: <span className="font-semibold text-primary-600">{totalOperations}</span>
               </div>
             )}
@@ -384,15 +467,15 @@ export default function JSONFormatterPage() {
         {/* SEO Content */}
         <div className="max-w-4xl mx-auto mt-16 space-y-8">
           {/* Introduction */}
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">What is JSON?</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">What is JSON?</h2>
             <div className="prose prose-gray max-w-none">
-              <p className="text-gray-700 leading-relaxed mb-4">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                 JSON (JavaScript Object Notation) is a lightweight data-interchange format that&apos;s easy for humans 
                 to read and write, and easy for machines to parse and generate. It&apos;s based on a subset of JavaScript 
                 and is commonly used for transmitting data in web applications, APIs, and configuration files.
               </p>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                 JSON is language-independent but uses conventions familiar to programmers of C-family languages. 
                 It&apos;s built on two structures: a collection of name/value pairs (objects) and an ordered list of values (arrays). 
                 Properly formatted JSON is essential for readability, debugging, and maintaining code quality.
@@ -401,33 +484,33 @@ export default function JSONFormatterPage() {
           </section>
 
           {/* Use Cases */}
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Common Use Cases</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Common Use Cases</h2>
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">🌐 API Development</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">🌐 API Development</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Format and validate JSON responses from APIs. Ensure proper structure and readability for 
                   debugging and documentation purposes.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">💻 Code Development</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">💻 Code Development</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Format JSON configuration files, package.json, tsconfig.json, and other JSON-based configs. 
                   Maintain consistent formatting across projects.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">🔍 Debugging</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">🔍 Debugging</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Validate JSON syntax to find errors quickly. Format minified JSON to understand structure 
                   and identify issues in data.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">📊 Data Processing</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">📊 Data Processing</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Format JSON data for analysis, transformation, or storage. Minify JSON to reduce file size 
                   for production environments.
                 </p>
@@ -436,14 +519,14 @@ export default function JSONFormatterPage() {
           </section>
 
           {/* Features */}
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Key Features</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Key Features</h2>
             <div className="grid md:grid-cols-2 gap-6">
               <div className="flex items-start gap-3">
                 <span className="text-2xl">✨</span>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Format & Minify</h3>
-                  <p className="text-gray-700 text-sm">
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Format & Minify</h3>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">
                     Format JSON with customizable indentation (2 spaces, 4 spaces, or tabs) or minify to 
                     reduce file size for production.
                   </p>
@@ -452,8 +535,8 @@ export default function JSONFormatterPage() {
               <div className="flex items-start gap-3">
                 <span className="text-2xl">✅</span>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Real-time Validation</h3>
-                  <p className="text-gray-700 text-sm">
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Real-time Validation</h3>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">
                     Validate JSON syntax in real-time as you type. Get instant feedback on errors with 
                     detailed error messages.
                   </p>
@@ -462,8 +545,8 @@ export default function JSONFormatterPage() {
               <div className="flex items-start gap-3">
                 <span className="text-2xl">⚡</span>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Auto-Format</h3>
-                  <p className="text-gray-700 text-sm">
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Auto-Format</h3>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">
                     Enable auto-formatting to automatically format JSON as you type. Perfect for maintaining 
                     consistent formatting.
                   </p>
@@ -472,8 +555,8 @@ export default function JSONFormatterPage() {
               <div className="flex items-start gap-3">
                 <span className="text-2xl">🔤</span>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Key Sorting</h3>
-                  <p className="text-gray-700 text-sm">
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Key Sorting</h3>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">
                     Optionally sort object keys alphabetically for consistent output. Useful for comparing 
                     JSON files or maintaining order.
                   </p>
@@ -482,8 +565,8 @@ export default function JSONFormatterPage() {
               <div className="flex items-start gap-3">
                 <span className="text-2xl">📊</span>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Statistics</h3>
-                  <p className="text-gray-700 text-sm">
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Statistics</h3>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">
                     View file size, total number of keys, and maximum nesting depth. Understand your JSON 
                     structure at a glance.
                   </p>
@@ -492,8 +575,8 @@ export default function JSONFormatterPage() {
               <div className="flex items-start gap-3">
                 <span className="text-2xl">🔒</span>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Privacy First</h3>
-                  <p className="text-gray-700 text-sm">
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Privacy First</h3>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">
                     All JSON processing happens locally in your browser. We never see, store, or have access 
                     to your JSON data.
                   </p>
@@ -503,36 +586,36 @@ export default function JSONFormatterPage() {
           </section>
 
           {/* FAQ */}
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Frequently Asked Questions</h2>
             <div className="space-y-6">
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">What&apos;s the difference between formatting and minifying?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">What&apos;s the difference between formatting and minifying?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Formatting adds indentation and line breaks to make JSON readable. Minifying removes all 
                   unnecessary whitespace to reduce file size. Use formatting for development and minifying 
                   for production.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Why is my JSON invalid?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Why is my JSON invalid?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Common JSON errors include: missing quotes around keys, trailing commas, single quotes 
                   instead of double quotes, or unescaped special characters. Our validator will show the 
                   specific error message.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Can I format very large JSON files?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Can I format very large JSON files?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Our tool works best with JSON files under 10MB. For very large files, consider processing 
                   them in chunks or using command-line tools. Browser memory limits may affect performance 
                   with extremely large files.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Do you store my JSON data?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Do you store my JSON data?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   No, absolutely not. All JSON processing happens entirely in your browser. We never see, 
                   store, transmit, or have any access to your JSON data. Your privacy is completely protected.
                 </p>
@@ -541,6 +624,11 @@ export default function JSONFormatterPage() {
           </section>
         </div>
       </div>
+      
+      {/* Related Tools */}
+      {relatedTools.length > 0 && (
+        <RelatedTools tools={relatedTools} title="Related Code Tools" />
+      )}
     </Layout>
     </>
   )

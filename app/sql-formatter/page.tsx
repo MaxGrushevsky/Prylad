@@ -2,7 +2,11 @@
 
 import { useState, useCallback } from 'react'
 import Layout from '@/components/Layout'
+import StructuredData from '@/components/StructuredData'
+import RelatedTools from '@/components/RelatedTools'
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
+import { generateFAQSchema, generateHowToSchema, generateSoftwareApplicationSchema } from '@/lib/structured-data'
+import { generateBreadcrumbs, getRelatedTools } from '@/lib/seo-helpers'
 type KeywordCase = 'upper' | 'lower' | 'preserve'
 type IndentStyle = '2 spaces' | '4 spaces' | 'tab'
 
@@ -25,6 +29,82 @@ export default function SQLFormatterPage() {
   const [indentStyle, setIndentStyle] = useState<IndentStyle>('2 spaces')
   const [autoFormat, setAutoFormat] = useState(false)
   const [totalFormatted, setTotalFormatted] = useState(0)
+
+  // SEO data
+  const toolPath = '/sql-formatter'
+  const toolName = 'SQL Formatter'
+  const category = 'code'
+  const breadcrumbs = generateBreadcrumbs(toolName, toolPath, category)
+  const relatedTools = getRelatedTools(toolPath, category, 6)
+
+  // FAQ data
+  const faqs = [
+    {
+      question: "What is SQL formatting?",
+      answer: "SQL formatting is the process of adding proper indentation, line breaks, and spacing to SQL queries to make them more readable and easier to maintain. It helps developers understand complex queries and debug SQL code more effectively."
+    },
+    {
+      question: "Can I customize keyword capitalization?",
+      answer: "Yes! Our SQL formatter allows you to choose between uppercase, lowercase, or preserve original case for SQL keywords like SELECT, FROM, WHERE, etc. This helps match your team's coding standards."
+    },
+    {
+      question: "Does formatting affect SQL query execution?",
+      answer: "No, formatting only changes the appearance of SQL code, not its functionality. Formatted SQL queries execute exactly the same as unformatted ones. The only difference is readability."
+    },
+    {
+      question: "What indentation options are available?",
+      answer: "You can choose between 2 spaces, 4 spaces, or tabs for indentation. This lets you match your project's coding style and preferences."
+    },
+    {
+      question: "Is the SQL formatter free to use?",
+      answer: "Yes, absolutely! Our SQL formatter is completely free to use. There are no hidden fees, subscriptions, or usage limits. You can format as much SQL as you need."
+    },
+    {
+      question: "Do you store my SQL queries?",
+      answer: "No, absolutely not. All SQL processing happens entirely in your browser. We never see, store, transmit, or have any access to your SQL queries. Your privacy is completely protected."
+    }
+  ]
+
+  // HowTo steps
+  const howToSteps = [
+    {
+      name: "Paste Your SQL Query",
+      text: "Enter your SQL query into the input area. You can paste SQL from any source or type it directly."
+    },
+    {
+      name: "Choose Keyword Case",
+      text: "Select how you want SQL keywords formatted: UPPERCASE, lowercase, or preserve original case."
+    },
+    {
+      name: "Select Indentation Style",
+      text: "Choose your preferred indentation: 2 spaces, 4 spaces, or tabs."
+    },
+    {
+      name: "Enable Auto-Format (Optional)",
+      text: "Turn on auto-format to automatically format SQL as you type for real-time formatting."
+    },
+    {
+      name: "Copy Formatted SQL",
+      text: "Copy the formatted SQL query to your clipboard for use in your database tools or projects."
+    }
+  ]
+
+  // Structured data
+  const structuredData = [
+    generateFAQSchema(faqs),
+    generateHowToSchema(
+      "How to Format SQL Queries",
+      "Learn how to format and beautify SQL queries using our free online SQL formatter tool.",
+      howToSteps,
+      "PT2M"
+    ),
+    generateSoftwareApplicationSchema(
+      "SQL Formatter",
+      "Free online SQL formatter. Format and beautify SQL queries with proper indentation and keyword capitalization.",
+      "https://prylad.pro/sql-formatter",
+      "UtilityApplication"
+    )
+  ]
   const getIndent = useCallback((): string => {
     switch (indentStyle) {
       case '2 spaces':
@@ -164,23 +244,26 @@ export default function SQLFormatterPage() {
   })
 
   return (
-    <Layout
-      title="💾 SQL Formatter"
-      description="Format and beautify SQL queries online. Auto-format with proper indentation and keyword capitalization."
-    >
+    <>
+      <StructuredData data={structuredData} />
+      <Layout
+        title="💾 SQL Formatter"
+        description="Format and beautify SQL queries online. Auto-format with proper indentation and keyword capitalization."
+        breadcrumbs={breadcrumbs}
+      >
       <div className="max-w-6xl mx-auto">
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 mb-6">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 mb-6 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
           <div className="space-y-6">
             {/* Settings */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   Keyword Case
                 </label>
                 <select
                   value={keywordCase}
                   onChange={(e) => setKeywordCase(e.target.value as KeywordCase)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                 >
                   <option value="upper">UPPERCASE</option>
                   <option value="lower">lowercase</option>
@@ -188,13 +271,13 @@ export default function SQLFormatterPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   Indent Style
                 </label>
                 <select
                   value={indentStyle}
                   onChange={(e) => setIndentStyle(e.target.value as IndentStyle)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                 >
                   <option value="2 spaces">2 Spaces</option>
                   <option value="4 spaces">4 Spaces</option>
@@ -209,7 +292,7 @@ export default function SQLFormatterPage() {
                     onChange={(e) => setAutoFormat(e.target.checked)}
                     className="w-4 h-4 accent-primary-600"
                   />
-                  <span className="text-sm font-medium text-gray-700">Auto-format</span>
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Auto-format</span>
                 </label>
               </div>
             </div>
@@ -217,12 +300,12 @@ export default function SQLFormatterPage() {
             {/* Input */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="block text-sm font-semibold text-gray-700">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
                   SQL Query
                 </label>
                 <button
                   onClick={() => setInput('')}
-                  className="text-xs text-gray-500 hover:text-gray-700 font-medium"
+                  className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 font-medium"
                 >
                   Clear
                 </button>
@@ -231,7 +314,7 @@ export default function SQLFormatterPage() {
                 value={input}
                 onChange={(e) => handleInputChange(e.target.value)}
                 placeholder="SELECT * FROM users WHERE age > 18 ORDER BY name;"
-                className="w-full h-64 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent font-mono text-sm resize-none"
+                className="w-full h-64 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent font-mono text-sm resize-none bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
               />
               <div className="flex items-center justify-end mt-2">
                 <button
@@ -247,7 +330,7 @@ export default function SQLFormatterPage() {
             {output && (
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="block text-sm font-semibold text-gray-700">
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
                     Formatted SQL
                   </label>
                   <div className="flex gap-2">
@@ -265,7 +348,7 @@ export default function SQLFormatterPage() {
                     </button>
                   </div>
                 </div>
-                <pre className="bg-gray-50 border border-gray-200 rounded-lg p-4 overflow-x-auto text-sm font-mono">
+                <pre className="bg-gray-50 dark:bg-gray-800 border border-gray-200 rounded-lg p-4 overflow-x-auto text-sm font-mono bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
                   {output}
                 </pre>
               </div>
@@ -275,8 +358,8 @@ export default function SQLFormatterPage() {
 
         {/* Stats */}
         {totalFormatted > 0 && (
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 border border-gray-100">
-            <p className="text-sm text-gray-600">
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
               Total queries formatted: <span className="font-semibold text-primary-600">{totalFormatted}</span>
             </p>
           </div>
@@ -285,7 +368,7 @@ export default function SQLFormatterPage() {
 
       {/* SEO Content */}
       <div className="max-w-4xl mx-auto mt-16 space-y-8">
-        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Why Format SQL Queries?</h2>
           <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
             SQL formatting is essential for code readability, maintainability, and collaboration. Well-formatted SQL 
@@ -298,7 +381,7 @@ export default function SQLFormatterPage() {
           </p>
         </section>
 
-        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Formatting Features</h2>
           <div className="grid md:grid-cols-2 gap-6">
             <div>
@@ -328,7 +411,7 @@ export default function SQLFormatterPage() {
           </div>
         </section>
 
-        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Best Practices</h2>
           <ul className="space-y-3 text-gray-700 dark:text-gray-300">
             <li className="flex items-start gap-2">
@@ -351,7 +434,12 @@ export default function SQLFormatterPage() {
         </section>
       </div>
 
+      {/* Related Tools */}
+      {relatedTools.length > 0 && (
+        <RelatedTools tools={relatedTools} title="Related Code Tools" />
+      )}
       </Layout>
+    </>
   )
 }
 

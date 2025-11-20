@@ -2,6 +2,10 @@
 
 import { useState, useCallback, useMemo } from 'react'
 import Layout from '@/components/Layout'
+import StructuredData from '@/components/StructuredData'
+import RelatedTools from '@/components/RelatedTools'
+import { generateFAQSchema, generateHowToSchema, generateSoftwareApplicationSchema } from '@/lib/structured-data'
+import { generateBreadcrumbs, getRelatedTools } from '@/lib/seo-helpers'
 interface FontPairing {
   heading: string
   body: string
@@ -132,13 +136,93 @@ body, p {
     }
   }
 
+  // SEO data
+  const toolPath = '/font-pairing-generator'
+  const toolName = 'Font Pairing Generator'
+  const category = 'design'
+  const breadcrumbs = generateBreadcrumbs(toolName, toolPath, category)
+  const relatedTools = getRelatedTools(toolPath, category, 6)
+
+  // FAQ data
+  const faqs = [
+    {
+      question: "What is a font pairing?",
+      answer: "A font pairing is a combination of two fonts (typically one for headings and one for body text) that work well together visually. Good font pairings create contrast and harmony, making text more readable and visually appealing."
+    },
+    {
+      question: "How do I find a good font pairing?",
+      answer: "Browse through curated font pairings from Google Fonts, preview how they look together, and select the one that matches your design style. Each pairing includes a heading font and a body font that complement each other."
+    },
+    {
+      question: "Can I use custom fonts?",
+      answer: "Yes! Select 'Custom' mode and enter any Google Font name for both heading and body text. The tool will load and preview your custom font combination."
+    },
+    {
+      question: "What makes a good font pairing?",
+      answer: "Good font pairings combine contrast (different styles, weights, or families) with harmony (complementary characteristics). Common strategies: serif + sans-serif, bold + regular, or contrasting weights of the same family."
+    },
+    {
+      question: "How do I use the font pairing in my project?",
+      answer: "Copy the Google Fonts import link and CSS code provided. Add the import link to your HTML <head> and use the CSS font-family values in your stylesheets. The code is ready to use immediately."
+    },
+    {
+      question: "Is the font pairing generator free?",
+      answer: "Yes, completely free! No registration, no limits, no hidden fees. All font pairings use Google Fonts, which are free to use in any project."
+    }
+  ]
+
+  // HowTo steps
+  const howToSteps = [
+    {
+      name: "Browse Font Pairings",
+      text: "Scroll through curated font pairings from Google Fonts. Each pairing shows a heading font and a body font that work well together, with a description of the style."
+    },
+    {
+      name: "Preview Pairing",
+      text: "Click on a font pairing to see a live preview with sample heading and body text. The preview shows exactly how the fonts look together."
+    },
+    {
+      name: "Use Custom Fonts (Optional)",
+      text: "Select 'Custom' mode and enter any Google Font name for heading and body text. The tool will load and preview your custom combination."
+    },
+    {
+      name: "Copy Import Link",
+      text: "Copy the Google Fonts import link provided. Add this link to your HTML <head> section to load the fonts."
+    },
+    {
+      name: "Copy CSS Code",
+      text: "Copy the CSS font-family values and use them in your stylesheets. Apply the heading font to headings and the body font to body text."
+    }
+  ]
+
+  // Structured data
+  const structuredData = [
+    generateFAQSchema(faqs),
+    generateHowToSchema(
+      "How to Find and Use Font Pairings",
+      "Learn how to discover beautiful font pairings from Google Fonts and use them in your projects using our free online font pairing generator tool.",
+      howToSteps,
+      "PT2M"
+    ),
+    generateSoftwareApplicationSchema(
+      "Font Pairing Generator",
+      "Free online font pairing generator. Discover beautiful font pairings from Google Fonts. Preview heading and body text combinations. Get CSS code and import links. Perfect for web designers.",
+      "https://prylad.pro/font-pairing-generator",
+      "WebApplication"
+    )
+  ]
+
   return (
-    <Layout
-      title="🔤 Font Pairing Generator"
-      description="Discover beautiful font pairings from Google Fonts. Preview heading and body text combinations."
+    <>
+      <StructuredData data={structuredData} />
+      <Layout
+        title="🔤 Font Pairing Generator"
+        description="Discover beautiful font pairings from Google Fonts. Preview heading and body text combinations."
+        breadcrumbs={breadcrumbs}
+      >
     >
       <div className="max-w-6xl mx-auto">
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 mb-6">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 mb-6 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
           <div className="space-y-6">
             {/* Preview */}
             <div className="p-8 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 rounded-xl">
@@ -179,7 +263,7 @@ body, p {
                   type="text"
                   value={sampleText}
                   onChange={(e) => setSampleText(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                 />
               </div>
               <div>
@@ -288,7 +372,7 @@ body, p {
 
       {/* SEO Content */}
       <div className="max-w-4xl mx-auto mt-16 space-y-8">
-        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">What is Font Pairing?</h2>
           <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
             Font pairing is the art of combining two or more typefaces that complement each other to create 
@@ -302,7 +386,7 @@ body, p {
           </p>
         </section>
 
-        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Font Pairing Principles</h2>
           <div className="grid md:grid-cols-2 gap-6">
             <div>
@@ -332,7 +416,7 @@ body, p {
           </div>
         </section>
 
-        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Best Practices</h2>
           <ul className="space-y-3 text-gray-700 dark:text-gray-300">
             <li className="flex items-start gap-2">
@@ -354,8 +438,12 @@ body, p {
           </ul>
         </section>
       </div>
-
-      </Layout>
+      {/* Related Tools */}
+      {relatedTools.length > 0 && (
+        <RelatedTools tools={relatedTools} title="Related Design Tools" />
+      )}
+    </Layout>
+    </>
   )
 }
 

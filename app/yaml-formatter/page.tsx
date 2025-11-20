@@ -2,7 +2,11 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import Layout from '@/components/Layout'
+import StructuredData from '@/components/StructuredData'
+import RelatedTools from '@/components/RelatedTools'
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
+import { generateFAQSchema, generateHowToSchema, generateSoftwareApplicationSchema } from '@/lib/structured-data'
+import { generateBreadcrumbs, getRelatedTools } from '@/lib/seo-helpers'
 type IndentSize = 2 | 4
 type Action = 'format' | 'minify' | 'validate' | 'toJSON' | 'fromJSON'
 
@@ -20,6 +24,82 @@ export default function YAMLFormatterPage() {
   const [autoFormat, setAutoFormat] = useState(false)
   const [isValid, setIsValid] = useState<boolean | null>(null)
   const [totalOperations, setTotalOperations] = useState(0)
+
+  // SEO data
+  const toolPath = '/yaml-formatter'
+  const toolName = 'YAML Formatter'
+  const category = 'code'
+  const breadcrumbs = generateBreadcrumbs(toolName, toolPath, category)
+  const relatedTools = getRelatedTools(toolPath, category, 6)
+
+  // FAQ data
+  const faqs = [
+    {
+      question: "What is YAML formatting?",
+      answer: "YAML formatting is the process of adding proper indentation and spacing to YAML documents to make them more readable and easier to maintain. YAML is sensitive to indentation, so proper formatting is essential for valid YAML."
+    },
+    {
+      question: "Can I convert YAML to JSON?",
+      answer: "Yes! Our tool can convert YAML to JSON and JSON to YAML. This is useful when working with different configuration formats or when you need to use YAML data in JSON-based systems."
+    },
+    {
+      question: "What is YAML validation?",
+      answer: "YAML validation checks if a YAML document is well-formed and syntactically correct. It ensures proper indentation, valid syntax, and correct structure according to YAML specifications."
+    },
+    {
+      question: "What is YAML minification?",
+      answer: "YAML minification removes unnecessary whitespace and line breaks to reduce file size. However, YAML is indentation-sensitive, so minification must preserve the structure while removing only redundant whitespace."
+    },
+    {
+      question: "Is the YAML formatter free to use?",
+      answer: "Yes, absolutely! Our YAML formatter is completely free to use. There are no hidden fees, subscriptions, or usage limits. You can format, minify, validate, and convert as much YAML as you need."
+    },
+    {
+      question: "Do you store my YAML data?",
+      answer: "No, absolutely not. All YAML processing happens entirely in your browser. We never see, store, transmit, or have any access to your YAML data. Your privacy is completely protected."
+    }
+  ]
+
+  // HowTo steps
+  const howToSteps = [
+    {
+      name: "Paste Your YAML",
+      text: "Enter your YAML code into the input area. You can paste YAML from any source or type it directly."
+    },
+    {
+      name: "Choose Action",
+      text: "Select Format to beautify YAML, Minify to compress it, Validate to check for errors, or convert to/from JSON."
+    },
+    {
+      name: "Customize Indentation (Format Mode)",
+      text: "If formatting, choose your preferred indentation: 2 spaces or 4 spaces. YAML requires consistent indentation."
+    },
+    {
+      name: "Enable Auto-Format (Optional)",
+      text: "Turn on auto-format to automatically format YAML as you type for real-time processing."
+    },
+    {
+      name: "Copy or Export",
+      text: "Copy the formatted, minified, validated, or converted YAML/JSON to your clipboard for use in your projects."
+    }
+  ]
+
+  // Structured data
+  const structuredData = [
+    generateFAQSchema(faqs),
+    generateHowToSchema(
+      "How to Format, Minify, and Validate YAML",
+      "Learn how to format, minify, validate YAML, and convert between YAML and JSON using our free online YAML formatter tool.",
+      howToSteps,
+      "PT2M"
+    ),
+    generateSoftwareApplicationSchema(
+      "YAML Formatter",
+      "Free online YAML formatter, minifier, validator, and converter. Format YAML with proper indentation, minify for production, validate structure, or convert to/from JSON.",
+      "https://prylad.pro/yaml-formatter",
+      "UtilityApplication"
+    )
+  ]
   const getIndent = useCallback((level: number): string => {
     return ' '.repeat(indentSize * level)
   }, [indentSize])
@@ -379,18 +459,18 @@ export default function YAMLFormatterPage() {
       description="Format, minify, and validate YAML online. Convert YAML to JSON and back. Auto-format with proper indentation."
     >
       <div className="max-w-6xl mx-auto">
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 mb-6">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 mb-6 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
           <div className="space-y-6">
             {/* Settings */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   Indent Size
                 </label>
                 <select
                   value={indentSize}
                   onChange={(e) => setIndentSize(parseInt(e.target.value) as IndentSize)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                 >
                   <option value={2}>2 Spaces</option>
                   <option value={4}>4 Spaces</option>
@@ -404,7 +484,7 @@ export default function YAMLFormatterPage() {
                     onChange={(e) => setAutoFormat(e.target.checked)}
                     className="w-4 h-4 accent-primary-600"
                   />
-                  <span className="text-sm font-medium text-gray-700">Auto-format</span>
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Auto-format</span>
                 </label>
               </div>
             </div>
@@ -412,7 +492,7 @@ export default function YAMLFormatterPage() {
             {/* Input */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="block text-sm font-semibold text-gray-700">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
                   YAML Input
                 </label>
                 <div className="flex items-center gap-2">
@@ -420,11 +500,11 @@ export default function YAMLFormatterPage() {
                     <span className="text-xs text-green-600 font-medium">✓ Valid</span>
                   )}
                   {isValid === false && (
-                    <span className="text-xs text-red-600 font-medium">✗ Invalid</span>
+                    <span className="text-xs text-red-600 dark:text-red-400 font-medium">✗ Invalid</span>
                   )}
                   <button
                     onClick={() => setInput('')}
-                    className="text-xs text-gray-500 hover:text-gray-700 font-medium"
+                    className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 font-medium"
                   >
                     Clear
                   </button>
@@ -434,10 +514,10 @@ export default function YAMLFormatterPage() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="name: John Doe\nage: 30\ncity: New York"
-                className="w-full h-64 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent font-mono text-sm resize-none"
+                className="w-full h-64 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent font-mono text-sm resize-none bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
               />
               {error && (
-                <p className="text-sm text-red-600 mt-2">{error}</p>
+                <p className="text-sm text-red-600 dark:text-red-400 mt-2">{error}</p>
               )}
               <div className="flex items-center gap-3 mt-3 flex-wrap">
                 <button
@@ -448,25 +528,25 @@ export default function YAMLFormatterPage() {
                 </button>
                 <button
                   onClick={minify}
-                  className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+                  className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 transition-colors font-medium"
                 >
                   Minify
                 </button>
                 <button
                   onClick={validate}
-                  className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+                  className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 transition-colors font-medium"
                 >
                   Validate
                 </button>
                 <button
                   onClick={toJSON}
-                  className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+                  className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 transition-colors font-medium"
                 >
                   To JSON
                 </button>
                 <button
                   onClick={fromJSON}
-                  className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+                  className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 transition-colors font-medium"
                 >
                   From JSON
                 </button>
@@ -477,7 +557,7 @@ export default function YAMLFormatterPage() {
             {output && (
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="block text-sm font-semibold text-gray-700">
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
                     Output
                   </label>
                   <div className="flex gap-2">
@@ -495,7 +575,7 @@ export default function YAMLFormatterPage() {
                     </button>
                   </div>
                 </div>
-                <pre className="bg-gray-50 border border-gray-200 rounded-lg p-4 overflow-x-auto text-sm font-mono max-h-96 overflow-y-auto">
+                <pre className="bg-gray-50 dark:bg-gray-800 border border-gray-200 rounded-lg p-4 overflow-x-auto text-sm font-mono max-h-96 overflow-y-auto bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
                   {output}
                 </pre>
               </div>
@@ -505,8 +585,8 @@ export default function YAMLFormatterPage() {
 
         {/* Stats */}
         {totalOperations > 0 && (
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 border border-gray-100">
-            <p className="text-sm text-gray-600">
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
               Total operations: <span className="font-semibold text-primary-600">{totalOperations}</span>
             </p>
           </div>
@@ -515,7 +595,7 @@ export default function YAMLFormatterPage() {
 
       {/* SEO Content */}
       <div className="max-w-4xl mx-auto mt-16 space-y-8">
-        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">What is YAML?</h2>
           <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
             YAML (YAML Ain&apos;t Markup Language) is a human-readable data serialization standard. It&apos;s commonly 
@@ -528,7 +608,7 @@ export default function YAMLFormatterPage() {
           </p>
         </section>
 
-        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Common Use Cases</h2>
           <div className="grid md:grid-cols-2 gap-6">
             <div>
@@ -558,7 +638,7 @@ export default function YAMLFormatterPage() {
           </div>
         </section>
 
-        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Best Practices</h2>
           <ul className="space-y-3 text-gray-700 dark:text-gray-300">
             <li className="flex items-start gap-2">
@@ -581,7 +661,11 @@ export default function YAMLFormatterPage() {
         </section>
       </div>
 
-      </Layout>
+      {/* Related Tools */}
+      {relatedTools.length > 0 && (
+        <RelatedTools tools={relatedTools} title="Related Code Tools" />
+      )}
+    </Layout>
   )
 }
 

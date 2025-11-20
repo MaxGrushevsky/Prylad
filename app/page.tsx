@@ -11,9 +11,9 @@ const categories = [
     color: 'from-violet-500 to-purple-500',
     tools: [
       { name: 'QR Code', path: '/qr-generator', icon: '📱', desc: 'QR code generator (Text, URL, WiFi, Email)' },
-      { name: 'URL Encoder', path: '/url-encoder', icon: '🔗', desc: 'URL encoding and decoding' },
-      { name: 'IP Address Info', path: '/ip-address-info', icon: '🌐', desc: 'Lookup IP address location and network details' },
-      { name: 'Domain Age Checker', path: '/domain-age-checker', icon: '🌍', desc: 'Check domain registration date and age' },
+      { name: 'QR Reader', path: '/qr-reader', icon: '📱', desc: 'Scan and decode QR codes from images' },
+      { name: 'Barcode Generator', path: '/barcode-generator', icon: '📊', desc: 'Create EAN, Code128, Code39 barcodes' },
+      { name: 'URL Tools', path: '/url-tools', icon: '🔗', desc: 'URL encoder, parser & query builder' },
     ]
   },
   {
@@ -34,24 +34,7 @@ const categories = [
     tools: [
       { name: 'UUID/GUID', path: '/uuid-generator', icon: '🆔', desc: 'Unique identifier generator' },
       { name: 'Name Generator', path: '/name-generator', icon: '👤', desc: 'Random names and nicknames' },
-    ]
-  },
-  {
-    name: 'Random Numbers',
-    icon: '🔢',
-    color: 'from-yellow-500 to-orange-500',
-    tools: [
       { name: 'Number Generator', path: '/number-generator', icon: '🎲', desc: 'Generator for lotteries and games' },
-    ]
-  },
-  {
-    name: 'Games',
-    icon: '🎮',
-    color: 'from-green-500 to-emerald-500',
-    tools: [
-      { name: 'Dice Roller', path: '/dice-roller', icon: '🎲', desc: 'D&D dice with bonuses' },
-      { name: 'Decision Generator', path: '/decision-generator', icon: '🎯', desc: 'Yes/No and Magic 8 Ball' },
-      { name: 'Wheel of Fortune', path: '/wheel-of-fortune', icon: '🎡', desc: 'Random choice from options' },
     ]
   },
   {
@@ -63,9 +46,7 @@ const categories = [
       { name: 'Placeholder Generator', path: '/placeholder-generator', icon: '🖼️', desc: 'Generate placeholder images' },
       { name: 'Favicon Generator', path: '/favicon-generator', icon: '🎯', desc: 'Create favicons from images' },
       { name: 'Avatar Generator', path: '/avatar-generator', icon: '👤', desc: 'Random geometric avatars' },
-      { name: 'Meme Generator', path: '/meme-generator', icon: '😂', desc: 'Create memes with text' },
-      { name: 'ASCII Art', path: '/ascii-art', icon: '🎨', desc: 'Generate ASCII art from text' },
-      { name: 'Image Compressor', path: '/image-compressor', icon: '🗜️', desc: 'Compress images and reduce file size' },
+      { name: 'Image Editor', path: '/image-resizer', icon: '🖼️', desc: 'Resize, compress, rotate & flip images' },
     ]
   },
   {
@@ -78,9 +59,9 @@ const categories = [
       { name: 'Text Case', path: '/text-case', icon: '⌨️', desc: 'UPPERCASE, lowercase, Title Case' },
       { name: 'Text Cleaner', path: '/text-cleaner', icon: '🧹', desc: 'Remove spaces and duplicates' },
       { name: 'Text Diff', path: '/text-diff', icon: '🔍', desc: 'Compare two texts' },
+      { name: 'Text Reverser', path: '/text-reverser', icon: '🔄', desc: 'Reverse text, words, and sentences' },
       { name: 'Slug Generator', path: '/slug-generator', icon: '🔗', desc: 'URL-friendly string generator' },
       { name: 'Transliteration', path: '/transliteration', icon: '🔄', desc: 'Cyrillic ↔ Latin conversion' },
-      { name: 'Palindrome Checker', path: '/palindrome-checker', icon: '🔄', desc: 'Check if text is palindrome' },
     ]
   },
   {
@@ -90,6 +71,12 @@ const categories = [
     tools: [
       { name: 'Base64 Converter', path: '/base64-converter', icon: '📦', desc: 'Text and image encoding' },
       { name: 'CSV ↔ JSON', path: '/csv-json-converter', icon: '🔄', desc: 'Convert CSV to JSON and back' },
+      { name: 'Morse Code', path: '/morse-code-encoder', icon: '📡', desc: 'Encode/decode Morse code with audio' },
+      { name: 'Temperature', path: '/temperature-converter', icon: '🌡️', desc: 'Convert Celsius, Fahrenheit, Kelvin' },
+      { name: 'Unit Converter', path: '/unit-converter', icon: '📏', desc: 'Convert length, weight, volume, area, time' },
+      { name: 'Text ↔ Binary', path: '/text-to-binary', icon: '💻', desc: 'Convert text to binary and binary to text' },
+      { name: 'Roman Numerals', path: '/roman-numerals-converter', icon: '🔢', desc: 'Convert numbers to Roman numerals and back' },
+      { name: 'Number Base Converter', path: '/number-base-converter', icon: '🔢', desc: 'Convert between binary, octal, decimal, and hex' },
     ]
   },
   {
@@ -98,16 +85,17 @@ const categories = [
     color: 'from-indigo-500 to-blue-500',
     tools: [
       { name: 'JSON Formatter', path: '/json-formatter', icon: '📋', desc: 'Format and validate JSON' },
+      { name: 'CSS Formatter', path: '/css-formatter', icon: '🎨', desc: 'Format and minify CSS code' },
+      { name: 'JavaScript Formatter', path: '/js-formatter', icon: '💻', desc: 'Format and minify JavaScript code' },
+      { name: 'HTML Entity Encoder', path: '/html-entity-encoder', icon: '🔤', desc: 'Encode/decode HTML entities and format HTML' },
       { name: 'SQL Formatter', path: '/sql-formatter', icon: '💾', desc: 'Format and beautify SQL queries' },
       { name: 'XML Formatter', path: '/xml-formatter', icon: '📄', desc: 'Format, minify and validate XML' },
       { name: 'YAML Formatter', path: '/yaml-formatter', icon: '📝', desc: 'Format YAML and convert to/from JSON' },
       { name: 'HTTP Status Codes', path: '/http-status-codes', icon: '📡', desc: 'Complete reference of HTTP status codes' },
       { name: 'Test Data Generator', path: '/test-data-generator', icon: '🧪', desc: 'Generate fake data for testing' },
-      { name: 'Code Minifier & Beautifier', path: '/minifier', icon: '⚡', desc: 'Minify and format CSS, JS, JSON, HTML' },
       { name: 'Regex Tester', path: '/regex-tester', icon: '🔎', desc: 'Regular expression testing' },
       { name: 'Markdown Preview', path: '/markdown', icon: '📄', desc: 'Markdown preview' },
-      { name: 'JWT Decoder', path: '/jwt-decoder', icon: '🔐', desc: 'Decode and validate JWT tokens' },
-      { name: 'JWT Generator', path: '/jwt-token-generator', icon: '🔑', desc: 'Generate JWT tokens with custom payload' },
+      { name: 'JWT Decoder & Generator', path: '/jwt-decoder', icon: '🔐', desc: 'Decode and generate JWT tokens' },
     ]
   },
   {
@@ -131,8 +119,7 @@ const categories = [
     icon: '🔒',
     color: 'from-red-500 to-orange-500',
     tools: [
-      { name: 'Password Generator', path: '/password-generator', icon: '🔐', desc: 'Secure passwords with settings' },
-      { name: 'Password Strength', path: '/password-strength-checker', icon: '🔒', desc: 'Check password strength and security' },
+      { name: 'Password Generator', path: '/password-generator', icon: '🔐', desc: 'Generate secure passwords and check strength' },
       { name: 'Hash Generator', path: '/hash-generator', icon: '🔐', desc: 'MD5, SHA-1, SHA-256, SHA-512, HMAC' },
       { name: 'Text Encryption', path: '/text-encryption', icon: '🔒', desc: 'Caesar cipher and Base64' },
     ]
@@ -143,9 +130,22 @@ const categories = [
     color: 'from-teal-500 to-cyan-500',
     tools: [
       { name: 'World Clock', path: '/world-clock', icon: '🌍', desc: 'Time in different cities' },
-      { name: 'Age Calculator', path: '/age-calculator', icon: '📅', desc: 'Age in days/hours/seconds' },
-      { name: 'Date Calculator', path: '/date-calculator', icon: '📅', desc: 'Days between dates, add days' },
+      { name: 'Date & Age Calculator', path: '/date-calculator', icon: '📅', desc: 'Calculate date differences & age' },
       { name: 'Timezone Converter', path: '/timezone-converter', icon: '🌍', desc: 'Time converter between zones' },
+      { name: 'Unix Timestamp', path: '/unix-timestamp-converter', icon: '⏰', desc: 'Convert timestamp to date and time' },
+    ]
+  },
+  {
+    name: 'Entertainment',
+    icon: '🎮',
+    color: 'from-purple-500 to-pink-500',
+    tools: [
+      { name: 'Dice Roller', path: '/dice-roller', icon: '🎲', desc: 'D&D dice with bonuses' },
+      { name: 'Decision Generator', path: '/decision-generator', icon: '🎯', desc: 'Yes/No and Magic 8 Ball' },
+      { name: 'Wheel of Fortune', path: '/wheel-of-fortune', icon: '🎡', desc: 'Random choice from options' },
+      { name: 'Meme Generator', path: '/meme-generator', icon: '😂', desc: 'Create memes with text' },
+      { name: 'ASCII Art', path: '/ascii-art', icon: '🎨', desc: 'Generate ASCII art from text' },
+      { name: 'Palindrome Checker', path: '/palindrome-checker', icon: '🔄', desc: 'Check if text is palindrome' },
     ]
   },
 ]
@@ -154,17 +154,18 @@ export default function Home() {
   return (
     <>
       <Navigation />
-      <main className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 lg:ml-80">
+      <main className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 lg:ml-80">
         {/* Header */}
         <header className="container mx-auto px-4 py-8 md:py-12">
-          <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 bg-gradient-to-r from-primary-600 to-purple-600 bg-clip-text text-transparent">
-              🛠️ Prylad
+          <div className="text-center max-w-4xl mx-auto overflow-visible">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 flex items-center justify-center gap-3 overflow-visible">
+              <span className="text-5xl md:text-6xl lg:text-7xl">🛠️</span>
+              <span className="bg-gradient-to-r from-primary-600 to-purple-600 bg-clip-text text-transparent whitespace-nowrap leading-tight" style={{ WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', display: 'inline-block', padding: '0 2px' }}>Prylad</span>
             </h1>
-            <p className="text-lg md:text-xl text-gray-600 leading-relaxed">
+            <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 leading-relaxed">
               All essential tools for development, design, and data work in one place.
               <br />
-              <span className="text-sm text-gray-500 mt-2 block">
+              <span className="text-sm text-gray-500 dark:text-gray-400 mt-2 block">
                 Free, fast, no registration required
               </span>
             </p>
@@ -185,7 +186,7 @@ export default function Home() {
                   <div className={`w-12 h-12 rounded-xl bg-gradient-to-r ${category.color} flex items-center justify-center text-2xl shadow-lg`}>
                     {category.icon}
                   </div>
-                  <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
+                  <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100">
                     {category.name}
                   </h2>
                 </div>
@@ -194,15 +195,15 @@ export default function Home() {
                     <Link
                       key={tool.path}
                       href={tool.path}
-                      className="group bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl hover:border-primary-300 transition-all duration-300 transform hover:-translate-y-1"
+                      className="group bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700 hover:shadow-xl hover:border-primary-300 transition-all duration-300 transform hover:-translate-y-1"
                     >
                       <div className="flex items-start gap-4">
                         <span className="text-4xl">{tool.icon}</span>
                         <div className="flex-1">
-                          <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">
+                          <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2 group-hover:text-primary-600 transition-colors">
                             {tool.name}
                           </h3>
-                          <p className="text-sm text-gray-600">{tool.desc}</p>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">{tool.desc}</p>
                         </div>
                       </div>
                     </Link>
@@ -219,12 +220,21 @@ export default function Home() {
         </div>
 
         {/* Footer */}
-        <footer className="container mx-auto px-4 py-8 mt-16 border-t border-gray-200/50">
-          <div className="text-center text-gray-600">
+        <footer className="container mx-auto px-4 py-8 mt-16 border-t border-gray-200 dark:border-gray-700/50 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+          <div className="text-center text-gray-600 dark:text-gray-400">
             <p className="mb-2 font-medium">© 2025 Prylad</p>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
               All tools are free and work in the browser
             </p>
+            <a
+              href="https://buymeacoffee.com/mgrushevsky"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+            >
+              <span>☕</span>
+              <span>Support us</span>
+            </a>
           </div>
         </footer>
       </main>

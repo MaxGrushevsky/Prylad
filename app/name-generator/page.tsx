@@ -2,7 +2,11 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Layout from '@/components/Layout'
+import StructuredData from '@/components/StructuredData'
+import RelatedTools from '@/components/RelatedTools'
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
+import { generateFAQSchema, generateHowToSchema, generateSoftwareApplicationSchema } from '@/lib/structured-data'
+import { generateBreadcrumbs, getRelatedTools } from '@/lib/seo-helpers'
 type NameStyle = 'modern' | 'classic' | 'fantasy' | 'sci-fi'
 type Gender = 'any' | 'male' | 'female'
 
@@ -201,24 +205,103 @@ export default function NameGeneratorPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // SEO data
+  const toolPath = '/name-generator'
+  const toolName = 'Name Generator'
+  const category = 'generator'
+  const breadcrumbs = generateBreadcrumbs(toolName, toolPath, category)
+  const relatedTools = getRelatedTools(toolPath, category, 6)
+
+  // FAQ data
+  const faqs = [
+    {
+      question: "How do I generate random names?",
+      answer: "Select a name style (modern, classic, fantasy, or sci-fi), choose gender preference (any, male, or female), set the quantity, and click 'Generate'. The generator creates random names based on your preferences."
+    },
+    {
+      question: "What name styles are available?",
+      answer: "The generator offers four styles: Modern (contemporary names), Classic (traditional names), Fantasy (fantasy-themed names), and Sci-Fi (futuristic names). Each style has unique name pools."
+    },
+    {
+      question: "Can I generate nicknames or gaming names?",
+      answer: "Yes! The generator can create both full names and gaming-style nicknames. You can choose to generate first names, last names, full names, or nicknames based on your needs."
+    },
+    {
+      question: "How many names can I generate at once?",
+      answer: "You can generate any quantity of names. Use the quantity slider or input field to specify how many names you want, from 1 to 100 or more."
+    },
+    {
+      question: "Are the generated names unique?",
+      answer: "The generator creates random combinations from predefined name pools. While names are randomly selected, duplicates are possible with large quantities. You can regenerate to get different combinations."
+    },
+    {
+      question: "Is the name generator free to use?",
+      answer: "Yes, completely free! No registration, no limits, no hidden fees. All name generation happens in your browser - we never see or store your generated names."
+    }
+  ]
+
+  // HowTo steps
+  const howToSteps = [
+    {
+      name: "Choose Name Style",
+      text: "Select a style that matches your needs: Modern for contemporary names, Classic for traditional, Fantasy for fantasy-themed, or Sci-Fi for futuristic names."
+    },
+    {
+      name: "Set Gender Preference",
+      text: "Choose gender preference: Any (random), Male, or Female. This helps generate names appropriate for your character or use case."
+    },
+    {
+      name: "Set Quantity",
+      text: "Specify how many names you want to generate. Use the slider or input field to set the quantity from 1 to 100 or more."
+    },
+    {
+      name: "Generate Names",
+      text: "Click 'Generate' to create random names based on your settings. The names appear instantly in the output area."
+    },
+    {
+      name: "Copy or Export",
+      text: "Copy individual names or export all generated names to a file. Use them for characters, games, stories, or any creative project."
+    }
+  ]
+
+  // Structured data
+  const structuredData = [
+    generateFAQSchema(faqs),
+    generateHowToSchema(
+      "How to Generate Random Names",
+      "Learn how to generate random names and nicknames for games, stories, characters, and more using our free online name generator.",
+      howToSteps,
+      "PT2M"
+    ),
+    generateSoftwareApplicationSchema(
+      "Name Generator",
+      "Free online name generator. Generate random names and nicknames in multiple styles: modern, classic, fantasy, sci-fi. Gender options and export functionality.",
+      "https://prylad.pro/name-generator",
+      "UtilityApplication"
+    )
+  ]
+
   return (
-    <Layout
-      title="👤 Name and Nickname Generator"
-      description="Generate random names and nicknames for games, stories, characters, and more. Multiple styles: modern, classic, fantasy, sci-fi. Free online name generator with gender options."
-    >
+    <>
+      <StructuredData data={structuredData} />
+      <Layout
+        title="👤 Name and Nickname Generator"
+        description="Generate random names and nicknames for games, stories, characters, and more. Multiple styles: modern, classic, fantasy, sci-fi. Free online name generator with gender options."
+        breadcrumbs={breadcrumbs}
+      >
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 mb-6">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 mb-6">
           <div className="space-y-6">
             {/* Type Selection */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-3">Type:</label>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Type:</label>
               <div className="flex gap-3">
                 <button
                   onClick={() => setType('full')}
                   className={`flex-1 px-6 py-3 rounded-xl font-semibold transition-all ${
                     type === 'full'
                       ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
                   Full Name
@@ -228,7 +311,7 @@ export default function NameGeneratorPage() {
                   className={`flex-1 px-6 py-3 rounded-xl font-semibold transition-all ${
                     type === 'nickname'
                       ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
                   Nickname
@@ -240,7 +323,7 @@ export default function NameGeneratorPage() {
             {type === 'full' && (
               <>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-3">Name Style:</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Name Style:</label>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                     {(['modern', 'classic', 'fantasy', 'sci-fi'] as NameStyle[]).map((style) => (
                       <button
@@ -249,7 +332,7 @@ export default function NameGeneratorPage() {
                         className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
                           nameStyle === style
                             ? 'bg-primary-600 text-white shadow-md'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                         }`}
                       >
                         {style === 'sci-fi' ? 'Sci-Fi' : style.charAt(0).toUpperCase() + style.slice(1)}
@@ -259,7 +342,7 @@ export default function NameGeneratorPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-3">Gender:</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Gender:</label>
                   <div className="flex gap-3">
                     {(['any', 'male', 'female'] as Gender[]).map((g) => (
                       <button
@@ -268,7 +351,7 @@ export default function NameGeneratorPage() {
                         className={`flex-1 px-4 py-2 rounded-lg font-medium text-sm transition-all ${
                           gender === g
                             ? 'bg-primary-600 text-white shadow-md'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                         }`}
                       >
                         {g.charAt(0).toUpperCase() + g.slice(1)}
@@ -283,7 +366,7 @@ export default function NameGeneratorPage() {
             {type === 'nickname' && (
               <>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-3">Nickname Style:</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Nickname Style:</label>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                     {(['gaming', 'cool', 'cute', 'professional'] as string[]).map((style) => (
                       <button
@@ -292,7 +375,7 @@ export default function NameGeneratorPage() {
                         className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
                           nicknameStyle === style
                             ? 'bg-primary-600 text-white shadow-md'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                         }`}
                       >
                         {style.charAt(0).toUpperCase() + style.slice(1)}
@@ -309,7 +392,7 @@ export default function NameGeneratorPage() {
                     onChange={(e) => setIncludeNumbers(e.target.checked)}
                     className="w-4 h-4 accent-primary-600"
                   />
-                  <label htmlFor="include-numbers" className="text-sm text-gray-700 cursor-pointer">
+                  <label htmlFor="include-numbers" className="text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
                     Include numbers (e.g., Shadow1234)
                   </label>
                 </div>
@@ -318,7 +401,7 @@ export default function NameGeneratorPage() {
 
             {/* Count */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Count: <span className="text-primary-600 font-bold">{count}</span>
               </label>
               <input
@@ -329,7 +412,7 @@ export default function NameGeneratorPage() {
                 onChange={(e) => setCount(Number(e.target.value))}
                 className="w-full h-2 bg-gray-200 rounded-lg appearance-none accent-primary-600"
               />
-              <div className="flex justify-between text-xs text-gray-500 mt-1">
+              <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
                 <span>1</span>
                 <span>50</span>
               </div>
@@ -345,7 +428,7 @@ export default function NameGeneratorPage() {
 
             {/* Statistics */}
             {totalGenerated > 0 && (
-              <div className="text-center text-sm text-gray-600 pt-2 border-t border-gray-200">
+              <div className="text-center text-sm text-gray-600 dark:text-gray-400 pt-2 border-t border-gray-200 dark:border-gray-700">
                 Total generated: <span className="font-semibold text-primary-600">{totalGenerated}</span> {totalGenerated === 1 ? 'item' : 'items'}
               </div>
             )}
@@ -354,7 +437,7 @@ export default function NameGeneratorPage() {
 
         {/* Results */}
         {results.length > 0 && (
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
             <div className="flex justify-between items-center mb-4 flex-wrap gap-2">
               <h3 className="text-lg font-bold">Generated {type === 'full' ? 'Names' : 'Nicknames'}:</h3>
               <div className="flex gap-2">
@@ -379,12 +462,12 @@ export default function NameGeneratorPage() {
               {results.map((result, index) => (
                 <div
                   key={index}
-                  className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors"
+                  className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                 >
                   <span className="flex-1 font-medium">{result}</span>
                   <button
                     onClick={() => copyToClipboard(result)}
-                    className="text-gray-500 hover:text-primary-600 transition-colors text-lg"
+                    className="text-gray-500 dark:text-gray-400 hover:text-primary-600 transition-colors text-lg"
                     title="Copy to clipboard"
                   >
                     📋
@@ -398,16 +481,16 @@ export default function NameGeneratorPage() {
         {/* SEO Content */}
         <div className="max-w-4xl mx-auto mt-16 space-y-8">
           {/* Introduction */}
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Why Use a Name Generator?</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Why Use a Name Generator?</h2>
             <div className="prose prose-gray max-w-none">
-              <p className="text-gray-700 leading-relaxed mb-4">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                 Whether you&apos;re creating characters for a story, developing game personas, brainstorming usernames, 
                 or need placeholder names for testing, a name generator is an invaluable tool. Coming up with unique, 
                 appropriate names can be time-consuming and challenging, especially when you need multiple options 
                 or names that fit a specific theme or style.
               </p>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                 Our free name generator provides instant access to thousands of name combinations across multiple 
                 styles and categories. Generate realistic modern names, classic traditional names, fantasy character 
                 names, or sci-fi inspired identifiers. All generation happens locally in your browser, ensuring 
@@ -417,34 +500,34 @@ export default function NameGeneratorPage() {
           </section>
 
           {/* Use Cases */}
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Common Use Cases</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Common Use Cases</h2>
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">📚 Writing & Storytelling</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">📚 Writing & Storytelling</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Create unique character names for novels, short stories, screenplays, and other creative writing 
                   projects. Choose from modern, classic, fantasy, or sci-fi styles to match your story&apos;s setting 
                   and tone.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">🎮 Gaming & Role-Playing</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">🎮 Gaming & Role-Playing</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Generate character names for video games, tabletop RPGs, or online gaming platforms. Create memorable 
                   usernames and gamer tags that stand out while fitting your character&apos;s personality or game world.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">💻 Development & Testing</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">💻 Development & Testing</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Use generated names for testing applications, creating sample data, populating databases, or 
                   generating placeholder content during development. Perfect for QA testing and demos.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">🌐 Online Identity</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">🌐 Online Identity</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Create unique usernames, social media handles, or online personas. Generate cool nicknames for 
                   gaming, professional aliases for work, or cute names for personal accounts.
                 </p>
@@ -453,53 +536,53 @@ export default function NameGeneratorPage() {
           </section>
 
           {/* Name Styles */}
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Name Styles Explained</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Name Styles Explained</h2>
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Modern Names</h3>
-                <p className="text-gray-700 text-sm mb-3">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Modern Names</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-3">
                   Contemporary first and last names commonly used today. Perfect for realistic characters, 
                   modern settings, or when you need believable, everyday names.
                 </p>
-                <p className="text-xs text-gray-600"><strong>Best for:</strong> Contemporary fiction, realistic characters, modern settings</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400"><strong>Best for:</strong> Contemporary fiction, realistic characters, modern settings</p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Classic Names</h3>
-                <p className="text-gray-700 text-sm mb-3">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Classic Names</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-3">
                   Traditional, timeless names with historical significance. These names have stood the test of time 
                   and work well for period pieces, formal characters, or elegant personas.
                 </p>
-                <p className="text-xs text-gray-600"><strong>Best for:</strong> Historical fiction, period dramas, formal characters</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400"><strong>Best for:</strong> Historical fiction, period dramas, formal characters</p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Fantasy Names</h3>
-                <p className="text-gray-700 text-sm mb-3">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Fantasy Names</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-3">
                   Inspired by fantasy literature and mythology. These names evoke magical worlds, epic adventures, 
                   and legendary characters from fantasy realms.
                 </p>
-                <p className="text-xs text-gray-600"><strong>Best for:</strong> Fantasy games, epic fantasy stories, magical characters</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400"><strong>Best for:</strong> Fantasy games, epic fantasy stories, magical characters</p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Sci-Fi Names</h3>
-                <p className="text-gray-700 text-sm mb-3">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Sci-Fi Names</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-3">
                   Futuristic and space-themed names perfect for science fiction settings. These names suggest advanced 
                   technology, space exploration, and futuristic societies.
                 </p>
-                <p className="text-xs text-gray-600"><strong>Best for:</strong> Science fiction, space operas, futuristic settings</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400"><strong>Best for:</strong> Science fiction, space operas, futuristic settings</p>
               </div>
             </div>
           </section>
 
           {/* Features */}
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Key Features</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Key Features</h2>
             <div className="grid md:grid-cols-2 gap-6">
               <div className="flex items-start gap-3">
                 <span className="text-2xl">🎨</span>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Multiple Styles</h3>
-                  <p className="text-gray-700 text-sm">
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Multiple Styles</h3>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">
                     Choose from modern, classic, fantasy, or sci-fi name styles. Each style includes hundreds of 
                     carefully curated names for maximum variety and authenticity.
                   </p>
@@ -508,8 +591,8 @@ export default function NameGeneratorPage() {
               <div className="flex items-start gap-3">
                 <span className="text-2xl">👥</span>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Gender Options</h3>
-                  <p className="text-gray-700 text-sm">
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Gender Options</h3>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">
                     Generate male names, female names, or mix both. Perfect for creating diverse character rosters 
                     or when gender doesn&apos;t matter for your use case.
                   </p>
@@ -518,8 +601,8 @@ export default function NameGeneratorPage() {
               <div className="flex items-start gap-3">
                 <span className="text-2xl">🎮</span>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Nickname Styles</h3>
-                  <p className="text-gray-700 text-sm">
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Nickname Styles</h3>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">
                     Generate gaming nicknames, cool aliases, cute usernames, or professional handles. Optional number 
                     suffixes for added uniqueness.
                   </p>
@@ -528,8 +611,8 @@ export default function NameGeneratorPage() {
               <div className="flex items-start gap-3">
                 <span className="text-2xl">⚡</span>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Batch Generation</h3>
-                  <p className="text-gray-700 text-sm">
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Batch Generation</h3>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">
                     Generate up to 50 names or nicknames at once. Perfect for populating character lists, creating 
                     test data, or finding the perfect name from multiple options.
                   </p>
@@ -538,8 +621,8 @@ export default function NameGeneratorPage() {
               <div className="flex items-start gap-3">
                 <span className="text-2xl">📥</span>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Export Options</h3>
-                  <p className="text-gray-700 text-sm">
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Export Options</h3>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">
                     Copy individual names or export all results to a text file. Easy integration into your projects, 
                     documents, or character sheets.
                   </p>
@@ -548,8 +631,8 @@ export default function NameGeneratorPage() {
               <div className="flex items-start gap-3">
                 <span className="text-2xl">🔒</span>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Privacy Guaranteed</h3>
-                  <p className="text-gray-700 text-sm">
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Privacy Guaranteed</h3>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">
                     All name generation happens locally in your browser. We never see, store, or have access to any 
                     generated names or your preferences.
                   </p>
@@ -559,40 +642,40 @@ export default function NameGeneratorPage() {
           </section>
 
           {/* FAQ */}
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Frequently Asked Questions</h2>
             <div className="space-y-6">
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Can I use these names for commercial projects?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Can I use these names for commercial projects?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Yes! All generated names are free to use for any purpose, including commercial projects, games, 
                   books, and other creative works. There are no restrictions on usage.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Are the names unique?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Are the names unique?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Names are randomly generated from our curated databases, so duplicates are possible but unlikely 
                   when generating multiple names. Each generation is independent, providing fresh combinations each time.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">How many names can I generate?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">How many names can I generate?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   You can generate up to 50 names or nicknames in a single batch. There&apos;s no limit on how many 
                   batches you can generate, so you can create as many names as you need.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Do you store the generated names?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Do you store the generated names?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   No, absolutely not. All name generation happens entirely in your browser. We never see, store, 
                   transmit, or have any access to the names you generate. Your privacy is completely protected.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Can I customize the nickname format?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Can I customize the nickname format?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Yes! You can choose from different nickname styles (gaming, cool, cute, professional) and optionally 
                   include numbers. The numbers are randomly generated (0-9999) to add uniqueness to your nicknames.
                 </p>
@@ -601,7 +684,12 @@ export default function NameGeneratorPage() {
           </section>
         </div>
       </div>
+      {/* Related Tools */}
+      {relatedTools.length > 0 && (
+        <RelatedTools tools={relatedTools} title="Related Generator Tools" />
+      )}
     </Layout>
+    </>
   )
 }
 

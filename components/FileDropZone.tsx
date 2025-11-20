@@ -118,8 +118,8 @@ export default function FileDropZone({
         className={`
           border-2 border-dashed rounded-lg p-6 transition-all cursor-pointer
           ${isDragging
-            ? 'border-primary-500 bg-primary-50'
-            : 'border-gray-300 hover:border-primary-400 hover:bg-gray-50'
+            ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
+            : 'border-gray-300 dark:border-gray-600 hover:border-primary-400 hover:bg-gray-50 dark:hover:bg-gray-800'
           }
           ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
         `}
@@ -127,7 +127,7 @@ export default function FileDropZone({
         {children || (
           <div className="text-center">
             <svg
-              className="mx-auto h-12 w-12 text-gray-400"
+              className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500"
               stroke="currentColor"
               fill="none"
               viewBox="0 0 48 48"
@@ -139,16 +139,16 @@ export default function FileDropZone({
                 strokeLinejoin="round"
               />
             </svg>
-            <p className="mt-2 text-sm text-gray-600">
+            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
               <span className="font-semibold">Click to upload</span> or drag and drop
             </p>
             {accept && (
-              <p className="mt-1 text-xs text-gray-500">
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                 {accept}
               </p>
             )}
             {maxSize && (
-              <p className="mt-1 text-xs text-gray-500">
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                 Max size: {(maxSize / (1024 * 1024)).toFixed(2)} MB
               </p>
             )}
@@ -156,7 +156,7 @@ export default function FileDropZone({
         )}
       </div>
       {error && (
-        <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded text-sm text-red-600">
+        <div className="mt-2 p-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded text-sm text-red-600 dark:text-red-400">
           {error}
         </div>
       )}

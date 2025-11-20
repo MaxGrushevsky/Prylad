@@ -38,13 +38,13 @@ export default function HistoryPanel<T>({
     <div className="mt-4">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-between w-full px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-sm"
+        className="flex items-center justify-between w-full px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 rounded-lg transition-colors text-sm"
       >
-        <span className="font-semibold text-gray-700">
+        <span className="font-semibold text-gray-700 dark:text-gray-300">
           {title} ({history.length})
         </span>
         <svg
-          className={`w-4 h-4 text-gray-500 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          className={`w-4 h-4 text-gray-500 dark:text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -58,16 +58,16 @@ export default function HistoryPanel<T>({
           {displayHistory.map((item) => (
             <div
               key={item.id}
-              className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors group"
+              className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors group bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
             >
               <button
                 onClick={() => onSelect(item.data)}
                 className="flex-1 text-left min-w-0"
               >
-                <div className="text-sm font-medium text-gray-900 truncate">
+                <div className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                   {item.label || formatItem(item.data)}
                 </div>
-                <div className="text-xs text-gray-500 mt-1">
+                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   {new Date(item.timestamp).toLocaleString()}
                 </div>
               </button>

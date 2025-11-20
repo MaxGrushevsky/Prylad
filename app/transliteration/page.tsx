@@ -2,6 +2,10 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import Layout from '@/components/Layout'
+import StructuredData from '@/components/StructuredData'
+import RelatedTools from '@/components/RelatedTools'
+import { generateFAQSchema, generateHowToSchema, generateSoftwareApplicationSchema } from '@/lib/structured-data'
+import { generateBreadcrumbs, getRelatedTools } from '@/lib/seo-helpers'
 
 const cyrillicToLatin: { [key: string]: string } = {
   'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'yo',
@@ -132,24 +136,104 @@ export default function TransliterationPage() {
     setResult('')
   }
 
+  // SEO data
+  const toolPath = '/transliteration'
+  const toolName = 'Transliteration Tool'
+  const category = 'text'
+  const breadcrumbs = generateBreadcrumbs(toolName, toolPath, category)
+  const relatedTools = getRelatedTools(toolPath, category, 6)
+
+  // FAQ data
+  const faqs = [
+    {
+      question: "What is transliteration?",
+      answer: "Transliteration is the process of converting text from one writing system to another. This tool converts between Cyrillic (used in Russian, Bulgarian, Serbian, etc.) and Latin (English alphabet) scripts."
+    },
+    {
+      question: "How do I convert Cyrillic to Latin?",
+      answer: "Select 'Cyrillic → Latin' direction, enter or paste your Cyrillic text, and the tool automatically converts it to Latin script. Enable auto-convert for real-time conversion as you type."
+    },
+    {
+      question: "How do I convert Latin to Cyrillic?",
+      answer: "Select 'Latin → Cyrillic' direction, enter or paste your Latin text, and the tool automatically converts it to Cyrillic script. The conversion follows standard transliteration rules."
+    },
+    {
+      question: "What languages are supported?",
+      answer: "The tool supports transliteration for languages using Cyrillic script, primarily Russian, but also works for Bulgarian, Serbian, Ukrainian, and other Cyrillic-based languages."
+    },
+    {
+      question: "Is the transliteration accurate?",
+      answer: "The tool uses standard transliteration rules. However, transliteration is not always perfect as some sounds don't have direct equivalents. The tool provides the most common transliteration mappings."
+    },
+    {
+      question: "Is the transliteration tool free?",
+      answer: "Yes, completely free! No registration, no limits, no hidden fees. All transliteration happens in your browser - we never see or store your text."
+    }
+  ]
+
+  // HowTo steps
+  const howToSteps = [
+    {
+      name: "Select Direction",
+      text: "Choose the conversion direction: 'Cyrillic → Latin' to convert Cyrillic text to Latin, or 'Latin → Cyrillic' to convert Latin text to Cyrillic."
+    },
+    {
+      name: "Enter Your Text",
+      text: "Type or paste the text you want to transliterate in the input field. The text should be in the source script (Cyrillic or Latin)."
+    },
+    {
+      name: "Enable Auto-Convert (Optional)",
+      text: "Enable 'Auto-convert' for real-time transliteration as you type. This provides instant feedback and makes the conversion process faster."
+    },
+    {
+      name: "View Results",
+      text: "See the transliterated text in the output area. The conversion follows standard transliteration rules for the selected direction."
+    },
+    {
+      name: "Copy or Export",
+      text: "Copy the transliterated text to your clipboard or export it to a file. Use it for names, addresses, or any text that needs to be converted between scripts."
+    }
+  ]
+
+  // Structured data
+  const structuredData = [
+    generateFAQSchema(faqs),
+    generateHowToSchema(
+      "How to Convert Between Cyrillic and Latin Scripts",
+      "Learn how to transliterate text between Cyrillic and Latin scripts using our free online transliteration tool.",
+      howToSteps,
+      "PT2M"
+    ),
+    generateSoftwareApplicationSchema(
+      "Transliteration Tool",
+      "Free online transliteration tool. Convert between Cyrillic and Latin scripts in real-time. Support for Russian, Bulgarian, Serbian, and other Cyrillic languages. Auto-convert option and export functionality.",
+      "https://prylad.pro/transliteration",
+      "UtilityApplication"
+    )
+  ]
+
   return (
-    <Layout
-      title="🔄 Transliteration - Convert Cyrillic to Latin & Vice Versa"
-      description="Convert between Cyrillic and Latin scripts online for free. Real-time transliteration with auto-convert option. Export results. No registration required."
+    <>
+      <StructuredData data={structuredData} />
+      <Layout
+        title="🔄 Transliteration - Convert Cyrillic to Latin & Vice Versa"
+        description="Convert between Cyrillic and Latin scripts online for free. Real-time transliteration with auto-convert option. Export results. No registration required."
+        breadcrumbs={breadcrumbs}
+      >
     >
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Main Tool */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 space-y-6">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 space-y-6">
           {/* Direction Selector */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-3">Transliteration Direction:</label>
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Transliteration Direction:</label>
             <div className="flex gap-3">
               <button
                 onClick={() => setDirection('cyr-to-lat')}
                 className={`flex-1 px-6 py-3 rounded-xl font-semibold transition-all ${
                   direction === 'cyr-to-lat'
                     ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
               >
                 Cyrillic → Latin
@@ -159,7 +243,7 @@ export default function TransliterationPage() {
                 className={`flex-1 px-6 py-3 rounded-xl font-semibold transition-all ${
                   direction === 'lat-to-cyr'
                     ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
               >
                 Latin → Cyrillic
@@ -176,22 +260,22 @@ export default function TransliterationPage() {
                 onChange={(e) => setAutoTransliterate(e.target.checked)}
                 className="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
               />
-              <span className="text-sm text-gray-700">Auto-transliterate as you type</span>
+              <span className="text-sm text-gray-700 dark:text-gray-300">Auto-transliterate as you type</span>
             </label>
           </div>
 
           {/* Input */}
           <div>
             <div className="flex justify-between items-center mb-2">
-              <label className="block text-sm font-semibold text-gray-700">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
                 {direction === 'cyr-to-lat' ? 'Cyrillic Text' : 'Latin Text'}
               </label>
-              <span className="text-xs text-gray-500">{text.length} chars</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">{text.length} chars</span>
             </div>
             <textarea
               value={text}
               onChange={(e) => setText(e.target.value)}
-              className="w-full h-32 px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 resize-none"
+              className="w-full h-32 px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 resize-none bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
               placeholder={direction === 'cyr-to-lat' ? 'Enter Cyrillic text (e.g., Привет мир)...' : 'Enter Latin text (e.g., Privet mir)...'}
             />
           </div>
@@ -210,7 +294,7 @@ export default function TransliterationPage() {
           {result && (
             <div>
               <div className="flex justify-between items-center mb-2">
-                <label className="block text-sm font-semibold text-gray-700">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
                   {direction === 'cyr-to-lat' ? 'Latin Text' : 'Cyrillic Text'}
                 </label>
                 <div className="flex gap-2">
@@ -231,7 +315,7 @@ export default function TransliterationPage() {
               <textarea
                 value={result}
                 readOnly
-                className="w-full h-32 px-4 py-3 border-2 border-gray-200 rounded-lg bg-gray-50 resize-none"
+                className="w-full h-32 px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 resize-none text-gray-900 dark:text-gray-100"
               />
             </div>
           )}
@@ -240,7 +324,7 @@ export default function TransliterationPage() {
           {(text || result) && (
             <button
               onClick={clearAll}
-              className="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors text-sm font-medium"
+              className="w-full px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors text-sm font-medium"
             >
               Clear All
             </button>
@@ -248,7 +332,7 @@ export default function TransliterationPage() {
 
           {/* Total Operations */}
           {totalOperations > 0 && (
-            <div className="text-center text-sm text-gray-500">
+            <div className="text-center text-sm text-gray-500 dark:text-gray-400">
               Total transliterations: <span className="font-semibold">{totalOperations}</span>
             </div>
           )}
@@ -257,16 +341,16 @@ export default function TransliterationPage() {
         {/* SEO Content */}
         <div className="max-w-4xl mx-auto mt-16 space-y-8">
           {/* Introduction */}
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">What is Transliteration?</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">What is Transliteration?</h2>
             <div className="prose prose-gray max-w-none">
-              <p className="text-gray-700 leading-relaxed mb-4">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                 Transliteration is the process of converting text from one writing system to another, representing 
                 the sounds or characters of one script using the characters of another. Unlike translation, which 
                 converts meaning between languages, transliteration focuses on representing the sounds or characters 
                 of the source script.
               </p>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                 Our free online transliteration tool converts between Cyrillic (used in Russian, Bulgarian, Serbian, 
                 and other languages) and Latin scripts. This is useful for typing Russian text using a standard 
                 keyboard, creating URLs with Cyrillic content, or converting names and terms between scripts.
@@ -275,10 +359,10 @@ export default function TransliterationPage() {
           </section>
 
           {/* How to Use */}
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">How to Use Our Transliteration Tool</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">How to Use Our Transliteration Tool</h2>
             <div className="prose prose-gray max-w-none">
-              <ol className="list-decimal list-inside space-y-3 text-gray-700">
+              <ol className="list-decimal list-inside space-y-3 text-gray-700 dark:text-gray-300">
                 <li><strong>Choose Direction:</strong> Select whether you want to convert from Cyrillic to Latin or from Latin to Cyrillic.</li>
                 <li><strong>Enable Auto-Transliterate:</strong> Check the &quot;Auto-transliterate&quot; option to see results in real-time as you type, or uncheck it to transliterate manually.</li>
                 <li><strong>Enter Your Text:</strong> Type or paste the text you want to transliterate in the input field.</li>
@@ -289,33 +373,33 @@ export default function TransliterationPage() {
           </section>
 
           {/* Use Cases */}
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Common Use Cases</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Common Use Cases</h2>
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">⌨️ Typing Russian Text</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">⌨️ Typing Russian Text</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Type Russian text using a standard QWERTY keyboard by entering the Latin transliteration, 
                   then convert it to Cyrillic. Perfect for users without Cyrillic keyboard layouts.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">🌐 URL Creation</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">🌐 URL Creation</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Create SEO-friendly URLs from Cyrillic text by converting to Latin. Many web systems 
                   require Latin characters in URLs, making transliteration essential.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">📝 Name Conversion</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">📝 Name Conversion</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Convert names, addresses, or other proper nouns between Cyrillic and Latin scripts. 
                   Useful for official documents, forms, or international communication.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">🔤 Learning & Education</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">🔤 Learning & Education</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Learn Cyrillic script by seeing how words are transliterated. Compare Cyrillic and 
                   Latin versions to understand pronunciation and script relationships.
                 </p>
@@ -324,12 +408,12 @@ export default function TransliterationPage() {
           </section>
 
           {/* FAQ */}
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Frequently Asked Questions</h2>
             <div className="space-y-6">
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">What&apos;s the difference between transliteration and translation?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">What&apos;s the difference between transliteration and translation?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Transliteration converts text from one writing system to another (e.g., Cyrillic to Latin), 
                   representing sounds or characters. Translation converts meaning between languages. For example, 
                   &quot;Привет&quot; transliterates to &quot;Privet&quot; (same meaning, different script), while it translates to 
@@ -337,24 +421,24 @@ export default function TransliterationPage() {
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Which transliteration standard does this tool use?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Which transliteration standard does this tool use?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Our tool uses a common transliteration scheme that maps Cyrillic characters to their Latin 
                   equivalents. This is based on standard transliteration practices used for Russian and other 
                   Cyrillic-based languages.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Can I transliterate other languages that use Cyrillic?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Can I transliterate other languages that use Cyrillic?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   While our tool is optimized for Russian, it can handle other Cyrillic-based languages like 
                   Bulgarian, Serbian, Ukrainian, and others. Some language-specific characters may have 
                   different transliterations.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Is my text stored or transmitted?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Is my text stored or transmitted?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   No, all transliteration happens entirely in your browser. We never see, store, or transmit 
                   any of your text. Your privacy is completely protected.
                 </p>
@@ -363,7 +447,12 @@ export default function TransliterationPage() {
           </section>
         </div>
       </div>
+      {/* Related Tools */}
+      {relatedTools.length > 0 && (
+        <RelatedTools tools={relatedTools} title="Related Text Tools" />
+      )}
     </Layout>
+    </>
   )
 }
 

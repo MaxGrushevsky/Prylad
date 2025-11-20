@@ -2,6 +2,10 @@
 
 import { useState, useCallback } from 'react'
 import Layout from '@/components/Layout'
+import StructuredData from '@/components/StructuredData'
+import RelatedTools from '@/components/RelatedTools'
+import { generateFAQSchema, generateHowToSchema, generateSoftwareApplicationSchema } from '@/lib/structured-data'
+import { generateBreadcrumbs, getRelatedTools } from '@/lib/seo-helpers'
 
 type DiffMode = 'line' | 'word' | 'character'
 type DiffStats = {
@@ -180,25 +184,104 @@ export default function TextDiffPage() {
     setStats({ added: 0, removed: 0, modified: 0, unchanged: 0 })
   }
 
+  // SEO data
+  const toolPath = '/text-diff'
+  const toolName = 'Text Diff'
+  const category = 'text'
+  const breadcrumbs = generateBreadcrumbs(toolName, toolPath, category)
+  const relatedTools = getRelatedTools(toolPath, category, 6)
+
+  // FAQ data
+  const faqs = [
+    {
+      question: "What is a text diff tool?",
+      answer: "A text diff tool compares two texts and highlights the differences between them. It shows what was added, removed, or modified, making it useful for code reviews, document comparisons, and version control."
+    },
+    {
+      question: "How do I compare two texts?",
+      answer: "Paste your first text in the 'Original Text' field and your second text in the 'Modified Text' field. The tool automatically calculates and displays the differences with color-coded highlights (green for additions, red for deletions)."
+    },
+    {
+      question: "What comparison modes are available?",
+      answer: "Three modes: Line-by-line (compares entire lines), Word-by-word (compares individual words), and Character-by-character (compares each character). Choose the mode that best fits your needs."
+    },
+    {
+      question: "Can I ignore whitespace or case differences?",
+      answer: "Yes! Enable 'Ignore Whitespace' to treat all whitespace as equivalent, or 'Ignore Case' to treat uppercase and lowercase letters as the same. This is useful when comparing code or formatted text."
+    },
+    {
+      question: "What statistics are shown?",
+      answer: "The tool displays statistics: number of additions (new content), removals (deleted content), modifications (changed content), and unchanged content. It also shows the total number of operations performed."
+    },
+    {
+      question: "Is the text diff tool free?",
+      answer: "Yes, completely free! No registration, no limits, no hidden fees. All text comparison happens in your browser - we never see or store your text."
+    }
+  ]
+
+  // HowTo steps
+  const howToSteps = [
+    {
+      name: "Enter Original Text",
+      text: "Paste or type your original text in the 'Original Text' field. This is the baseline text you want to compare against."
+    },
+    {
+      name: "Enter Modified Text",
+      text: "Paste or type your modified text in the 'Modified Text' field. This is the text you want to compare with the original."
+    },
+    {
+      name: "Choose Comparison Mode",
+      text: "Select comparison mode: Line-by-line (for code or documents), Word-by-word (for general text), or Character-by-character (for precise differences)."
+    },
+    {
+      name: "Configure Options",
+      text: "Enable 'Ignore Whitespace' if you want to ignore spacing differences, or 'Ignore Case' if you want to ignore letter case differences."
+    },
+    {
+      name: "View Results",
+      text: "See the differences highlighted with colors: green for additions, red for deletions. View statistics and export results if needed."
+    }
+  ]
+
+  // Structured data
+  const structuredData = [
+    generateFAQSchema(faqs),
+    generateHowToSchema(
+      "How to Compare Two Texts and Find Differences",
+      "Learn how to compare two texts and find differences using our free online text diff tool with multiple comparison modes.",
+      howToSteps,
+      "PT2M"
+    ),
+    generateSoftwareApplicationSchema(
+      "Text Diff Tool",
+      "Free online text diff tool. Compare two texts and find differences. Line-by-line, word-by-word, or character-by-character comparison. Export results. Perfect for code reviews and document comparisons.",
+      "https://prylad.pro/text-diff",
+      "WebApplication"
+    )
+  ]
+
   return (
-    <Layout
-      title="🔍 Text Diff - Compare & Find Differences Online"
-      description="Compare two texts and find differences online for free. Line-by-line, word-by-word, or character-by-character comparison. Export results. No registration required."
-    >
+    <>
+      <StructuredData data={structuredData} />
+      <Layout
+        title="🔍 Text Diff - Compare & Find Differences"
+        description="Compare two texts and find differences online for free. Line-by-line, word-by-word, or character-by-character comparison. Export results. No registration required."
+        breadcrumbs={breadcrumbs}
+      >
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Main Tool */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 space-y-6">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 space-y-6">
           {/* Options */}
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-3">Comparison Mode:</label>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Comparison Mode:</label>
               <div className="flex gap-3">
                 <button
                   onClick={() => setMode('line')}
                   className={`flex-1 px-4 py-2 rounded-lg font-semibold transition-all ${
                     mode === 'line'
                       ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
                   Line-by-Line
@@ -208,7 +291,7 @@ export default function TextDiffPage() {
                   className={`flex-1 px-4 py-2 rounded-lg font-semibold transition-all ${
                     mode === 'word'
                       ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
                   Word-by-Word
@@ -218,7 +301,7 @@ export default function TextDiffPage() {
                   className={`flex-1 px-4 py-2 rounded-lg font-semibold transition-all ${
                     mode === 'character'
                       ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
                   Character-by-Character
@@ -234,7 +317,7 @@ export default function TextDiffPage() {
                   onChange={(e) => setIgnoreWhitespace(e.target.checked)}
                   className="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
                 />
-                <span className="text-sm text-gray-700">Ignore whitespace</span>
+                <span className="text-sm text-gray-700 dark:text-gray-300">Ignore whitespace</span>
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
@@ -243,7 +326,7 @@ export default function TextDiffPage() {
                   onChange={(e) => setIgnoreCase(e.target.checked)}
                   className="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
                 />
-                <span className="text-sm text-gray-700">Ignore case</span>
+                <span className="text-sm text-gray-700 dark:text-gray-300">Ignore case</span>
               </label>
             </div>
           </div>
@@ -252,25 +335,25 @@ export default function TextDiffPage() {
           <div className="grid md:grid-cols-2 gap-4">
             <div>
               <div className="flex justify-between items-center mb-2">
-                <label className="block text-sm font-semibold text-gray-700">Text 1 (Original)</label>
-                <span className="text-xs text-gray-500">{text1.length} chars</span>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Text 1 (Original)</label>
+                <span className="text-xs text-gray-500 dark:text-gray-400">{text1.length} chars</span>
               </div>
               <textarea
                 value={text1}
                 onChange={(e) => setText1(e.target.value)}
-                className="w-full h-64 px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 resize-none font-mono text-sm"
+                className="w-full h-64 px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 resize-none font-mono text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                 placeholder="Enter first text..."
               />
             </div>
             <div>
               <div className="flex justify-between items-center mb-2">
-                <label className="block text-sm font-semibold text-gray-700">Text 2 (Modified)</label>
-                <span className="text-xs text-gray-500">{text2.length} chars</span>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Text 2 (Modified)</label>
+                <span className="text-xs text-gray-500 dark:text-gray-400">{text2.length} chars</span>
               </div>
               <textarea
                 value={text2}
                 onChange={(e) => setText2(e.target.value)}
-                className="w-full h-64 px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 resize-none font-mono text-sm"
+                className="w-full h-64 px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 resize-none font-mono text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                 placeholder="Enter second text..."
               />
             </div>
@@ -286,7 +369,7 @@ export default function TextDiffPage() {
             </button>
             <button
               onClick={clearAll}
-              className="px-6 py-3 bg-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-300 transition-colors"
+              className="px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold rounded-xl hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
             >
               Clear
             </button>
@@ -294,23 +377,23 @@ export default function TextDiffPage() {
 
           {/* Statistics */}
           {(stats.added > 0 || stats.removed > 0 || stats.modified > 0 || stats.unchanged > 0) && (
-            <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+            <div className="bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-lg p-4">
               <div className="grid grid-cols-4 gap-4 text-center">
                 <div>
-                  <p className="text-xs text-gray-600 mb-1">Added</p>
-                  <p className="text-lg font-bold text-green-600">{stats.added}</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Added</p>
+                  <p className="text-lg font-bold text-green-600 dark:text-green-400">{stats.added}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-600 mb-1">Removed</p>
-                  <p className="text-lg font-bold text-red-600">{stats.removed}</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Removed</p>
+                  <p className="text-lg font-bold text-red-600 dark:text-red-400">{stats.removed}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-600 mb-1">Modified</p>
-                  <p className="text-lg font-bold text-orange-600">{stats.modified}</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Modified</p>
+                  <p className="text-lg font-bold text-orange-600 dark:text-orange-400">{stats.modified}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-600 mb-1">Unchanged</p>
-                  <p className="text-lg font-bold text-gray-600">{stats.unchanged}</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Unchanged</p>
+                  <p className="text-lg font-bold text-gray-600 dark:text-gray-400">{stats.unchanged}</p>
                 </div>
               </div>
             </div>
@@ -320,7 +403,7 @@ export default function TextDiffPage() {
           {diff && (
             <div>
               <div className="flex justify-between items-center mb-2">
-                <label className="block text-sm font-semibold text-gray-700">Differences</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Differences</label>
                 <div className="flex gap-2">
                   <button
                     onClick={copyToClipboard}
@@ -339,18 +422,18 @@ export default function TextDiffPage() {
               <textarea
                 value={diff}
                 readOnly
-                className="w-full h-64 px-4 py-3 border-2 border-gray-200 rounded-lg bg-gray-50 resize-none font-mono text-sm"
+                className="w-full h-64 px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 resize-none font-mono text-sm text-gray-900 dark:text-gray-100"
               />
-              <p className="text-xs text-gray-500 mt-2">
-                Legend: Lines starting with <span className="font-mono bg-red-100 px-1 rounded">-</span> are removed, 
-                lines starting with <span className="font-mono bg-green-100 px-1 rounded">+</span> are added
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                Legend: Lines starting with <span className="font-mono bg-red-100 dark:bg-red-900/30 px-1 rounded">-</span> are removed, 
+                lines starting with <span className="font-mono bg-green-100 dark:bg-green-900/30 px-1 rounded">+</span> are added
               </p>
             </div>
           )}
 
           {/* Total Operations */}
           {totalOperations > 0 && (
-            <div className="text-center text-sm text-gray-500">
+            <div className="text-center text-sm text-gray-500 dark:text-gray-400">
               Total comparisons: <span className="font-semibold">{totalOperations}</span>
             </div>
           )}
@@ -359,15 +442,15 @@ export default function TextDiffPage() {
         {/* SEO Content */}
         <div className="max-w-4xl mx-auto mt-16 space-y-8">
           {/* Introduction */}
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">What is Text Diff?</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">What is Text Diff?</h2>
             <div className="prose prose-gray max-w-none">
-              <p className="text-gray-700 leading-relaxed mb-4">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                 Text diff (difference) is a comparison tool that identifies changes between two versions of text. 
                 It&apos;s an essential utility for developers, writers, editors, and anyone who needs to track changes 
                 in documents, code, or any text-based content.
               </p>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                 Our free online text diff tool allows you to compare two texts and see exactly what has been added, 
                 removed, or modified. Whether you&apos;re reviewing code changes, comparing document versions, or tracking 
                 edits, our tool makes it easy to spot differences quickly and accurately.
@@ -376,10 +459,10 @@ export default function TextDiffPage() {
           </section>
 
           {/* How to Use */}
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">How to Use Our Text Diff Tool</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">How to Use Our Text Diff Tool</h2>
             <div className="prose prose-gray max-w-none">
-              <ol className="list-decimal list-inside space-y-3 text-gray-700">
+              <ol className="list-decimal list-inside space-y-3 text-gray-700 dark:text-gray-300">
                 <li><strong>Choose Comparison Mode:</strong> Select line-by-line, word-by-word, or character-by-character comparison depending on your needs.</li>
                 <li><strong>Set Options:</strong> Enable &quot;Ignore whitespace&quot; to compare texts without considering spaces, or &quot;Ignore case&quot; to compare without considering letter case.</li>
                 <li><strong>Enter Your Texts:</strong> Paste or type the original text in the first field and the modified text in the second field.</li>
@@ -391,33 +474,33 @@ export default function TextDiffPage() {
           </section>
 
           {/* Use Cases */}
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Common Use Cases</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Common Use Cases</h2>
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">💻 Code Review</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">💻 Code Review</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Compare code versions to see what changed between commits, branches, or revisions. 
                   Essential for code reviews and understanding changes in software development.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">📝 Document Editing</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">📝 Document Editing</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Track changes in documents, articles, or any written content. See exactly what was 
                   added, removed, or modified between versions.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">🔍 Content Verification</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">🔍 Content Verification</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Verify that content matches expected versions. Compare translations, transcriptions, 
                   or any text that should match a reference version.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">📊 Data Analysis</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">📊 Data Analysis</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Compare datasets, logs, or configuration files to identify differences. Useful for 
                   debugging, troubleshooting, or understanding changes in data.
                 </p>
@@ -426,34 +509,34 @@ export default function TextDiffPage() {
           </section>
 
           {/* FAQ */}
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Frequently Asked Questions</h2>
             <div className="space-y-6">
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">What&apos;s the difference between comparison modes?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">What&apos;s the difference between comparison modes?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   <strong>Line-by-line:</strong> Compares entire lines, best for code or structured text. 
                   <strong>Word-by-word:</strong> Compares individual words, useful for prose and documents. 
                   <strong>Character-by-character:</strong> Compares each character, most detailed but can be verbose for large texts.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">When should I use &quot;Ignore whitespace&quot;?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">When should I use &quot;Ignore whitespace&quot;?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Use this option when you want to compare content without considering spaces, tabs, or line breaks. 
                   Useful when formatting differences don&apos;t matter, only the actual content.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Can I export the diff results?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Can I export the diff results?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Yes! Click the &quot;Export&quot; button to download the diff as a text file. This is useful for 
                   documentation, sharing with team members, or keeping a record of changes.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Is my data stored or transmitted?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Is my data stored or transmitted?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   No, all comparison happens entirely in your browser. We never see, store, or transmit 
                   any of your text. Your privacy is completely protected.
                 </p>
@@ -462,7 +545,12 @@ export default function TextDiffPage() {
           </section>
         </div>
       </div>
+      {/* Related Tools */}
+      {relatedTools.length > 0 && (
+        <RelatedTools tools={relatedTools} title="Related Text Tools" />
+      )}
     </Layout>
+    </>
   )
 }
 

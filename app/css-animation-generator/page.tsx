@@ -2,6 +2,10 @@
 
 import { useState, useCallback, useMemo, useEffect } from 'react'
 import Layout from '@/components/Layout'
+import StructuredData from '@/components/StructuredData'
+import RelatedTools from '@/components/RelatedTools'
+import { generateFAQSchema, generateHowToSchema, generateSoftwareApplicationSchema } from '@/lib/structured-data'
+import { generateBreadcrumbs, getRelatedTools } from '@/lib/seo-helpers'
 type AnimationType = 'fade' | 'slide' | 'rotate' | 'scale' | 'bounce' | 'custom'
 type Easing = 'ease' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'linear' | 'cubic-bezier'
 
@@ -99,13 +103,93 @@ export default function CSSAnimationGeneratorPage() {
     }
   }, [animationName, keyframes])
 
+  // SEO data
+  const toolPath = '/css-animation-generator'
+  const toolName = 'CSS Animation Generator'
+  const category = 'design'
+  const breadcrumbs = generateBreadcrumbs(toolName, toolPath, category)
+  const relatedTools = getRelatedTools(toolPath, category, 6)
+
+  // FAQ data
+  const faqs = [
+    {
+      question: "What is a CSS animation generator?",
+      answer: "A CSS animation generator creates CSS keyframe animations that can be applied to HTML elements. It generates the @keyframes rule and animation properties needed to create smooth, animated effects on web pages."
+    },
+    {
+      question: "How do I create a CSS animation?",
+      answer: "Choose an animation type (fade, slide, rotate, scale, bounce, or custom), configure properties (duration, delay, iteration count, direction, easing), write or select keyframes, and the CSS code is generated automatically. Preview the animation in real-time."
+    },
+    {
+      question: "What animation types are available?",
+      answer: "Six types: Fade (opacity changes), Slide (position changes), Rotate (rotation transforms), Scale (size changes), Bounce (bouncing effects), and Custom (write your own keyframes). Each type has preset keyframes you can customize."
+    },
+    {
+      question: "Can I customize animation properties?",
+      answer: "Yes! Configure duration (how long the animation takes), delay (when it starts), iteration count (how many times it repeats), direction (forward, reverse, alternate), fill mode (how styles apply), and easing (timing function)."
+    },
+    {
+      question: "What is a keyframe?",
+      answer: "Keyframes define the start and end states (and intermediate states) of an animation. They specify what CSS properties change and at what point during the animation. The generator creates @keyframes rules automatically."
+    },
+    {
+      question: "Is the CSS animation generator free?",
+      answer: "Yes, completely free! No registration, no limits, no hidden fees. All CSS generation happens in your browser - we never see or store your code."
+    }
+  ]
+
+  // HowTo steps
+  const howToSteps = [
+    {
+      name: "Choose Animation Type",
+      text: "Select an animation type: Fade, Slide, Rotate, Scale, Bounce, or Custom. Each type has preset keyframes you can use or modify."
+    },
+    {
+      name: "Configure Properties",
+      text: "Set animation properties: duration (seconds), delay (seconds), iteration count (number or infinite), direction, fill mode, and easing function."
+    },
+    {
+      name: "Write Keyframes",
+      text: "Write or modify the @keyframes rule. Use 'from' and 'to' for simple animations, or percentages (0%, 50%, 100%) for more complex animations with intermediate states."
+    },
+    {
+      name: "Preview Animation",
+      text: "See the animation preview in real-time. The preview shows exactly how your animation will look when applied to an element."
+    },
+    {
+      name: "Copy CSS Code",
+      text: "Copy the generated CSS code (both @keyframes and animation properties) and use it in your stylesheets. The code is ready to use immediately."
+    }
+  ]
+
+  // Structured data
+  const structuredData = [
+    generateFAQSchema(faqs),
+    generateHowToSchema(
+      "How to Generate CSS Animations",
+      "Learn how to generate CSS animations and keyframes using our free online CSS animation generator tool.",
+      howToSteps,
+      "PT3M"
+    ),
+    generateSoftwareApplicationSchema(
+      "CSS Animation Generator",
+      "Free online CSS animation generator. Create fade, slide, rotate, scale, and bounce animations. Preview and copy CSS code. Perfect for web designers and developers.",
+      "https://prylad.pro/css-animation-generator",
+      "WebApplication"
+    )
+  ]
+
   return (
-    <Layout
-      title="🎬 CSS Animation Generator"
-      description="Generate CSS animations and keyframes online. Create fade, slide, rotate, scale, and bounce animations."
+    <>
+      <StructuredData data={structuredData} />
+      <Layout
+        title="🎬 CSS Animation Generator"
+        description="Generate CSS animations and keyframes online. Create fade, slide, rotate, scale, and bounce animations."
+        breadcrumbs={breadcrumbs}
+      >
     >
       <div className="max-w-6xl mx-auto">
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 mb-6">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 mb-6 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
           <div className="space-y-6">
             {/* Preview */}
             <div className="flex items-center justify-center p-12 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 rounded-xl">
@@ -127,7 +211,7 @@ export default function CSSAnimationGeneratorPage() {
                 type="text"
                 value={animationName}
                 onChange={(e) => setAnimationName(e.target.value.replace(/\s+/g, '-'))}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-mono text-sm"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-mono text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
               />
             </div>
 
@@ -158,7 +242,7 @@ export default function CSSAnimationGeneratorPage() {
                 value={keyframes}
                 onChange={(e) => setKeyframes(e.target.value)}
                 placeholder="from { opacity: 0; }\nto { opacity: 1; }"
-                className="w-full h-32 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-mono text-sm resize-none"
+                className="w-full h-32 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-mono text-sm resize-none bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
               />
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 Use CSS keyframe syntax: from/to or 0%/50%/100%
@@ -202,7 +286,7 @@ export default function CSSAnimationGeneratorPage() {
                 <select
                   value={iteration}
                   onChange={(e) => setIteration(e.target.value === 'infinite' ? 'infinite' : parseInt(e.target.value) || 1)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                 >
                   <option value={1}>1</option>
                   <option value={2}>2</option>
@@ -217,7 +301,7 @@ export default function CSSAnimationGeneratorPage() {
                 <select
                   value={direction}
                   onChange={(e) => setDirection(e.target.value as typeof direction)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                 >
                   <option value="normal">Normal</option>
                   <option value="reverse">Reverse</option>
@@ -232,7 +316,7 @@ export default function CSSAnimationGeneratorPage() {
                 <select
                   value={easing}
                   onChange={(e) => setEasing(e.target.value as Easing)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                 >
                   <option value="ease">Ease</option>
                   <option value="ease-in">Ease In</option>
@@ -248,7 +332,7 @@ export default function CSSAnimationGeneratorPage() {
                 <select
                   value={fillMode}
                   onChange={(e) => setFillMode(e.target.value as typeof fillMode)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                 >
                   <option value="none">None</option>
                   <option value="forwards">Forwards</option>
@@ -263,7 +347,7 @@ export default function CSSAnimationGeneratorPage() {
                 <select
                   value={playState}
                   onChange={(e) => setPlayState(e.target.value as typeof playState)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                 >
                   <option value="running">Running</option>
                   <option value="paused">Paused</option>
@@ -295,8 +379,8 @@ export default function CSSAnimationGeneratorPage() {
       </div>
 
       <div className="max-w-4xl mx-auto space-y-8 mt-10">
-        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">How to Use the CSS Animation Generator</h2>
+        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white mb-4">How to Use the CSS Animation Generator</h2>
           <ol className="list-decimal list-inside space-y-2 text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
             <li>Pick a preset (Fade, Slide, Rotate, Scale, Bounce) or edit the keyframes manually.</li>
             <li>Adjust the animation name, duration, delay, iteration count, direction, easing, fill mode, and play state.</li>
@@ -308,11 +392,11 @@ export default function CSSAnimationGeneratorPage() {
           </p>
         </section>
 
-        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Supported Animation Types</h2>
+        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white mb-4">Supported Animation Types</h2>
           <div className="grid md:grid-cols-2 gap-4 text-sm text-gray-700 dark:text-gray-300">
             <div>
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Visual Presets</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-gray-100 dark:text-white mb-2">Visual Presets</h3>
               <ul className="space-y-1 list-disc list-inside">
                 <li>Fade In / Fade Out</li>
                 <li>Slide In (Left / Right)</li>
@@ -322,7 +406,7 @@ export default function CSSAnimationGeneratorPage() {
               </ul>
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Custom Keyframes</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-gray-100 dark:text-white mb-2">Custom Keyframes</h3>
               <p className="leading-relaxed">
                 Craft bespoke animations by mixing <code className="font-mono">from / to</code> or percentage-based keyframes. Add transforms, opacity changes, or any CSS property supported inside <code className="font-mono">@keyframes</code>.
               </p>
@@ -330,8 +414,8 @@ export default function CSSAnimationGeneratorPage() {
           </div>
         </section>
 
-        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Best Practices</h2>
+        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white mb-4">Best Practices</h2>
           <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300 leading-relaxed list-disc list-inside">
             <li>Keep animations short (<code className="font-mono">0.3s – 1s</code>) for UI interactions to avoid sluggish interfaces.</li>
             <li>Use <code className="font-mono">ease-in-out</code> for natural movement and <code className="font-mono">linear</code> for continuous loops.</li>
@@ -340,8 +424,12 @@ export default function CSSAnimationGeneratorPage() {
           </ul>
         </section>
       </div>
-
-      </Layout>
+      {/* Related Tools */}
+      {relatedTools.length > 0 && (
+        <RelatedTools tools={relatedTools} title="Related Design Tools" />
+      )}
+    </Layout>
+    </>
   )
 }
 

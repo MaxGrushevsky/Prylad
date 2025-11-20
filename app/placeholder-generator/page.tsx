@@ -2,6 +2,10 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react'
 import Layout from '@/components/Layout'
+import StructuredData from '@/components/StructuredData'
+import RelatedTools from '@/components/RelatedTools'
+import { generateFAQSchema, generateHowToSchema, generateSoftwareApplicationSchema } from '@/lib/structured-data'
+import { generateBreadcrumbs, getRelatedTools } from '@/lib/seo-helpers'
 
 type PlaceholderStyle = 'solid' | 'gradient' | 'pattern' | 'checkerboard'
 type PresetSize = 'custom' | 'banner' | 'square' | 'portrait' | 'landscape' | 'icon' | 'thumbnail' | 'hero'
@@ -202,20 +206,99 @@ export default function PlaceholderGeneratorPage() {
     }
   }
 
+  // SEO data
+  const toolPath = '/placeholder-generator'
+  const toolName = 'Placeholder Image Generator'
+  const category = 'generator'
+  const breadcrumbs = generateBreadcrumbs(toolName, toolPath, category)
+  const relatedTools = getRelatedTools(toolPath, category, 6)
+
+  // FAQ data
+  const faqs = [
+    {
+      question: "What is a placeholder image?",
+      answer: "A placeholder image is a temporary image used during web development or design to represent where an actual image will be placed. It helps visualize layouts, test designs, and develop websites before final images are ready."
+    },
+    {
+      question: "How do I generate a placeholder image?",
+      answer: "Set the width and height, choose a style (solid, gradient, pattern, checkerboard), customize colors and text, and the placeholder is generated automatically. You can use presets for common sizes like banners, squares, or thumbnails."
+    },
+    {
+      question: "What styles are available?",
+      answer: "Four styles: Solid (single color), Gradient (two-color gradient), Pattern (geometric pattern), and Checkerboard (alternating squares). Each style can be customized with colors and text overlay."
+    },
+    {
+      question: "Can I add text to placeholder images?",
+      answer: "Yes! Add custom text, choose text color, font size, font family, and font weight. The text is displayed centered on the placeholder image. Leave text empty for no text overlay."
+    },
+    {
+      question: "What file formats are supported?",
+      answer: "You can export placeholder images as PNG (with transparency support) or JPG (smaller file size). PNG is recommended for images with transparency or when you need higher quality."
+    },
+    {
+      question: "Is the placeholder generator free?",
+      answer: "Yes, completely free! No registration, no limits, no hidden fees. All placeholder generation happens in your browser - we never see or store your images."
+    }
+  ]
+
+  // HowTo steps
+  const howToSteps = [
+    {
+      name: "Set Dimensions",
+      text: "Enter width and height in pixels, or select a preset size (banner, square, portrait, landscape, icon, thumbnail, hero). Presets automatically set common dimensions."
+    },
+    {
+      name: "Choose Style",
+      text: "Select placeholder style: Solid (single color), Gradient (two-color blend), Pattern (geometric pattern), or Checkerboard (alternating squares)."
+    },
+    {
+      name: "Customize Colors",
+      text: "Set background color(s) and text color. For gradient style, set both background colors. For other styles, set the primary background color."
+    },
+    {
+      name: "Add Text (Optional)",
+      text: "Enter text to display on the placeholder, set font size, font family, and font weight. Leave text empty for no text overlay."
+    },
+    {
+      name: "Download Image",
+      text: "Preview the placeholder and download as PNG or JPG. PNG supports transparency, JPG has smaller file size. Use the placeholder in your projects."
+    }
+  ]
+
+  // Structured data
+  const structuredData = [
+    generateFAQSchema(faqs),
+    generateHowToSchema(
+      "How to Generate Placeholder Images",
+      "Learn how to generate custom placeholder images of any size using our free online placeholder generator tool.",
+      howToSteps,
+      "PT2M"
+    ),
+    generateSoftwareApplicationSchema(
+      "Placeholder Image Generator",
+      "Free online placeholder image generator. Create placeholder images of any size with custom colors, text, styles, and patterns. Export as PNG or JPG. Perfect for web development and design mockups.",
+      "https://prylad.pro/placeholder-generator",
+      "UtilityApplication"
+    )
+  ]
+
   return (
-    <Layout
-      title="🖼️ Placeholder Image Generator - Create Custom Placeholder Images Online"
-      description="Generate placeholder images of any size online for free. Customize colors, text, styles, and patterns. Export as PNG or JPG. Perfect for web development and design mockups."
-    >
+    <>
+      <StructuredData data={structuredData} />
+      <Layout
+        title="🖼️ Placeholder Image Generator"
+        description="Generate placeholder images of any size online for free. Customize colors, text, styles, and patterns. Export as PNG or JPG. Perfect for web development and design mockups."
+        breadcrumbs={breadcrumbs}
+      >
       <div className="max-w-6xl mx-auto space-y-6">
         <div className="grid lg:grid-cols-2 gap-6">
           {/* Settings */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 space-y-6">
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 space-y-6">
             <h2 className="text-xl font-bold">Placeholder Settings</h2>
 
             {/* Presets */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-3">Quick Presets:</label>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Quick Presets:</label>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                 {Object.entries(presets).filter(([key]) => key !== 'custom').map(([key, value]) => (
                   <button
@@ -224,7 +307,7 @@ export default function PlaceholderGeneratorPage() {
                     className={`px-3 py-2 rounded-lg text-xs font-medium transition-all ${
                       preset === key
                         ? 'bg-primary-600 text-white shadow-lg'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                     }`}
                   >
                     {value.label}
@@ -236,7 +319,7 @@ export default function PlaceholderGeneratorPage() {
             {/* Dimensions */}
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   Width: {width}px
                 </label>
                 <input
@@ -254,12 +337,12 @@ export default function PlaceholderGeneratorPage() {
                   max="4000"
                   value={width}
                   onChange={(e) => setWidth(Math.max(50, Math.min(4000, Number(e.target.value))))}
-                  className="w-full mt-2 px-3 py-2 border-2 border-gray-200 rounded-lg"
+                  className="w-full mt-2 px-3 py-2 border-2 border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   Height: {height}px
                 </label>
                 <input
@@ -277,21 +360,21 @@ export default function PlaceholderGeneratorPage() {
                   max="4000"
                   value={height}
                   onChange={(e) => setHeight(Math.max(50, Math.min(4000, Number(e.target.value))))}
-                  className="w-full mt-2 px-3 py-2 border-2 border-gray-200 rounded-lg"
+                  className="w-full mt-2 px-3 py-2 border-2 border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                 />
               </div>
             </div>
 
             {/* Style */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-3">Background Style:</label>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Background Style:</label>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                 <button
                   onClick={() => setStyle('solid')}
                   className={`px-4 py-2 rounded-lg font-semibold transition-all ${
                     style === 'solid'
                       ? 'bg-primary-600 text-white shadow-lg'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
                   Solid
@@ -301,7 +384,7 @@ export default function PlaceholderGeneratorPage() {
                   className={`px-4 py-2 rounded-lg font-semibold transition-all ${
                     style === 'gradient'
                       ? 'bg-primary-600 text-white shadow-lg'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
                   Gradient
@@ -311,7 +394,7 @@ export default function PlaceholderGeneratorPage() {
                   className={`px-4 py-2 rounded-lg font-semibold transition-all ${
                     style === 'pattern'
                       ? 'bg-primary-600 text-white shadow-lg'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
                   Pattern
@@ -321,7 +404,7 @@ export default function PlaceholderGeneratorPage() {
                   className={`px-4 py-2 rounded-lg font-semibold transition-all ${
                     style === 'checkerboard'
                       ? 'bg-primary-600 text-white shadow-lg'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
                   Checker
@@ -332,23 +415,45 @@ export default function PlaceholderGeneratorPage() {
             {/* Colors */}
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Background Color</label>
-                <input
-                  type="color"
-                  value={bgColor}
-                  onChange={(e) => setBgColor(e.target.value)}
-                  className="w-full h-10 rounded-lg border-2 border-gray-200"
-                />
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Background Color</label>
+                <label className="relative block cursor-pointer group">
+                  <input
+                    type="color"
+                    value={bgColor}
+                    onChange={(e) => setBgColor(e.target.value)}
+                    className="w-full h-10 rounded-lg border-2 border-gray-200 dark:border-gray-700 group-hover:border-primary-400 transition-all opacity-0 absolute bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                  />
+                  <div 
+                    className="w-full h-10 rounded-lg border-2 border-gray-200 dark:border-gray-700 group-hover:border-primary-400 transition-all flex items-center justify-end px-3 relative overflow-hidden"
+                    style={{ backgroundColor: bgColor }}
+                  >
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
+                    <svg className="w-4 h-4 text-white relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ filter: 'drop-shadow(0 0 2px rgba(0,0,0,0.8)) drop-shadow(0 0 1px rgba(0,0,0,0.9))' }}>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </label>
               </div>
               {(style === 'gradient' || style === 'pattern' || style === 'checkerboard') && (
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Secondary Color</label>
-                  <input
-                    type="color"
-                    value={bgColor2}
-                    onChange={(e) => setBgColor2(e.target.value)}
-                    className="w-full h-10 rounded-lg border-2 border-gray-200"
-                  />
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Secondary Color</label>
+                  <label className="relative block cursor-pointer group">
+                    <input
+                      type="color"
+                      value={bgColor2}
+                      onChange={(e) => setBgColor2(e.target.value)}
+                      className="w-full h-10 rounded-lg border-2 border-gray-200 dark:border-gray-700 group-hover:border-primary-400 transition-all opacity-0 absolute bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                    />
+                    <div 
+                      className="w-full h-10 rounded-lg border-2 border-gray-200 dark:border-gray-700 group-hover:border-primary-400 transition-all flex items-center justify-end px-3 relative overflow-hidden"
+                      style={{ backgroundColor: bgColor2 }}
+                    >
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
+                      <svg className="w-4 h-4 text-white relative z-10 drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </label>
                 </div>
               )}
             </div>
@@ -362,27 +467,27 @@ export default function PlaceholderGeneratorPage() {
                   onChange={(e) => setShowText(e.target.checked)}
                   className="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
                 />
-                <span className="text-sm text-gray-700">Show text on placeholder</span>
+                <span className="text-sm text-gray-700 dark:text-gray-300">Show text on placeholder</span>
               </label>
 
               {showText && (
                 <>
                   <div className="mb-4">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                       Text (leave empty for dimensions)
                     </label>
                     <input
                       type="text"
                       value={text}
                       onChange={(e) => setText(e.target.value)}
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                       placeholder="Enter text or leave empty"
                     />
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-4 mb-4">
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                         Font Size: {fontSize}px
                       </label>
                       <input
@@ -395,11 +500,11 @@ export default function PlaceholderGeneratorPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">Font Family</label>
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Font Family</label>
                       <select
                         value={fontFamily}
                         onChange={(e) => setFontFamily(e.target.value)}
-                        className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg"
+                        className="w-full px-3 py-2 border-2 border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                       >
                         <option value="Arial">Arial</option>
                         <option value="Helvetica">Helvetica</option>
@@ -419,15 +524,15 @@ export default function PlaceholderGeneratorPage() {
                         onChange={(e) => setFontWeight(e.target.checked ? 'bold' : 'normal')}
                         className="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
                       />
-                      <span className="text-sm text-gray-700">Bold text</span>
+                      <span className="text-sm text-gray-700 dark:text-gray-300">Bold text</span>
                     </label>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">Text Color</label>
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Text Color</label>
                       <input
                         type="color"
                         value={textColor}
                         onChange={(e) => setTextColor(e.target.value)}
-                        className="w-full h-10 rounded-lg border-2 border-gray-200"
+                        className="w-full h-10 rounded-lg border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                       />
                     </div>
                   </div>
@@ -443,7 +548,7 @@ export default function PlaceholderGeneratorPage() {
                 onChange={(e) => setAutoGenerate(e.target.checked)}
                 className="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
               />
-              <span className="text-sm text-gray-700">Auto-generate as you edit</span>
+              <span className="text-sm text-gray-700 dark:text-gray-300">Auto-generate as you edit</span>
             </label>
 
             {!autoGenerate && (
@@ -457,12 +562,12 @@ export default function PlaceholderGeneratorPage() {
           </div>
 
           {/* Preview */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 space-y-6">
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold">Preview</h2>
               {totalGenerated > 0 && (
-                <div className="text-sm text-gray-500">
-                  Generated: <span className="font-semibold text-gray-900">{totalGenerated}</span>
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  Generated: <span className="font-semibold text-gray-900 dark:text-gray-100">{totalGenerated}</span>
                 </div>
               )}
             </div>
@@ -474,7 +579,7 @@ export default function PlaceholderGeneratorPage() {
                 style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}
               />
               
-              <div className="border-2 border-dashed border-gray-200 rounded-xl p-4 bg-gray-50 overflow-auto max-h-[500px] flex justify-center items-center min-h-[200px]">
+              <div className="border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl p-4 bg-gray-50 dark:bg-gray-800 overflow-auto max-h-[500px] flex justify-center items-center min-h-[200px]">
                 {imageUrl ? (
                   <img
                     src={imageUrl}
@@ -491,13 +596,13 @@ export default function PlaceholderGeneratorPage() {
               {imageUrl && (
                 <>
                   <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-center">
-                      <p className="text-xs text-gray-600 mb-1">Dimensions</p>
-                      <p className="font-semibold text-gray-900">{width} × {height}</p>
+                    <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 text-center">
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Dimensions</p>
+                      <p className="font-semibold text-gray-900 dark:text-gray-100">{width} × {height}</p>
                     </div>
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-center">
-                      <p className="text-xs text-gray-600 mb-1">Aspect Ratio</p>
-                      <p className="font-semibold text-gray-900">
+                    <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3 text-center">
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Aspect Ratio</p>
+                      <p className="font-semibold text-gray-900 dark:text-gray-100">
                         {Math.round((width / height) * 100) / 100}
                       </p>
                     </div>
@@ -545,15 +650,15 @@ export default function PlaceholderGeneratorPage() {
 
         {/* SEO Content */}
         <div className="max-w-4xl mx-auto mt-16 space-y-8">
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">What is a Placeholder Image?</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">What is a Placeholder Image?</h2>
             <div className="prose prose-gray max-w-none">
-              <p className="text-gray-700 leading-relaxed mb-4">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                 Placeholder images are temporary images used during web development and design to represent where 
                 actual images will be placed. They help developers and designers visualize layouts, test responsive 
                 designs, and work on projects before final images are available.
               </p>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                 Our free placeholder generator creates custom placeholder images instantly in your browser. You can 
                 specify exact dimensions, customize colors, add text, choose from different styles (solid, gradient, 
                 patterns), and export in PNG or JPG format. Perfect for prototyping, mockups, and development workflows.
@@ -561,10 +666,10 @@ export default function PlaceholderGeneratorPage() {
             </div>
           </section>
 
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">How to Use Our Placeholder Generator</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">How to Use Our Placeholder Generator</h2>
             <div className="prose prose-gray max-w-none">
-              <ol className="list-decimal list-inside space-y-3 text-gray-700">
+              <ol className="list-decimal list-inside space-y-3 text-gray-700 dark:text-gray-300">
                 <li><strong>Choose a Preset:</strong> Select from common sizes like banner, square, portrait, or landscape, or use custom dimensions.</li>
                 <li><strong>Set Dimensions:</strong> Adjust width and height using sliders or input fields. Range: 50px to 4000px.</li>
                 <li><strong>Select Style:</strong> Choose solid color, gradient, diagonal pattern, or checkerboard background.</li>
@@ -575,33 +680,33 @@ export default function PlaceholderGeneratorPage() {
             </div>
           </section>
 
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Common Use Cases</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Common Use Cases</h2>
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">💻 Web Development</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">💻 Web Development</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Use placeholders during development to test layouts, responsive designs, and image loading 
                   before final assets are ready. Essential for prototyping and client presentations.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">🎨 Design Mockups</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">🎨 Design Mockups</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Create placeholder images that match your design system. Use brand colors and consistent 
                   dimensions to visualize how final designs will look.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">📱 Responsive Testing</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">📱 Responsive Testing</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Generate placeholders at different aspect ratios to test how layouts adapt across devices. 
                   Perfect for mobile, tablet, and desktop breakpoints.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">🚀 Quick Prototyping</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">🚀 Quick Prototyping</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Speed up development by generating placeholders instantly. No need to search for stock images 
                   or create temporary graphics in design software.
                 </p>
@@ -609,40 +714,40 @@ export default function PlaceholderGeneratorPage() {
             </div>
           </section>
 
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Frequently Asked Questions</h2>
             <div className="space-y-6">
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">What image formats are supported?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">What image formats are supported?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   You can download placeholders as PNG (with transparency support) or JPG (smaller file size). 
                   PNG is recommended for web use as it preserves quality and supports transparency.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Can I use these placeholders commercially?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Can I use these placeholders commercially?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Yes! All generated placeholders are free to use for any purpose, including commercial projects. 
                   There are no restrictions or licensing requirements.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">What&apos;s the maximum size I can generate?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">What&apos;s the maximum size I can generate?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   You can generate placeholders from 50px to 4000px in both width and height. This covers 
                   everything from icons to large hero images and banners.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Is my data stored or transmitted?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Is my data stored or transmitted?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   No, all placeholder generation happens entirely in your browser. We never see, store, or 
                   transmit any of your settings or generated images. Your privacy is completely protected.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Can I use the placeholder URL directly in my code?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Can I use the placeholder URL directly in my code?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   The generated URL is a data URL (base64-encoded image). You can use it directly in HTML 
                   img tags or CSS, but it&apos;s quite long. For production, download the image and host it 
                   separately, or use our &quot;Copy HTML&quot; or &quot;Copy CSS&quot; buttons for ready-to-use code snippets.
@@ -652,7 +757,12 @@ export default function PlaceholderGeneratorPage() {
           </section>
         </div>
       </div>
+      {/* Related Tools */}
+      {relatedTools.length > 0 && (
+        <RelatedTools tools={relatedTools} title="Related Generator Tools" />
+      )}
     </Layout>
+    </>
   )
 }
 

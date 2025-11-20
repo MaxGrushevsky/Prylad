@@ -5,16 +5,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://prylad.pro')
   const currentDate = new Date()
 
-  // Все страницы сайта
+  // Все страницы сайта - синхронизировано с SearchModal.tsx
   const routes = [
     // Главная страница
     '',
     // QR/Network
     '/qr-generator',
-    '/wifi-qr-generator',
-    '/url-encoder',
-    '/ip-address-info',
-    '/domain-age-checker',
+    '/qr-reader',
+    '/barcode-generator',
+    '/url-tools',
     // Colors
     '/color-generator',
     '/gradient-generator',
@@ -25,42 +24,44 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // Generators
     '/uuid-generator',
     '/name-generator',
-    // Random Numbers
     '/number-generator',
-    // Games
-    '/dice-roller',
-    '/decision-generator',
-    '/wheel-of-fortune',
     // Images
     '/watermark',
     '/placeholder-generator',
     '/favicon-generator',
     '/avatar-generator',
-    '/meme-generator',
-    '/ascii-art',
-    '/image-compressor',
+    '/image-resizer',
     // Text
     '/lorem-generator',
     '/word-counter',
     '/text-case',
     '/text-cleaner',
     '/text-diff',
+    '/text-reverser',
     '/slug-generator',
     '/transliteration',
-    '/palindrome-checker',
     // Converters
     '/base64-converter',
     '/csv-json-converter',
+    '/morse-code-encoder',
+    '/temperature-converter',
+    '/unit-converter',
+    '/text-to-binary',
+    '/roman-numerals-converter',
+    '/number-base-converter',
     // Code
     '/json-formatter',
-    '/minifier',
-    '/regex-tester',
-    '/markdown',
+    '/css-formatter',
+    '/js-formatter',
+    '/html-entity-encoder',
     '/sql-formatter',
     '/xml-formatter',
     '/yaml-formatter',
+    '/http-status-codes',
+    '/test-data-generator',
+    '/regex-tester',
+    '/markdown',
     '/jwt-decoder',
-    '/jwt-token-generator',
     // CSS/Design
     '/box-shadow',
     '/layout-generator',
@@ -71,17 +72,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/typography-scale-generator',
     // Security
     '/password-generator',
-    '/password-strength-checker',
     '/hash-generator',
     '/text-encryption',
     // Time
     '/world-clock',
-    '/age-calculator',
     '/date-calculator',
     '/timezone-converter',
-    // Other
-    '/http-status-codes',
-    '/test-data-generator',
+    '/unix-timestamp-converter',
+    // Entertainment
+    '/dice-roller',
+    '/decision-generator',
+    '/wheel-of-fortune',
+    '/meme-generator',
+    '/ascii-art',
+    '/palindrome-checker',
   ]
 
   // Все страницы с максимальным приоритетом (каждая страница - полноценный инструмент)
@@ -95,4 +99,3 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return sitemapEntries
 }
-

@@ -57,7 +57,7 @@ export default function AdBanner({ position }: AdBannerProps) {
   // Placeholder for sidebar position
   return (
     <div
-      className="w-full h-96 bg-gradient-to-r from-gray-50 to-gray-100 border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center transition-opacity hover:opacity-90"
+      className="w-full h-96 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl flex items-center justify-center transition-opacity hover:opacity-90 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
       role="banner"
       aria-label="Advertisement"
     >

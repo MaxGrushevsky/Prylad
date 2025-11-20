@@ -2,6 +2,10 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Layout from '@/components/Layout'
+import StructuredData from '@/components/StructuredData'
+import RelatedTools from '@/components/RelatedTools'
+import { generateFAQSchema, generateHowToSchema, generateSoftwareApplicationSchema } from '@/lib/structured-data'
+import { generateBreadcrumbs, getRelatedTools } from '@/lib/seo-helpers'
 
 type GradientType = 'linear' | 'radial'
 type Direction = 'to right' | 'to left' | 'to top' | 'to bottom' | 'to top right' | 'to top left' | 'to bottom right' | 'to bottom left' | string
@@ -127,9 +131,7 @@ export default function GradientGeneratorPage() {
 
   // Regenerate CSS when settings change
   useEffect(() => {
-    if (css) {
-      generateCSS()
-    }
+    generateCSS()
   }, [colors, direction, angle, useAngle, gradientType, generateCSS])
 
   const getGradientStyle = () => {
@@ -142,23 +144,102 @@ export default function GradientGeneratorPage() {
     }
   }
 
+  // SEO data
+  const toolPath = '/gradient-generator'
+  const toolName = 'CSS Gradient Generator'
+  const category = 'design'
+  const breadcrumbs = generateBreadcrumbs(toolName, toolPath, category)
+  const relatedTools = getRelatedTools(toolPath, category, 6)
+
+  // FAQ data
+  const faqs = [
+    {
+      question: "What is a CSS gradient?",
+      answer: "A CSS gradient is a smooth transition between two or more colors. CSS gradients are used to create visually appealing backgrounds, buttons, and other design elements. There are two main types: linear gradients (straight line) and radial gradients (circular)."
+    },
+    {
+      question: "How do I create a gradient?",
+      answer: "Select gradient type (linear or radial), add colors using the color pickers, choose direction or angle, and the CSS code is generated automatically. You can also use preset gradients for quick results."
+    },
+    {
+      question: "What's the difference between linear and radial gradients?",
+      answer: "Linear gradients transition colors along a straight line in a specified direction. Radial gradients transition colors from a center point outward in a circular or elliptical pattern."
+    },
+    {
+      question: "Can I use more than two colors in a gradient?",
+      answer: "Yes! You can add multiple colors to create complex, multi-color gradients. Click 'Add Color' to add more color stops and create beautiful, sophisticated gradient effects."
+    },
+    {
+      question: "How do I customize the gradient direction?",
+      answer: "For linear gradients, you can choose from preset directions (to right, to left, to top, etc.) or use a custom angle (0-360 degrees). For radial gradients, you can adjust the position and shape."
+    },
+    {
+      question: "Is the gradient generator free to use?",
+      answer: "Yes, completely free! No registration, no limits, no hidden fees. All gradient generation happens in your browser - we never see or store your data."
+    }
+  ]
+
+  // HowTo steps
+  const howToSteps = [
+    {
+      name: "Choose Gradient Type",
+      text: "Select 'Linear' for straight-line gradients or 'Radial' for circular gradients. Each type creates different visual effects."
+    },
+    {
+      name: "Add Colors",
+      text: "Use the color pickers to select your gradient colors. Click 'Add Color' to add more color stops for complex gradients."
+    },
+    {
+      name: "Set Direction or Angle",
+      text: "For linear gradients, choose a direction (to right, to top, etc.) or set a custom angle. For radial gradients, adjust the position."
+    },
+    {
+      name: "Preview and Adjust",
+      text: "See your gradient preview in real-time. Adjust colors, positions, and settings until you achieve the desired effect."
+    },
+    {
+      name: "Copy CSS Code",
+      text: "Copy the generated CSS code and use it in your stylesheets, inline styles, or any CSS-compatible environment."
+    }
+  ]
+
+  // Structured data
+  const structuredData = [
+    generateFAQSchema(faqs),
+    generateHowToSchema(
+      "How to Create CSS Gradients",
+      "Learn how to create beautiful CSS gradients using our free online gradient generator tool.",
+      howToSteps,
+      "PT3M"
+    ),
+    generateSoftwareApplicationSchema(
+      "CSS Gradient Generator",
+      "Free online CSS gradient generator. Create linear and radial gradients with multiple colors, customizable directions, and preset options. Export CSS code instantly.",
+      "https://prylad.pro/gradient-generator",
+      "WebApplication"
+    )
+  ]
+
   return (
-    <Layout
-      title="🌈 CSS Gradient Generator"
-      description="Create beautiful CSS gradients online. Generate linear and radial gradients with multiple colors. Free gradient generator with presets and export options."
-    >
+    <>
+      <StructuredData data={structuredData} />
+      <Layout
+        title="🌈 CSS Gradient Generator"
+        description="Create beautiful CSS gradients online. Generate linear and radial gradients with multiple colors. Free gradient generator with presets and export options."
+        breadcrumbs={breadcrumbs}
+      >
       <div className="max-w-6xl mx-auto">
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 mb-6">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 mb-6">
           <div className="space-y-6">
             {/* Presets */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-3">Quick Presets:</label>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Quick Presets:</label>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                 {presets.map((preset, index) => (
                   <button
                     key={index}
                     onClick={() => applyPreset(preset)}
-                    className="h-16 rounded-lg border-2 border-gray-200 hover:border-primary-400 transition-all relative group overflow-hidden"
+                    className="h-16 rounded-lg border-2 border-gray-200 dark:border-gray-700 hover:border-primary-400 transition-all relative group overflow-hidden"
                     style={{
                       background: `linear-gradient(to right, ${preset.colors.join(', ')})`
                     }}
@@ -175,14 +256,14 @@ export default function GradientGeneratorPage() {
 
             {/* Gradient Type */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-3">Gradient Type:</label>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Gradient Type:</label>
               <div className="flex gap-3">
                 <button
                   onClick={() => setGradientType('linear')}
                   className={`flex-1 px-6 py-3 rounded-xl font-semibold transition-all ${
                     gradientType === 'linear'
                       ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
                   Linear
@@ -192,7 +273,7 @@ export default function GradientGeneratorPage() {
                   className={`flex-1 px-6 py-3 rounded-xl font-semibold transition-all ${
                     gradientType === 'radial'
                       ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
                   Radial
@@ -203,7 +284,7 @@ export default function GradientGeneratorPage() {
             {/* Colors */}
             <div>
               <div className="flex justify-between items-center mb-3">
-                <label className="block text-sm font-semibold text-gray-700">Colors ({colors.length}/5):</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Colors ({colors.length}/5):</label>
                 {colors.length < 5 && (
                   <button
                     onClick={addColor}
@@ -217,28 +298,39 @@ export default function GradientGeneratorPage() {
                 {colors.map((color, index) => (
                   <div key={index} className="space-y-2">
                     <div className="flex items-center gap-2">
-                      <label className="text-xs font-medium text-gray-600">Color {index + 1}</label>
+                      <label className="text-xs font-medium text-gray-600 dark:text-gray-400">Color {index + 1}</label>
                       {colors.length > 2 && (
                         <button
                           onClick={() => removeColor(index)}
-                          className="text-red-500 hover:text-red-700 text-xs"
+                          className="text-red-500 hover:text-red-700 dark:text-red-400 text-xs"
                           title="Remove color"
                         >
                           ×
                         </button>
                       )}
                     </div>
-                    <input
-                      type="color"
-                      value={color}
-                      onChange={(e) => updateColor(index, e.target.value)}
-                      className="w-full h-14 rounded-lg cursor-pointer border-2 border-gray-200 hover:border-primary-400 transition-all"
-                    />
+                    <label className="relative block cursor-pointer group">
+                      <input
+                        type="color"
+                        value={color}
+                        onChange={(e) => updateColor(index, e.target.value)}
+                        className="w-full h-14 rounded-lg cursor-pointer border-2 border-gray-200 dark:border-gray-700 group-hover:border-primary-400 transition-all opacity-0 absolute bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                      />
+                      <div 
+                        className="w-full h-14 rounded-lg border-2 border-gray-200 dark:border-gray-700 group-hover:border-primary-400 transition-all flex items-center justify-end px-4 relative overflow-hidden"
+                        style={{ backgroundColor: color }}
+                      >
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
+                        <svg className="w-5 h-5 text-white relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ filter: 'drop-shadow(0 0 2px rgba(0,0,0,0.8)) drop-shadow(0 0 1px rgba(0,0,0,0.9))' }}>
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    </label>
                     <input
                       type="text"
                       value={color}
                       onChange={(e) => updateColor(index, e.target.value)}
-                      className="w-full px-2 py-1 text-xs font-mono border border-gray-200 rounded focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-2 py-1 text-xs font-mono border border-gray-200 dark:border-gray-700 rounded focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                       placeholder="#000000"
                     />
                   </div>
@@ -257,13 +349,13 @@ export default function GradientGeneratorPage() {
                     onChange={(e) => setUseAngle(e.target.checked)}
                     className="w-4 h-4 accent-primary-600"
                   />
-                  <label htmlFor="use-angle" className="text-sm font-medium text-gray-700 cursor-pointer">
+                  <label htmlFor="use-angle" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
                     Use custom angle
                   </label>
                 </div>
                 {useAngle ? (
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                       Angle: <span className="text-primary-600 font-bold">{angle}°</span>
                     </label>
                     <input
@@ -274,14 +366,14 @@ export default function GradientGeneratorPage() {
                       onChange={(e) => setAngle(Number(e.target.value))}
                       className="w-full h-2 bg-gray-200 rounded-lg appearance-none accent-primary-600"
                     />
-                    <div className="flex justify-between text-xs text-gray-500 mt-1">
+                    <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
                       <span>0°</span>
                       <span>360°</span>
                     </div>
                   </div>
                 ) : (
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-3">Direction:</label>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Direction:</label>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                       {(['to right', 'to left', 'to top', 'to bottom', 'to top right', 'to top left', 'to bottom right', 'to bottom left'] as Direction[]).map((dir) => (
                         <button
@@ -290,7 +382,7 @@ export default function GradientGeneratorPage() {
                           className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
                             direction === dir
                               ? 'bg-primary-600 text-white shadow-md'
-                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                              : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                           }`}
                         >
                           {dir.replace('to ', '').replace(/\b\w/g, l => l.toUpperCase())}
@@ -304,17 +396,17 @@ export default function GradientGeneratorPage() {
 
             {/* Preview and CSS */}
             {css && (
-              <div className="space-y-4 pt-4 border-t border-gray-200">
+              <div className="space-y-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Preview:</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Preview:</label>
                   <div
-                    className="w-full h-48 rounded-xl border-2 border-gray-200 shadow-lg"
+                    className="w-full h-48 rounded-xl border-2 border-gray-200 dark:border-gray-700 shadow-lg"
                     style={getGradientStyle()}
                   />
                 </div>
                 <div>
                   <div className="flex justify-between items-center mb-2 flex-wrap gap-2">
-                    <label className="block text-sm font-semibold text-gray-700">CSS Code:</label>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">CSS Code:</label>
                     <div className="flex gap-2">
                       <button
                         onClick={exportToFile}
@@ -339,11 +431,11 @@ export default function GradientGeneratorPage() {
                       </button>
                     </div>
                   </div>
-                  <code className="block p-4 bg-gray-50 border-2 border-gray-200 rounded-lg font-mono text-sm break-all">
+                  <code className="block p-4 bg-gray-50 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg font-mono text-sm break-all text-gray-900 dark:text-gray-100">
                     {css}
                   </code>
-                  <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                    <p className="text-xs text-blue-800">
+                  <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                    <p className="text-xs text-blue-800 dark:text-blue-300">
                       <strong>Usage:</strong> Use this CSS property directly in your stylesheet or inline style attribute.
                     </p>
                   </div>
@@ -353,7 +445,7 @@ export default function GradientGeneratorPage() {
 
             {/* Statistics */}
             {totalGenerated > 0 && (
-              <div className="text-center text-sm text-gray-600 pt-2 border-t border-gray-200">
+              <div className="text-center text-sm text-gray-600 dark:text-gray-400 pt-2 border-t border-gray-200 dark:border-gray-700">
                 Total generated: <span className="font-semibold text-primary-600">{totalGenerated}</span> gradients
               </div>
             )}
@@ -363,15 +455,15 @@ export default function GradientGeneratorPage() {
         {/* SEO Content */}
         <div className="max-w-4xl mx-auto mt-16 space-y-8">
           {/* Introduction */}
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">What are CSS Gradients?</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">What are CSS Gradients?</h2>
             <div className="prose prose-gray max-w-none">
-              <p className="text-gray-700 leading-relaxed mb-4">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                 CSS gradients are smooth transitions between two or more colors. They&apos;re a powerful design tool that 
                 allows you to create visually appealing backgrounds, buttons, and UI elements without using images. 
                 Gradients can be linear (flowing in a direction) or radial (radiating from a center point).
               </p>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                 Modern web design heavily relies on gradients for creating depth, visual interest, and modern aesthetics. 
                 They&apos;re lightweight (no image files needed), scalable, and can be easily customized. Our gradient 
                 generator makes it easy to create professional gradients with multiple colors and various directions.
@@ -380,57 +472,57 @@ export default function GradientGeneratorPage() {
           </section>
 
           {/* Types of Gradients */}
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Types of CSS Gradients</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Types of CSS Gradients</h2>
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Linear Gradients</h3>
-                <p className="text-gray-700 text-sm mb-3">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Linear Gradients</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-3">
                   Linear gradients transition colors along a straight line. You can control the direction (top, bottom, 
                   left, right, diagonals) or use custom angles (0-360 degrees). Perfect for backgrounds, buttons, and 
                   section dividers.
                 </p>
-                <p className="text-xs text-gray-600"><strong>Best for:</strong> Backgrounds, buttons, headers, section dividers</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400"><strong>Best for:</strong> Backgrounds, buttons, headers, section dividers</p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Radial Gradients</h3>
-                <p className="text-gray-700 text-sm mb-3">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Radial Gradients</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-3">
                   Radial gradients radiate outward from a central point, creating circular or elliptical color transitions. 
                   Great for creating spotlight effects, glowing backgrounds, or circular design elements.
                 </p>
-                <p className="text-xs text-gray-600"><strong>Best for:</strong> Spotlight effects, glowing backgrounds, circular elements</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400"><strong>Best for:</strong> Spotlight effects, glowing backgrounds, circular elements</p>
               </div>
             </div>
           </section>
 
           {/* Use Cases */}
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Common Use Cases</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Common Use Cases</h2>
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">🎨 Website Backgrounds</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">🎨 Website Backgrounds</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Create eye-catching hero sections, landing pages, and full-page backgrounds. Gradients add depth and 
                   visual interest without overwhelming content.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">🔘 Buttons & CTAs</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">🔘 Buttons & CTAs</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Make call-to-action buttons stand out with gradient backgrounds. Gradients can make buttons feel more 
                   modern and clickable.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">📱 Mobile App Design</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">📱 Mobile App Design</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Use gradients in mobile app interfaces for headers, cards, and navigation elements. They create a 
                   premium, polished look.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">🎭 Brand Identity</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">🎭 Brand Identity</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Incorporate gradients into your brand&apos;s visual identity. Many modern brands use gradients as a key 
                   design element.
                 </p>
@@ -439,14 +531,14 @@ export default function GradientGeneratorPage() {
           </section>
 
           {/* Features */}
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Key Features</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Key Features</h2>
             <div className="grid md:grid-cols-2 gap-6">
               <div className="flex items-start gap-3">
                 <span className="text-2xl">🌈</span>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Multiple Colors</h3>
-                  <p className="text-gray-700 text-sm">
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Multiple Colors</h3>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">
                     Create gradients with up to 5 colors for complex, multi-stop gradients. Add or remove colors 
                     dynamically to achieve the perfect effect.
                   </p>
@@ -455,8 +547,8 @@ export default function GradientGeneratorPage() {
               <div className="flex items-start gap-3">
                 <span className="text-2xl">📐</span>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Flexible Directions</h3>
-                  <p className="text-gray-700 text-sm">
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Flexible Directions</h3>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">
                     Choose from 8 preset directions or use custom angles (0-360°). Perfect control over gradient 
                     orientation for any design need.
                   </p>
@@ -465,8 +557,8 @@ export default function GradientGeneratorPage() {
               <div className="flex items-start gap-3">
                 <span className="text-2xl">🎨</span>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Gradient Types</h3>
-                  <p className="text-gray-700 text-sm">
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Gradient Types</h3>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">
                     Generate both linear and radial gradients. Switch between types instantly to see which works 
                     best for your design.
                   </p>
@@ -475,8 +567,8 @@ export default function GradientGeneratorPage() {
               <div className="flex items-start gap-3">
                 <span className="text-2xl">⚡</span>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Quick Presets</h3>
-                  <p className="text-gray-700 text-sm">
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Quick Presets</h3>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">
                     Start with beautiful preset gradients like Sunset, Ocean, Forest, and more. One click to apply 
                     and customize.
                   </p>
@@ -485,8 +577,8 @@ export default function GradientGeneratorPage() {
               <div className="flex items-start gap-3">
                 <span className="text-2xl">📥</span>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Export Options</h3>
-                  <p className="text-gray-700 text-sm">
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Export Options</h3>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">
                     Copy the CSS property, full CSS rule, or export to a CSS file. Ready to use in any project 
                     immediately.
                   </p>
@@ -495,8 +587,8 @@ export default function GradientGeneratorPage() {
               <div className="flex items-start gap-3">
                 <span className="text-2xl">🔒</span>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Privacy First</h3>
-                  <p className="text-gray-700 text-sm">
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Privacy First</h3>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">
                     All gradient generation happens locally in your browser. We never see, store, or have access 
                     to your gradients.
                   </p>
@@ -506,48 +598,48 @@ export default function GradientGeneratorPage() {
           </section>
 
           {/* FAQ */}
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Frequently Asked Questions</h2>
             <div className="space-y-6">
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">How many colors can I use in a gradient?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">How many colors can I use in a gradient?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   You can use up to 5 colors in a single gradient. This allows for complex, multi-stop gradients 
                   with smooth transitions between multiple color points.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">What&apos;s the difference between linear and radial gradients?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">What&apos;s the difference between linear and radial gradients?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Linear gradients transition colors along a straight line in a specific direction. Radial gradients 
                   radiate outward from a center point in a circular or elliptical pattern. Choose based on your 
                   design needs.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Can I use custom angles for linear gradients?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Can I use custom angles for linear gradients?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Yes! Enable &quot;Use custom angle&quot; and adjust the slider from 0° to 360° for precise control over 
                   gradient direction. 0° is upward, 90° is rightward, and so on.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Are the generated gradients compatible with all browsers?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Are the generated gradients compatible with all browsers?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Yes! CSS gradients are supported by all modern browsers (Chrome, Firefox, Safari, Edge). The 
                   syntax we generate is standard CSS and works everywhere.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Can I use these gradients commercially?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Can I use these gradients commercially?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Absolutely! All generated gradients are free to use for any purpose, including commercial projects. 
                   There are no restrictions on usage.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Do you store the generated gradients?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Do you store the generated gradients?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   No, we don&apos;t store any gradients. All generation happens locally in your browser. Your settings 
                   are saved locally for convenience, but we never see or have access to your gradients.
                 </p>
@@ -556,7 +648,12 @@ export default function GradientGeneratorPage() {
           </section>
         </div>
       </div>
+      {/* Related Tools */}
+      {relatedTools.length > 0 && (
+        <RelatedTools tools={relatedTools} title="Related Design Tools" />
+      )}
     </Layout>
+    </>
   )
 }
 

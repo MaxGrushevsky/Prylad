@@ -2,6 +2,10 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import Layout from '@/components/Layout'
+import StructuredData from '@/components/StructuredData'
+import RelatedTools from '@/components/RelatedTools'
+import { generateFAQSchema, generateHowToSchema, generateSoftwareApplicationSchema } from '@/lib/structured-data'
+import { generateBreadcrumbs, getRelatedTools } from '@/lib/seo-helpers'
 
 interface GridSettings {
   columns: string
@@ -250,34 +254,113 @@ export default function LayoutGeneratorPage() {
     ])
   }
 
+  // SEO data
+  const toolPath = '/layout-generator'
+  const toolName = 'CSS Grid & Flexbox Generator'
+  const category = 'design'
+  const breadcrumbs = generateBreadcrumbs(toolName, toolPath, category)
+  const relatedTools = getRelatedTools(toolPath, category, 6)
+
+  // FAQ data
+  const faqs = [
+    {
+      question: "What is CSS Grid and Flexbox?",
+      answer: "CSS Grid is a two-dimensional layout system for creating complex grid-based layouts. Flexbox is a one-dimensional layout system for arranging items in rows or columns. Both are modern CSS layout methods that make responsive design easier."
+    },
+    {
+      question: "How do I create a Grid layout?",
+      answer: "Select 'Grid' layout type, add blocks to your layout, configure grid properties (columns, rows, gaps, alignment), and see the layout update in real-time. Export the CSS code when you're done."
+    },
+    {
+      question: "How do I create a Flexbox layout?",
+      answer: "Select 'Flexbox' layout type, add blocks, configure flex properties (direction, wrap, justify-content, align-items, gap), and see the layout update in real-time. Export the CSS code when you're done."
+    },
+    {
+      question: "Can I customize block properties?",
+      answer: "Yes! Each block can be customized with content, background color, and size. You can add, remove, and reorder blocks to create your desired layout structure."
+    },
+    {
+      question: "Can I export the CSS code?",
+      answer: "Yes! Click 'Copy CSS' to copy the generated CSS code to your clipboard. Use it directly in your stylesheets or projects. The code includes all the properties you've configured."
+    },
+    {
+      question: "Is the layout generator free?",
+      answer: "Yes, completely free! No registration, no limits, no hidden fees. All layout generation happens in your browser - we never see or store your layouts."
+    }
+  ]
+
+  // HowTo steps
+  const howToSteps = [
+    {
+      name: "Choose Layout Type",
+      text: "Select 'Grid' for two-dimensional layouts or 'Flexbox' for one-dimensional layouts. Each type has different properties and use cases."
+    },
+    {
+      name: "Add Blocks",
+      text: "Click 'Add Block' to add content blocks to your layout. Each block can be customized with content, color, and size."
+    },
+    {
+      name: "Configure Properties",
+      text: "Adjust layout properties: for Grid (columns, rows, gaps, alignment), for Flexbox (direction, wrap, justify-content, align-items, gap). See changes in real-time."
+    },
+    {
+      name: "Preview Layout",
+      text: "See your layout preview update automatically as you change properties. The visual preview shows exactly how your layout will look."
+    },
+    {
+      name: "Export CSS",
+      text: "Click 'Copy CSS' to copy the generated CSS code. Use it in your stylesheets, projects, or any CSS-compatible environment."
+    }
+  ]
+
+  // Structured data
+  const structuredData = [
+    generateFAQSchema(faqs),
+    generateHowToSchema(
+      "How to Create CSS Grid and Flexbox Layouts",
+      "Learn how to create CSS Grid and Flexbox layouts visually using our free online layout generator tool with real-time preview.",
+      howToSteps,
+      "PT3M"
+    ),
+    generateSoftwareApplicationSchema(
+      "CSS Grid & Flexbox Generator",
+      "Free online CSS Grid and Flexbox layout generator. Create layouts visually, adjust properties, see real-time preview, and export CSS code. Perfect for web designers and developers.",
+      "https://prylad.pro/layout-generator",
+      "WebApplication"
+    )
+  ]
+
   return (
-    <Layout
-      title="📐 CSS Grid & Flexbox Generator - Visual Layout Builder Online"
-      description="Create CSS Grid and Flexbox layouts visually. Add blocks, adjust properties, see real-time preview, and export CSS code. Perfect for web designers and developers building responsive layouts."
-    >
+    <>
+      <StructuredData data={structuredData} />
+      <Layout
+        title="📐 CSS Grid & Flexbox Generator - Visual Layout Builder"
+        description="Create CSS Grid and Flexbox layouts visually. Add blocks, adjust properties, see real-time preview, and export CSS code. Perfect for web designers and developers building responsive layouts."
+        breadcrumbs={breadcrumbs}
+      >
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="grid lg:grid-cols-2 gap-6">
           {/* Controls */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 space-y-6">
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold">Layout Controls</h2>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Layout Controls</h2>
               {totalGenerated > 0 && (
-                <div className="text-sm text-gray-500">
-                  Generated: <span className="font-semibold text-gray-900">{totalGenerated}</span>
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  Generated: <span className="font-semibold text-gray-900 dark:text-gray-100">{totalGenerated}</span>
                 </div>
               )}
             </div>
 
             {/* Type Selection */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-3">Layout Type:</label>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Layout Type:</label>
               <div className="grid grid-cols-2 gap-2">
                 <button
                   onClick={() => setType('grid')}
                   className={`px-4 py-3 rounded-lg font-semibold transition-all ${
                     type === 'grid'
                       ? 'bg-primary-600 text-white shadow-lg'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
                   CSS Grid
@@ -287,7 +370,7 @@ export default function LayoutGeneratorPage() {
                   className={`px-4 py-3 rounded-lg font-semibold transition-all ${
                     type === 'flexbox'
                       ? 'bg-primary-600 text-white shadow-lg'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
                   Flexbox
@@ -297,15 +380,15 @@ export default function LayoutGeneratorPage() {
 
             {/* Presets */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-3">Quick Presets:</label>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Quick Presets:</label>
               <div className="grid grid-cols-2 gap-2">
                 {(type === 'grid' ? gridPresets : flexboxPresets).map((preset) => (
                   <button
                     key={preset.name}
                     onClick={() => applyPreset(preset)}
-                    className="px-3 py-2 text-left bg-gray-50 hover:bg-gray-100 rounded-lg text-xs transition-colors"
+                    className="px-3 py-2 text-left bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-xs transition-colors"
                   >
-                    <div className="font-semibold text-gray-900">{preset.name}</div>
+                    <div className="font-semibold text-gray-900 dark:text-gray-100">{preset.name}</div>
                   </button>
                 ))}
               </div>
@@ -314,80 +397,80 @@ export default function LayoutGeneratorPage() {
             {/* Grid Settings */}
             {type === 'grid' && (
               <div className="space-y-4">
-                <h3 className="text-sm font-semibold text-gray-700">Grid Settings</h3>
+                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Grid Settings</h3>
                 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">
+                  <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">
                     Columns: {gridSettings.columns}
                   </label>
                   <input
                     type="text"
                     value={gridSettings.columns}
                     onChange={(e) => setGridSettings(prev => ({ ...prev, columns: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-200 rounded text-sm font-mono"
+                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded text-sm font-mono bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                     placeholder="repeat(3, 1fr)"
                   />
-                  <p className="mt-1 text-xs text-gray-500">
+                  <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                     Examples: repeat(3, 1fr), 1fr 2fr 1fr, 200px auto
                   </p>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">
+                  <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">
                     Rows: {gridSettings.rows}
                   </label>
                   <input
                     type="text"
                     value={gridSettings.rows}
                     onChange={(e) => setGridSettings(prev => ({ ...prev, rows: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-200 rounded text-sm font-mono"
+                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded text-sm font-mono bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                     placeholder="auto"
                   />
                 </div>
 
                 <div className="grid grid-cols-3 gap-2">
                   <div>
-                    <label className="block text-xs font-semibold text-gray-700 mb-1">Gap</label>
+                    <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Gap</label>
                     <input
                       type="number"
                       min="0"
                       max="100"
                       value={gridSettings.gap}
                       onChange={(e) => setGridSettings(prev => ({ ...prev, gap: Number(e.target.value) || 0 }))}
-                      className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                      className="w-full px-2 py-1 border border-gray-200 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-gray-700 mb-1">Col Gap</label>
+                    <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Col Gap</label>
                     <input
                       type="number"
                       min="0"
                       max="100"
                       value={gridSettings.columnGap}
                       onChange={(e) => setGridSettings(prev => ({ ...prev, columnGap: Number(e.target.value) || 0 }))}
-                      className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                      className="w-full px-2 py-1 border border-gray-200 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-gray-700 mb-1">Row Gap</label>
+                    <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Row Gap</label>
                     <input
                       type="number"
                       min="0"
                       max="100"
                       value={gridSettings.rowGap}
                       onChange={(e) => setGridSettings(prev => ({ ...prev, rowGap: Number(e.target.value) || 0 }))}
-                      className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                      className="w-full px-2 py-1 border border-gray-200 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="block text-xs font-semibold text-gray-700 mb-1">Justify Items</label>
+                    <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Justify Items</label>
                     <select
                       value={gridSettings.justifyItems}
                       onChange={(e) => setGridSettings(prev => ({ ...prev, justifyItems: e.target.value }))}
-                      className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                      className="w-full px-2 py-1 border border-gray-200 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                     >
                       <option value="stretch">stretch</option>
                       <option value="start">start</option>
@@ -396,11 +479,11 @@ export default function LayoutGeneratorPage() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-gray-700 mb-1">Align Items</label>
+                    <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Align Items</label>
                     <select
                       value={gridSettings.alignItems}
                       onChange={(e) => setGridSettings(prev => ({ ...prev, alignItems: e.target.value }))}
-                      className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                      className="w-full px-2 py-1 border border-gray-200 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                     >
                       <option value="stretch">stretch</option>
                       <option value="start">start</option>
@@ -409,11 +492,11 @@ export default function LayoutGeneratorPage() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-gray-700 mb-1">Justify Content</label>
+                    <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Justify Content</label>
                     <select
                       value={gridSettings.justifyContent}
                       onChange={(e) => setGridSettings(prev => ({ ...prev, justifyContent: e.target.value }))}
-                      className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                      className="w-full px-2 py-1 border border-gray-200 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                     >
                       <option value="start">start</option>
                       <option value="end">end</option>
@@ -425,11 +508,11 @@ export default function LayoutGeneratorPage() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-gray-700 mb-1">Align Content</label>
+                    <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Align Content</label>
                     <select
                       value={gridSettings.alignContent}
                       onChange={(e) => setGridSettings(prev => ({ ...prev, alignContent: e.target.value }))}
-                      className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                      className="w-full px-2 py-1 border border-gray-200 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                     >
                       <option value="start">start</option>
                       <option value="end">end</option>
@@ -447,15 +530,15 @@ export default function LayoutGeneratorPage() {
             {/* Flexbox Settings */}
             {type === 'flexbox' && (
               <div className="space-y-4">
-                <h3 className="text-sm font-semibold text-gray-700">Flexbox Settings</h3>
+                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Flexbox Settings</h3>
                 
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="block text-xs font-semibold text-gray-700 mb-1">Direction</label>
+                    <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Direction</label>
                     <select
                       value={flexboxSettings.direction}
                       onChange={(e) => setFlexboxSettings(prev => ({ ...prev, direction: e.target.value }))}
-                      className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                      className="w-full px-2 py-1 border border-gray-200 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                     >
                       <option value="row">row</option>
                       <option value="row-reverse">row-reverse</option>
@@ -464,11 +547,11 @@ export default function LayoutGeneratorPage() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-gray-700 mb-1">Wrap</label>
+                    <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Wrap</label>
                     <select
                       value={flexboxSettings.wrap}
                       onChange={(e) => setFlexboxSettings(prev => ({ ...prev, wrap: e.target.value }))}
-                      className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                      className="w-full px-2 py-1 border border-gray-200 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                     >
                       <option value="nowrap">nowrap</option>
                       <option value="wrap">wrap</option>
@@ -476,11 +559,11 @@ export default function LayoutGeneratorPage() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-gray-700 mb-1">Justify Content</label>
+                    <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Justify Content</label>
                     <select
                       value={flexboxSettings.justifyContent}
                       onChange={(e) => setFlexboxSettings(prev => ({ ...prev, justifyContent: e.target.value }))}
-                      className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                      className="w-full px-2 py-1 border border-gray-200 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                     >
                       <option value="flex-start">flex-start</option>
                       <option value="flex-end">flex-end</option>
@@ -491,11 +574,11 @@ export default function LayoutGeneratorPage() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-gray-700 mb-1">Align Items</label>
+                    <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Align Items</label>
                     <select
                       value={flexboxSettings.alignItems}
                       onChange={(e) => setFlexboxSettings(prev => ({ ...prev, alignItems: e.target.value }))}
-                      className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                      className="w-full px-2 py-1 border border-gray-200 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                     >
                       <option value="stretch">stretch</option>
                       <option value="flex-start">flex-start</option>
@@ -505,11 +588,11 @@ export default function LayoutGeneratorPage() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-gray-700 mb-1">Align Content</label>
+                    <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Align Content</label>
                     <select
                       value={flexboxSettings.alignContent}
                       onChange={(e) => setFlexboxSettings(prev => ({ ...prev, alignContent: e.target.value }))}
-                      className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                      className="w-full px-2 py-1 border border-gray-200 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                     >
                       <option value="stretch">stretch</option>
                       <option value="flex-start">flex-start</option>
@@ -521,14 +604,14 @@ export default function LayoutGeneratorPage() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-gray-700 mb-1">Gap (px)</label>
+                    <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Gap (px)</label>
                     <input
                       type="number"
                       min="0"
                       max="100"
                       value={flexboxSettings.gap}
                       onChange={(e) => setFlexboxSettings(prev => ({ ...prev, gap: Number(e.target.value) || 0 }))}
-                      className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                      className="w-full px-2 py-1 border border-gray-200 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                     />
                   </div>
                 </div>
@@ -538,7 +621,7 @@ export default function LayoutGeneratorPage() {
             {/* Blocks Management */}
             <div>
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-semibold text-gray-700">Blocks ({blocks.length})</h3>
+                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Blocks ({blocks.length})</h3>
                 <button
                   onClick={addBlock}
                   className="px-3 py-1 bg-primary-600 text-white text-xs rounded-lg hover:bg-primary-700 transition-colors"
@@ -548,9 +631,9 @@ export default function LayoutGeneratorPage() {
               </div>
               <div className="space-y-2 max-h-64 overflow-y-auto">
                 {blocks.map((block, index) => (
-                  <div key={block.id} className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                  <div key={block.id} className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-700">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-semibold text-gray-700">Block {index + 1}</span>
+                      <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">Block {index + 1}</span>
                       <div className="flex gap-1">
                         <button
                           onClick={() => duplicateBlock(block.id)}
@@ -570,43 +653,43 @@ export default function LayoutGeneratorPage() {
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <label className="block text-xs text-gray-600 mb-1">Content</label>
+                        <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">Content</label>
                         <input
                           type="text"
                           value={block.content}
                           onChange={(e) => updateBlock(block.id, { content: e.target.value })}
-                          className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+                          className="w-full px-2 py-1 border border-gray-200 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                         />
                       </div>
                       <div>
-                        <label className="block text-xs text-gray-600 mb-1">Color</label>
+                        <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">Color</label>
                         <input
                           type="color"
                           value={block.color}
                           onChange={(e) => updateBlock(block.id, { color: e.target.value })}
-                          className="w-full h-8 rounded cursor-pointer border border-gray-200"
+                          className="w-full h-8 rounded cursor-pointer border border-gray-200 dark:border-gray-700"
                         />
                       </div>
                     </div>
                     {type === 'grid' && (
                       <div className="grid grid-cols-2 gap-2 mt-2">
                         <div>
-                          <label className="block text-xs text-gray-600 mb-1">Grid Column</label>
+                          <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">Grid Column</label>
                           <input
                             type="text"
                             value={block.gridColumn || ''}
                             onChange={(e) => updateBlock(block.id, { gridColumn: e.target.value || undefined })}
-                            className="w-full px-2 py-1 border border-gray-200 rounded text-xs font-mono"
+                            className="w-full px-2 py-1 border border-gray-200 dark:border-gray-700 rounded text-xs font-mono bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                             placeholder="auto"
                           />
                         </div>
                         <div>
-                          <label className="block text-xs text-gray-600 mb-1">Grid Row</label>
+                          <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">Grid Row</label>
                           <input
                             type="text"
                             value={block.gridRow || ''}
                             onChange={(e) => updateBlock(block.id, { gridRow: e.target.value || undefined })}
-                            className="w-full px-2 py-1 border border-gray-200 rounded text-xs font-mono"
+                            className="w-full px-2 py-1 border border-gray-200 dark:border-gray-700 rounded text-xs font-mono bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                             placeholder="auto"
                           />
                         </div>
@@ -615,22 +698,22 @@ export default function LayoutGeneratorPage() {
                     {type === 'flexbox' && (
                       <div className="grid grid-cols-2 gap-2 mt-2">
                         <div>
-                          <label className="block text-xs text-gray-600 mb-1">Width</label>
+                          <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">Width</label>
                           <input
                             type="text"
                             value={block.width || ''}
                             onChange={(e) => updateBlock(block.id, { width: e.target.value || undefined })}
-                            className="w-full px-2 py-1 border border-gray-200 rounded text-xs font-mono"
+                            className="w-full px-2 py-1 border border-gray-200 dark:border-gray-700 rounded text-xs font-mono bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                             placeholder="auto"
                           />
                         </div>
                         <div>
-                          <label className="block text-xs text-gray-600 mb-1">Height</label>
+                          <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">Height</label>
                           <input
                             type="text"
                             value={block.height || ''}
                             onChange={(e) => updateBlock(block.id, { height: e.target.value || undefined })}
-                            className="w-full px-2 py-1 border border-gray-200 rounded text-xs font-mono"
+                            className="w-full px-2 py-1 border border-gray-200 dark:border-gray-700 rounded text-xs font-mono bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                             placeholder="auto"
                           />
                         </div>
@@ -643,7 +726,7 @@ export default function LayoutGeneratorPage() {
 
             {/* Container Height */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Container Height: {containerHeight}px
               </label>
               <input
@@ -664,7 +747,7 @@ export default function LayoutGeneratorPage() {
                 onChange={(e) => setAutoGenerate(e.target.checked)}
                 className="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
               />
-              <span className="text-sm text-gray-700">Auto-generate as you edit</span>
+              <span className="text-sm text-gray-700 dark:text-gray-300">Auto-generate as you edit</span>
             </label>
 
             {!autoGenerate && (
@@ -697,14 +780,14 @@ export default function LayoutGeneratorPage() {
           </div>
 
           {/* Preview & Output */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 space-y-6">
-            <h2 className="text-xl font-bold">Live Preview & CSS Output</h2>
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 space-y-6">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Live Preview & CSS Output</h2>
 
             {/* Preview */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Visual Preview</label>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Visual Preview</label>
               <div
-                className="w-full border-2 border-gray-300 rounded-lg bg-gray-50 p-4 overflow-auto"
+                className="w-full border-2 border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 p-4 overflow-auto"
                 style={containerStyle}
               >
                 {blocks.map((block) => (
@@ -731,7 +814,7 @@ export default function LayoutGeneratorPage() {
             {css && (
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <label className="block text-sm font-semibold text-gray-700">CSS Code</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">CSS Code</label>
                   <button
                     onClick={() => copyToClipboard(css)}
                     className="px-3 py-1 bg-primary-600 text-white text-sm rounded-lg hover:bg-primary-700 transition-colors"
@@ -739,7 +822,7 @@ export default function LayoutGeneratorPage() {
                     Copy CSS
                   </button>
                 </div>
-                <code className="block p-4 bg-gray-50 border-2 border-gray-200 rounded-lg font-mono text-sm whitespace-pre overflow-x-auto">
+                <code className="block p-4 bg-gray-50 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg font-mono text-sm whitespace-pre overflow-x-auto text-gray-900 dark:text-gray-200">
                   {css}
                 </code>
               </div>
@@ -749,69 +832,69 @@ export default function LayoutGeneratorPage() {
 
         {/* SEO Content */}
         <div className="max-w-4xl mx-auto mt-16 space-y-8">
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">CSS Grid vs Flexbox</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">CSS Grid vs Flexbox</h2>
             <div className="prose prose-gray max-w-none">
-              <p className="text-gray-700 leading-relaxed mb-4">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                 <strong>CSS Grid</strong> is a two-dimensional layout system, meaning it can handle both columns and rows. 
                 It&apos;s perfect for creating complex layouts with precise control over both axes. Grid excels at creating 
                 page layouts, card grids, and any design that needs alignment in two dimensions.
               </p>
-              <p className="text-gray-700 leading-relaxed mb-4">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                 <strong>Flexbox</strong> is a one-dimensional layout method for laying out items in rows or columns. 
                 It&apos;s ideal for distributing space and aligning content within a container. Flexbox is perfect for 
                 navigation bars, centering content, and creating flexible components.
               </p>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                 Our visual layout generator lets you experiment with both Grid and Flexbox. Add blocks, adjust properties, 
                 and see your layout update in real-time. Perfect for learning, prototyping, and generating production-ready CSS.
               </p>
             </div>
           </section>
 
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">CSS Grid Properties</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">CSS Grid Properties</h2>
             <div className="space-y-4">
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">grid-template-columns</h3>
-                <p className="text-gray-700 text-sm mb-2">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">grid-template-columns</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-2">
                   Defines the line names and track sizing functions of the grid columns.
                 </p>
-                <pre className="bg-gray-100 p-3 rounded text-sm overflow-x-auto">
+                <pre className="bg-gray-100 dark:bg-gray-700 p-3 rounded text-sm overflow-x-auto text-gray-900 dark:text-gray-200">
 {`grid-template-columns: repeat(3, 1fr);
 grid-template-columns: 1fr 2fr 1fr;
 grid-template-columns: 200px auto 300px;`}
                 </pre>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">grid-template-rows</h3>
-                <p className="text-gray-700 text-sm mb-2">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">grid-template-rows</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-2">
                   Defines the line names and track sizing functions of the grid rows.
                 </p>
-                <pre className="bg-gray-100 p-3 rounded text-sm overflow-x-auto">
+                <pre className="bg-gray-100 dark:bg-gray-700 p-3 rounded text-sm overflow-x-auto text-gray-900 dark:text-gray-200">
 {`grid-template-rows: auto;
 grid-template-rows: 100px 200px;
 grid-template-rows: repeat(2, 1fr);`}
                 </pre>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">gap</h3>
-                <p className="text-gray-700 text-sm mb-2">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">gap</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-2">
                   Sets the gaps (gutters) between rows and columns. Shorthand for row-gap and column-gap.
                 </p>
               </div>
             </div>
           </section>
 
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Flexbox Properties</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Flexbox Properties</h2>
             <div className="space-y-4">
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">flex-direction</h3>
-                <p className="text-gray-700 text-sm mb-2">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">flex-direction</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-2">
                   Establishes the main-axis, defining the direction flex items are placed in the flex container.
                 </p>
-                <pre className="bg-gray-100 p-3 rounded text-sm overflow-x-auto">
+                <pre className="bg-gray-100 dark:bg-gray-700 p-3 rounded text-sm overflow-x-auto text-gray-900 dark:text-gray-200">
 {`flex-direction: row;        /* default */
 flex-direction: column;
 flex-direction: row-reverse;
@@ -819,11 +902,11 @@ flex-direction: column-reverse;`}
                 </pre>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">justify-content</h3>
-                <p className="text-gray-700 text-sm mb-2">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">justify-content</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-2">
                   Defines how the browser distributes space between and around content items along the main-axis.
                 </p>
-                <pre className="bg-gray-100 p-3 rounded text-sm overflow-x-auto">
+                <pre className="bg-gray-100 dark:bg-gray-700 p-3 rounded text-sm overflow-x-auto text-gray-900 dark:text-gray-200">
 {`justify-content: flex-start;
 justify-content: center;
 justify-content: space-between;
@@ -831,55 +914,55 @@ justify-content: space-around;`}
                 </pre>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">align-items</h3>
-                <p className="text-gray-700 text-sm mb-2">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">align-items</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-2">
                   Controls the alignment of items on the cross-axis (perpendicular to the main-axis).
                 </p>
               </div>
             </div>
           </section>
 
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Common Use Cases</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Common Use Cases</h2>
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">📐 Grid: Page Layouts</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">📐 Grid: Page Layouts</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Use CSS Grid for overall page structure - header, sidebar, main content, footer. Grid&apos;s two-dimensional 
                   nature makes it perfect for complex layouts.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">📱 Grid: Card Grids</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">📱 Grid: Card Grids</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Create responsive card grids that automatically adjust to available space. Use repeat() and auto-fit/auto-fill 
                   for flexible, responsive designs.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">🎯 Flexbox: Navigation</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">🎯 Flexbox: Navigation</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Flexbox is ideal for navigation bars. Use justify-content to space items, align-items to center vertically, 
                   and flex-wrap for responsive behavior.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">🎨 Flexbox: Centering</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">🎨 Flexbox: Centering</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   The easiest way to center content both horizontally and vertically. Use justify-content: center and 
                   align-items: center on a flex container.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">🔄 Combined Approach</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">🔄 Combined Approach</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Use Grid for the overall page layout and Flexbox for components within grid areas. This combines the 
                   strengths of both layout methods.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">📦 Flexbox: Form Layouts</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">📦 Flexbox: Form Layouts</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Flexbox makes form layouts simple. Use flex-direction: column for stacked inputs, and flex properties 
                   on form elements for flexible sizing.
                 </p>
@@ -887,9 +970,9 @@ justify-content: space-around;`}
             </div>
           </section>
 
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Key Features</h2>
-            <ul className="space-y-3 text-gray-700">
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Key Features</h2>
+            <ul className="space-y-3 text-gray-700 dark:text-gray-300">
               <li className="flex items-start gap-2">
                 <span className="text-primary-600 font-bold">✓</span>
                 <span><strong>Visual Block Editor:</strong> Add, remove, duplicate, and customize blocks with colors and content.</span>
@@ -917,49 +1000,49 @@ justify-content: space-around;`}
             </ul>
           </section>
 
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Frequently Asked Questions</h2>
             <div className="space-y-6">
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">When should I use Grid vs Flexbox?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">When should I use Grid vs Flexbox?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Use <strong>Grid</strong> for two-dimensional layouts (rows and columns) like page layouts, card grids, and complex designs. 
                   Use <strong>Flexbox</strong> for one-dimensional layouts (row OR column) like navigation bars, centering content, and flexible components.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Can I use Grid and Flexbox together?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Can I use Grid and Flexbox together?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Absolutely! Use Grid for the overall page structure and Flexbox for components within grid areas. This is a common 
                   and recommended approach that combines the strengths of both layout methods.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">What does repeat() do in Grid?</h3>
-                <p className="text-gray-700 text-sm">
-                  <code className="bg-gray-100 px-1 rounded text-xs">repeat(3, 1fr)</code> creates 3 columns, each taking 1 fraction of available space. 
-                  <code className="bg-gray-100 px-1 rounded text-xs">repeat(auto-fit, minmax(200px, 1fr))</code> creates as many columns as fit, 
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">What does repeat() do in Grid?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
+                  <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded text-xs">repeat(3, 1fr)</code> creates 3 columns, each taking 1 fraction of available space. 
+                  <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded text-xs">repeat(auto-fit, minmax(200px, 1fr))</code> creates as many columns as fit, 
                   each at least 200px wide.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">How do I make a responsive grid?</h3>
-                <p className="text-gray-700 text-sm">
-                  Use <code className="bg-gray-100 px-1 rounded text-xs">repeat(auto-fit, minmax(200px, 1fr))</code> or 
-                  <code className="bg-gray-100 px-1 rounded text-xs">repeat(auto-fill, minmax(200px, 1fr))</code>. 
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">How do I make a responsive grid?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
+                  Use <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded text-xs">repeat(auto-fit, minmax(200px, 1fr))</code> or 
+                  <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded text-xs">repeat(auto-fill, minmax(200px, 1fr))</code>. 
                   This automatically adjusts the number of columns based on available space.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">What&apos;s the difference between justify-content and align-items in Flexbox?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">What&apos;s the difference between justify-content and align-items in Flexbox?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   <strong>justify-content</strong> aligns items along the main-axis (horizontal in row, vertical in column). 
                   <strong>align-items</strong> aligns items along the cross-axis (vertical in row, horizontal in column).
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Can I save my layouts?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Can I save my layouts?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   You can export the CSS code to a file, which you can then use in your projects. All processing happens in your browser, 
                   so your layouts are never stored on our servers.
                 </p>
@@ -968,6 +1051,11 @@ justify-content: space-around;`}
           </section>
         </div>
       </div>
+      {/* Related Tools */}
+      {relatedTools.length > 0 && (
+        <RelatedTools tools={relatedTools} title="Related Design Tools" />
+      )}
     </Layout>
+    </>
   )
 }

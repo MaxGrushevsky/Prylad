@@ -2,6 +2,10 @@
 
 import { useState, useCallback, useMemo } from 'react'
 import Layout from '@/components/Layout'
+import StructuredData from '@/components/StructuredData'
+import RelatedTools from '@/components/RelatedTools'
+import { generateFAQSchema, generateHowToSchema, generateSoftwareApplicationSchema } from '@/lib/structured-data'
+import { generateBreadcrumbs, getRelatedTools } from '@/lib/seo-helpers'
 type DataType = 'name' | 'email' | 'phone' | 'address' | 'date' | 'number' | 'text' | 'uuid' | 'url' | 'ip'
 type OutputFormat = 'json' | 'csv' | 'sql'
 
@@ -173,13 +177,93 @@ export default function TestDataGeneratorPage() {
     }
   }
 
+  // SEO data
+  const toolPath = '/test-data-generator'
+  const toolName = 'Test Data Generator'
+  const category = 'generator'
+  const breadcrumbs = generateBreadcrumbs(toolName, toolPath, category)
+  const relatedTools = getRelatedTools(toolPath, category, 6)
+
+  // FAQ data
+  const faqs = [
+    {
+      question: "What is a test data generator?",
+      answer: "A test data generator creates fake or mock data for software development and testing. It generates realistic-looking data like names, emails, addresses, phone numbers, dates, and more without using real personal information."
+    },
+    {
+      question: "What types of data can I generate?",
+      answer: "You can generate: Names (first and last), Emails, Phone numbers, Addresses (street, city, state, zip), Dates, Numbers (integers or decimals), Text (random strings), UUIDs, URLs, and IP addresses."
+    },
+    {
+      question: "How do I generate test data?",
+      answer: "Add fields to your data structure, select the data type for each field, configure options (like min/max for numbers, format for dates), set the number of rows, and click 'Generate'. The data is created instantly."
+    },
+    {
+      question: "What output formats are supported?",
+      answer: "Three formats: JSON (JavaScript Object Notation), CSV (Comma-Separated Values), and SQL (INSERT statements). Choose the format that works best for your project."
+    },
+    {
+      question: "Can I customize the generated data?",
+      answer: "Yes! Each field type has options: numbers have min/max ranges, dates have format options, text has length options, and more. Configure each field to match your testing needs."
+    },
+    {
+      question: "Is the test data generator free?",
+      answer: "Yes, completely free! No registration, no limits, no hidden fees. All data generation happens in your browser - we never see or store your generated data."
+    }
+  ]
+
+  // HowTo steps
+  const howToSteps = [
+    {
+      name: "Add Fields",
+      text: "Click 'Add Field' to add a new field to your data structure. Give it a name and select the data type (name, email, phone, address, date, number, text, UUID, URL, or IP)."
+    },
+    {
+      name: "Configure Field Options",
+      text: "Set options for each field: for numbers (min/max), for dates (format), for text (length), etc. Each data type has specific customization options."
+    },
+    {
+      name: "Set Row Count",
+      text: "Enter the number of rows you want to generate. You can generate anywhere from 1 to 10,000 rows of test data."
+    },
+    {
+      name: "Choose Output Format",
+      text: "Select output format: JSON (for APIs and JavaScript), CSV (for spreadsheets), or SQL (for database inserts)."
+    },
+    {
+      name: "Generate and Export",
+      text: "Click 'Generate' to create the test data. Preview the results, then copy or download the data in your chosen format."
+    }
+  ]
+
+  // Structured data
+  const structuredData = [
+    generateFAQSchema(faqs),
+    generateHowToSchema(
+      "How to Generate Test Data",
+      "Learn how to generate test data for development and testing using our free online test data generator tool.",
+      howToSteps,
+      "PT3M"
+    ),
+    generateSoftwareApplicationSchema(
+      "Test Data Generator",
+      "Free online test data generator. Create fake names, emails, addresses, phone numbers, dates, and more. Export to JSON, CSV, or SQL. Perfect for software development and testing.",
+      "https://prylad.pro/test-data-generator",
+      "UtilityApplication"
+    )
+  ]
+
   return (
-    <Layout
-      title="🧪 Test Data Generator"
-      description="Generate test data for development and testing. Create fake names, emails, addresses, phone numbers, dates, and more."
+    <>
+      <StructuredData data={structuredData} />
+      <Layout
+        title="🧪 Test Data Generator"
+        description="Generate test data for development and testing. Create fake names, emails, addresses, phone numbers, dates, and more."
+        breadcrumbs={breadcrumbs}
+      >
     >
       <div className="max-w-6xl mx-auto">
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 mb-6">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 mb-6 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
           <div className="space-y-6">
             {/* Settings */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -207,7 +291,7 @@ export default function TestDataGeneratorPage() {
                 <select
                   value={outputFormat}
                   onChange={(e) => setOutputFormat(e.target.value as OutputFormat)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                 >
                   <option value="json">JSON</option>
                   <option value="csv">CSV</option>
@@ -237,12 +321,12 @@ export default function TestDataGeneratorPage() {
                       value={field.name}
                       onChange={(e) => updateField(field.id, { name: e.target.value })}
                       placeholder="Field name"
-                      className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
+                      className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                     />
                     <select
                       value={field.type}
                       onChange={(e) => updateField(field.id, { type: e.target.value as DataType })}
-                      className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
+                      className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                     >
                       <option value="name">Name</option>
                       <option value="email">Email</option>
@@ -262,14 +346,14 @@ export default function TestDataGeneratorPage() {
                           value={field.options?.min ?? 0}
                           onChange={(e) => updateField(field.id, { options: { ...field.options, min: parseInt(e.target.value) || 0 } })}
                           placeholder="Min"
-                          className="w-20 px-2 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
+                          className="w-20 px-2 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                         />
                         <input
                           type="number"
                           value={field.options?.max ?? 100}
                           onChange={(e) => updateField(field.id, { options: { ...field.options, max: parseInt(e.target.value) || 100 } })}
                           placeholder="Max"
-                          className="w-20 px-2 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
+                          className="w-20 px-2 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                         />
                       </div>
                     )}
@@ -279,7 +363,7 @@ export default function TestDataGeneratorPage() {
                         value={field.options?.wordCount ?? 5}
                         onChange={(e) => updateField(field.id, { options: { ...field.options, wordCount: parseInt(e.target.value) || 5 } })}
                         placeholder="Word count"
-                        className="w-24 px-2 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
+                        className="w-24 px-2 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                       />
                     )}
                     {field.type === 'date' && (
@@ -289,20 +373,20 @@ export default function TestDataGeneratorPage() {
                           value={field.options?.startDate ?? ''}
                           onChange={(e) => updateField(field.id, { options: { ...field.options, startDate: e.target.value } })}
                           placeholder="Start date"
-                          className="px-2 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
+                          className="px-2 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                         />
                         <input
                           type="date"
                           value={field.options?.endDate ?? ''}
                           onChange={(e) => updateField(field.id, { options: { ...field.options, endDate: e.target.value } })}
                           placeholder="End date"
-                          className="px-2 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
+                          className="px-2 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                         />
                       </div>
                     )}
                     <button
                       onClick={() => removeField(field.id)}
-                      className="px-3 py-2 text-red-600 hover:text-red-700 font-medium text-sm"
+                      className="px-3 py-2 text-red-600 hover:text-red-700 dark:text-red-400 font-medium text-sm"
                     >
                       Remove
                     </button>
@@ -335,8 +419,8 @@ export default function TestDataGeneratorPage() {
       </div>
 
       <div className="max-w-4xl mx-auto space-y-8 mt-10">
-        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">How to Generate Test Data</h2>
+        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white mb-4">How to Generate Test Data</h2>
           <ol className="list-decimal list-inside space-y-2 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
             <li>Choose the number of rows you want to generate (1–1000).</li>
             <li>Add or customize fields: names, emails, phones, addresses, dates, numbers, etc.</li>
@@ -348,11 +432,11 @@ export default function TestDataGeneratorPage() {
           </p>
         </section>
 
-        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Supported Field Types</h2>
+        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white mb-4">Supported Field Types</h2>
           <div className="grid md:grid-cols-2 gap-4 text-sm text-gray-700 dark:text-gray-300">
             <div>
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Personal Data</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-gray-100 dark:text-white mb-2">Personal Data</h3>
               <ul className="list-disc list-inside space-y-1">
                 <li>Full names, emails, phone numbers</li>
                 <li>Street addresses, cities, postal codes</li>
@@ -360,7 +444,7 @@ export default function TestDataGeneratorPage() {
               </ul>
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Technical Fields</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-gray-100 dark:text-white mb-2">Technical Fields</h3>
               <ul className="list-disc list-inside space-y-1">
                 <li>Random numbers with min/max range</li>
                 <li>UUIDs, URLs, IP addresses</li>
@@ -370,8 +454,8 @@ export default function TestDataGeneratorPage() {
           </div>
         </section>
 
-        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Best Practices for Mock Data</h2>
+        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white mb-4">Best Practices for Mock Data</h2>
           <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300 leading-relaxed list-disc list-inside">
             <li>Keep personally identifiable information fake to avoid compliance issues.</li>
             <li>Generate edge cases: long strings, high/low numbers, dates in the future/past.</li>
@@ -380,8 +464,12 @@ export default function TestDataGeneratorPage() {
           </ul>
         </section>
       </div>
-
-      </Layout>
+      {/* Related Tools */}
+      {relatedTools.length > 0 && (
+        <RelatedTools tools={relatedTools} title="Related Generator Tools" />
+      )}
+    </Layout>
+    </>
   )
 }
 

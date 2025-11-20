@@ -2,6 +2,10 @@
 
 import { useState, useCallback, useMemo } from 'react'
 import Layout from '@/components/Layout'
+import StructuredData from '@/components/StructuredData'
+import RelatedTools from '@/components/RelatedTools'
+import { generateFAQSchema, generateHowToSchema, generateSoftwareApplicationSchema } from '@/lib/structured-data'
+import { generateBreadcrumbs, getRelatedTools } from '@/lib/seo-helpers'
 interface ContrastResult {
   ratio: number
   aaNormal: boolean
@@ -108,13 +112,93 @@ export default function ContrastCheckerPage() {
     }
   }
 
+  // SEO data
+  const toolPath = '/contrast-checker'
+  const toolName = 'Contrast Checker'
+  const category = 'design'
+  const breadcrumbs = generateBreadcrumbs(toolName, toolPath, category)
+  const relatedTools = getRelatedTools(toolPath, category, 6)
+
+  // FAQ data
+  const faqs = [
+    {
+      question: "What is WCAG contrast ratio?",
+      answer: "WCAG (Web Content Accessibility Guidelines) contrast ratio measures the difference in brightness between text and background colors. It's expressed as a ratio (e.g., 4.5:1) where higher ratios indicate better contrast and readability."
+    },
+    {
+      question: "What are the WCAG contrast requirements?",
+      answer: "WCAG Level AA requires: 4.5:1 for normal text (under 18pt or 14pt bold), 3:1 for large text (18pt+ or 14pt+ bold). WCAG Level AAA requires: 7:1 for normal text, 4.5:1 for large text."
+    },
+    {
+      question: "How do I check color contrast?",
+      answer: "Select your foreground (text) color and background color using the color pickers. The tool automatically calculates the contrast ratio and shows WCAG compliance status (AA, AAA, or fail)."
+    },
+    {
+      question: "Why is color contrast important?",
+      answer: "Good color contrast ensures text is readable for all users, including those with visual impairments, color blindness, or viewing screens in bright sunlight. It's also required for web accessibility compliance."
+    },
+    {
+      question: "What does the contrast ratio mean?",
+      answer: "Contrast ratio ranges from 1:1 (same color, no contrast) to 21:1 (maximum contrast, black on white). Higher ratios mean better readability. WCAG recommends minimum 4.5:1 for normal text."
+    },
+    {
+      question: "Is the contrast checker free?",
+      answer: "Yes, completely free! No registration, no limits, no hidden fees. All contrast calculations happen in your browser - we never see or store your color choices."
+    }
+  ]
+
+  // HowTo steps
+  const howToSteps = [
+    {
+      name: "Select Text Color",
+      text: "Choose your foreground (text) color using the color picker or enter a hex code. This is the color of the text you want to check."
+    },
+    {
+      name: "Select Background Color",
+      text: "Choose your background color using the color picker or enter a hex code. This is the color behind the text."
+    },
+    {
+      name: "View Contrast Ratio",
+      text: "See the calculated contrast ratio displayed immediately. The ratio shows how much the colors differ in brightness."
+    },
+    {
+      name: "Check WCAG Compliance",
+      text: "View WCAG compliance status: AA (normal/large text), AAA (normal/large text), or fail. The tool shows which standards your color combination meets."
+    },
+    {
+      name: "Adjust Colors",
+      text: "If contrast is insufficient, adjust either the text or background color until you achieve WCAG AA or AAA compliance for better accessibility."
+    }
+  ]
+
+  // Structured data
+  const structuredData = [
+    generateFAQSchema(faqs),
+    generateHowToSchema(
+      "How to Check Color Contrast for WCAG Compliance",
+      "Learn how to check color contrast ratios for WCAG accessibility compliance using our free online contrast checker tool.",
+      howToSteps,
+      "PT2M"
+    ),
+    generateSoftwareApplicationSchema(
+      "Contrast Checker",
+      "Free online contrast checker. Check color contrast ratios for WCAG accessibility compliance. Test text and background colors for AA and AAA standards. Real-time calculations.",
+      "https://prylad.pro/contrast-checker",
+      "WebApplication"
+    )
+  ]
+
   return (
-    <Layout
-      title="🎯 Contrast Checker"
-      description="Check color contrast ratio for WCAG accessibility compliance. Test text and background colors for AA and AAA standards."
+    <>
+      <StructuredData data={structuredData} />
+      <Layout
+        title="🎯 Contrast Checker"
+        description="Check color contrast ratio for WCAG accessibility compliance. Test text and background colors for AA and AAA standards."
+        breadcrumbs={breadcrumbs}
+      >
     >
       <div className="max-w-6xl mx-auto">
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 mb-6">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 mb-6 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
           <div className="space-y-6">
             {/* Color Pickers */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -127,13 +211,13 @@ export default function ContrastCheckerPage() {
                     type="color"
                     value={foreground}
                     onChange={(e) => setForeground(e.target.value)}
-                    className="w-16 h-16 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer"
+                    className="w-16 h-16 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                   />
                   <input
                     type="text"
                     value={foreground}
                     onChange={(e) => setForeground(e.target.value)}
-                    className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-mono text-sm"
+                    className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-mono text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                   />
                 </div>
               </div>
@@ -146,13 +230,13 @@ export default function ContrastCheckerPage() {
                     type="color"
                     value={background}
                     onChange={(e) => setBackground(e.target.value)}
-                    className="w-16 h-16 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer"
+                    className="w-16 h-16 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                   />
                   <input
                     type="text"
                     value={background}
                     onChange={(e) => setBackground(e.target.value)}
-                    className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-mono text-sm"
+                    className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-mono text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                   />
                 </div>
               </div>
@@ -164,7 +248,7 @@ export default function ContrastCheckerPage() {
                 Preview
               </label>
               <div
-                className="p-8 rounded-lg border-2 border-gray-200 dark:border-gray-700"
+                className="p-8 rounded-lg border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                 style={{ backgroundColor: background }}
               >
                 <div className="space-y-4">
@@ -206,7 +290,7 @@ export default function ContrastCheckerPage() {
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
                     <div>
                       <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">WCAG AA</h4>
                       <div className="space-y-2 text-sm">
@@ -271,7 +355,7 @@ export default function ContrastCheckerPage() {
         </div>
 
         {/* Info */}
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 border border-gray-100 dark:border-gray-700">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
           <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">About WCAG Contrast Standards</h3>
           <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
             <p>
@@ -286,8 +370,12 @@ export default function ContrastCheckerPage() {
           </div>
         </div>
       </div>
-
-      </Layout>
+      {/* Related Tools */}
+      {relatedTools.length > 0 && (
+        <RelatedTools tools={relatedTools} title="Related Design Tools" />
+      )}
+    </Layout>
+    </>
   )
 }
 

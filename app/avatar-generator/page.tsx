@@ -2,6 +2,10 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 import Layout from '@/components/Layout'
+import StructuredData from '@/components/StructuredData'
+import RelatedTools from '@/components/RelatedTools'
+import { generateFAQSchema, generateHowToSchema, generateSoftwareApplicationSchema } from '@/lib/structured-data'
+import { generateBreadcrumbs, getRelatedTools } from '@/lib/seo-helpers'
 
 type PatternType = 'geometric' | 'dots' | 'lines' | 'triangles' | 'grid' | 'waves' | 'mosaic' | 'abstract'
 type ColorScheme = 'vibrant' | 'pastel' | 'monochrome' | 'warm' | 'cool' | 'random'
@@ -279,27 +283,106 @@ export default function AvatarGeneratorPage() {
     setSeed(Math.random().toString(36).substring(2, 15))
   }
 
+  // SEO data
+  const toolPath = '/avatar-generator'
+  const toolName = 'Avatar Generator'
+  const category = 'generator'
+  const breadcrumbs = generateBreadcrumbs(toolName, toolPath, category)
+  const relatedTools = getRelatedTools(toolPath, category, 6)
+
+  // FAQ data
+  const faqs = [
+    {
+      question: "What is an avatar generator?",
+      answer: "An avatar generator creates unique geometric avatars that can be used as profile pictures, user icons, or design elements. Each avatar is generated with customizable patterns, colors, and shapes."
+    },
+    {
+      question: "How do I generate an avatar?",
+      answer: "Choose a pattern type (geometric, dots, lines, triangles, grid, waves, mosaic, abstract), select a color scheme (vibrant, pastel, monochrome, warm, cool, random), choose a shape (circle, square, rounded), and adjust complexity. The avatar is generated automatically."
+    },
+    {
+      question: "Can I use a seed to generate the same avatar?",
+      answer: "Yes! Enable 'Use Seed' and enter a seed value. The same seed will always generate the same avatar, making it perfect for creating consistent avatars for users based on their username or ID."
+    },
+    {
+      question: "What patterns are available?",
+      answer: "Eight pattern types: Geometric (shapes), Dots (circular dots), Lines (linear patterns), Triangles (triangular shapes), Grid (grid-based), Waves (wave patterns), Mosaic (tile-like), and Abstract (random abstract shapes)."
+    },
+    {
+      question: "What color schemes can I choose?",
+      answer: "Six color schemes: Vibrant (bright colors), Pastel (soft colors), Monochrome (grayscale), Warm (reds, oranges, yellows), Cool (blues, greens, purples), and Random (random colors)."
+    },
+    {
+      question: "Is the avatar generator free?",
+      answer: "Yes, completely free! No registration, no limits, no hidden fees. All avatar generation happens in your browser - we never see or store your avatars."
+    }
+  ]
+
+  // HowTo steps
+  const howToSteps = [
+    {
+      name: "Choose Pattern Type",
+      text: "Select a pattern type from eight options: Geometric, Dots, Lines, Triangles, Grid, Waves, Mosaic, or Abstract. Each pattern creates a unique visual style."
+    },
+    {
+      name: "Select Color Scheme",
+      text: "Choose a color scheme: Vibrant, Pastel, Monochrome, Warm, Cool, or Random. The color scheme determines the overall color palette of the avatar."
+    },
+    {
+      name: "Set Shape and Size",
+      text: "Choose avatar shape (Circle, Square, or Rounded) and set the size in pixels. Common sizes are 64x64, 128x128, or 200x200 pixels."
+    },
+    {
+      name: "Adjust Complexity",
+      text: "Use the complexity slider to control how detailed the avatar is. Higher complexity creates more intricate patterns, lower complexity creates simpler designs."
+    },
+    {
+      name: "Download Avatar",
+      text: "Click 'Download' to save the avatar as a PNG image. You can also use a seed value to generate the same avatar again later."
+    }
+  ]
+
+  // Structured data
+  const structuredData = [
+    generateFAQSchema(faqs),
+    generateHowToSchema(
+      "How to Generate Unique Avatars",
+      "Learn how to generate unique geometric avatars using our free online avatar generator tool with customizable patterns, colors, and shapes.",
+      howToSteps,
+      "PT2M"
+    ),
+    generateSoftwareApplicationSchema(
+      "Avatar Generator",
+      "Free online avatar generator. Create unique geometric avatars with customizable patterns, color schemes, and shapes. Perfect for profile pictures, user icons, and design projects.",
+      "https://prylad.pro/avatar-generator",
+      "UtilityApplication"
+    )
+  ]
+
   return (
-    <Layout
-      title="👤 Avatar Generator - Create Unique Geometric Avatars Online"
-      description="Generate unique geometric avatars online for free. Choose from multiple patterns, color schemes, and shapes. Perfect for profile pictures, user icons, and design projects."
-    >
+    <>
+      <StructuredData data={structuredData} />
+      <Layout
+        title="👤 Avatar Generator"
+        description="Generate unique geometric avatars online for free. Choose from multiple patterns, color schemes, and shapes. Perfect for profile pictures, user icons, and design projects."
+        breadcrumbs={breadcrumbs}
+      >
       <div className="max-w-6xl mx-auto space-y-6">
         <div className="grid lg:grid-cols-2 gap-6">
           {/* Settings */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 space-y-6">
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold">Avatar Settings</h2>
               {totalGenerated > 0 && (
-                <div className="text-sm text-gray-500">
-                  Generated: <span className="font-semibold text-gray-900">{totalGenerated}</span>
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  Generated: <span className="font-semibold text-gray-900 dark:text-gray-100">{totalGenerated}</span>
                 </div>
               )}
             </div>
 
             {/* Size */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Size: {size}px
               </label>
               <input
@@ -319,7 +402,7 @@ export default function AvatarGeneratorPage() {
                     className={`flex-1 px-2 py-1 rounded text-xs font-medium ${
                       size === s
                         ? 'bg-primary-600 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                     }`}
                   >
                     {s}px
@@ -330,14 +413,14 @@ export default function AvatarGeneratorPage() {
 
             {/* Shape */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-3">Shape:</label>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Shape:</label>
               <div className="grid grid-cols-3 gap-2">
                 <button
                   onClick={() => setShape('circle')}
                   className={`px-4 py-2 rounded-lg font-semibold transition-all ${
                     shape === 'circle'
                       ? 'bg-primary-600 text-white shadow-lg'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
                   Circle
@@ -347,7 +430,7 @@ export default function AvatarGeneratorPage() {
                   className={`px-4 py-2 rounded-lg font-semibold transition-all ${
                     shape === 'square'
                       ? 'bg-primary-600 text-white shadow-lg'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
                   Square
@@ -357,7 +440,7 @@ export default function AvatarGeneratorPage() {
                   className={`px-4 py-2 rounded-lg font-semibold transition-all ${
                     shape === 'rounded'
                       ? 'bg-primary-600 text-white shadow-lg'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
                   Rounded
@@ -367,7 +450,7 @@ export default function AvatarGeneratorPage() {
 
             {/* Pattern */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-3">Pattern:</label>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Pattern:</label>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                 {(['geometric', 'dots', 'lines', 'triangles', 'grid', 'waves', 'mosaic', 'abstract'] as PatternType[]).map((p) => (
                   <button
@@ -376,7 +459,7 @@ export default function AvatarGeneratorPage() {
                     className={`px-3 py-2 rounded-lg text-xs font-semibold transition-all capitalize ${
                       pattern === p
                         ? 'bg-primary-600 text-white shadow-lg'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                     }`}
                   >
                     {p}
@@ -387,7 +470,7 @@ export default function AvatarGeneratorPage() {
 
             {/* Color Scheme */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-3">Color Scheme:</label>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Color Scheme:</label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                 {(['vibrant', 'pastel', 'monochrome', 'warm', 'cool', 'random'] as ColorScheme[]).map((cs) => (
                   <button
@@ -396,7 +479,7 @@ export default function AvatarGeneratorPage() {
                     className={`px-3 py-2 rounded-lg text-xs font-semibold transition-all capitalize ${
                       colorScheme === cs
                         ? 'bg-primary-600 text-white shadow-lg'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                     }`}
                   >
                     {cs}
@@ -407,7 +490,7 @@ export default function AvatarGeneratorPage() {
 
             {/* Complexity */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Complexity: {complexity}
               </label>
               <input
@@ -418,7 +501,7 @@ export default function AvatarGeneratorPage() {
                 onChange={(e) => setComplexity(Number(e.target.value))}
                 className="w-full accent-primary-600"
               />
-              <div className="flex justify-between text-xs text-gray-500 mt-1">
+              <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
                 <span>Simple</span>
                 <span>Complex</span>
               </div>
@@ -433,7 +516,7 @@ export default function AvatarGeneratorPage() {
                   onChange={(e) => setUseSeed(e.target.checked)}
                   className="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
                 />
-                <span className="text-sm text-gray-700">Use seed for reproducibility</span>
+                <span className="text-sm text-gray-700 dark:text-gray-300">Use seed for reproducibility</span>
               </label>
               {useSeed && (
                 <div className="flex gap-2">
@@ -442,11 +525,11 @@ export default function AvatarGeneratorPage() {
                     value={seed}
                     onChange={(e) => setSeed(e.target.value)}
                     placeholder="Enter seed..."
-                    className="flex-1 px-3 py-2 border-2 border-gray-200 rounded-lg text-sm"
+                    className="flex-1 px-3 py-2 border-2 border-gray-200 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                   />
                   <button
                     onClick={generateNewSeed}
-                    className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 text-sm font-medium"
+                    className="px-4 py-2 bg-gray-200 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 text-sm font-medium"
                   >
                     Random
                   </button>
@@ -462,7 +545,7 @@ export default function AvatarGeneratorPage() {
                 onChange={(e) => setAutoGenerate(e.target.checked)}
                 className="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
               />
-              <span className="text-sm text-gray-700">Auto-generate as you edit</span>
+              <span className="text-sm text-gray-700 dark:text-gray-300">Auto-generate as you edit</span>
             </label>
 
             {!autoGenerate && (
@@ -476,15 +559,15 @@ export default function AvatarGeneratorPage() {
           </div>
 
           {/* Preview */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 space-y-6">
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 space-y-6">
             <h2 className="text-xl font-bold">Preview</h2>
 
-            <div className="border-2 border-gray-200 rounded-xl p-6 bg-gray-50 flex flex-col items-center">
+            <div className="border-2 border-gray-200 dark:border-gray-700 rounded-xl p-6 bg-gray-50 dark:bg-gray-800 flex flex-col items-center">
               <canvas
                 ref={canvasRef}
                 className={`${
                   shape === 'circle' ? 'rounded-full' : shape === 'rounded' ? 'rounded-2xl' : 'rounded-lg'
-                } border-2 border-gray-300 shadow-lg`}
+                } border-2 border-gray-300 dark:border-gray-600 shadow-lg`}
                 style={{ maxWidth: '100%', height: 'auto' }}
               />
             </div>
@@ -514,15 +597,15 @@ export default function AvatarGeneratorPage() {
 
         {/* SEO Content */}
         <div className="max-w-4xl mx-auto mt-16 space-y-8">
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">What is an Avatar Generator?</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">What is an Avatar Generator?</h2>
             <div className="prose prose-gray max-w-none">
-              <p className="text-gray-700 leading-relaxed mb-4">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                 An avatar generator creates unique, geometric profile pictures using algorithms and random patterns. 
                 These avatars are perfect for user profiles, social media accounts, gaming avatars, and design projects 
                 where you need distinctive visual identities.
               </p>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                 Our free avatar generator creates beautiful, algorithmically-generated avatars instantly in your browser. 
                 Choose from multiple patterns (geometric, dots, lines, triangles, grid, waves, mosaic, abstract), color 
                 schemes (vibrant, pastel, monochrome, warm, cool), and shapes (circle, square, rounded). Perfect for 
@@ -531,10 +614,10 @@ export default function AvatarGeneratorPage() {
             </div>
           </section>
 
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">How to Use Our Avatar Generator</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">How to Use Our Avatar Generator</h2>
             <div className="prose prose-gray max-w-none">
-              <ol className="list-decimal list-inside space-y-3 text-gray-700">
+              <ol className="list-decimal list-inside space-y-3 text-gray-700 dark:text-gray-300">
                 <li><strong>Choose Size:</strong> Select from 100px to 512px, or use quick presets (100px, 200px, 256px, 400px, 512px).</li>
                 <li><strong>Select Shape:</strong> Choose circle (perfect for profile pictures), square, or rounded corners.</li>
                 <li><strong>Pick Pattern:</strong> Select from 8 different patterns: geometric shapes, dots, lines, triangles, grid, waves, mosaic, or abstract art.</li>
@@ -546,33 +629,33 @@ export default function AvatarGeneratorPage() {
             </div>
           </section>
 
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Common Use Cases</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Common Use Cases</h2>
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">👤 User Profiles</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">👤 User Profiles</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Generate unique avatars for user accounts in web applications, forums, and social platforms. 
                   Use seeds to ensure each user gets a consistent avatar.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">🎮 Gaming & Apps</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">🎮 Gaming & Apps</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Create distinctive character avatars for games, apps, and virtual worlds. The geometric patterns 
                   work great for modern, minimalist designs.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">🎨 Design Projects</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">🎨 Design Projects</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Use generated avatars as placeholders in design mockups, wireframes, and prototypes. Export in 
                   high resolution for professional use.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">🔐 Privacy-First</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">🔐 Privacy-First</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Generate avatars without uploading personal photos. Perfect for privacy-conscious users who want 
                   unique profile pictures without revealing their identity.
                 </p>
@@ -580,42 +663,42 @@ export default function AvatarGeneratorPage() {
             </div>
           </section>
 
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Frequently Asked Questions</h2>
             <div className="space-y-6">
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">What image formats are supported?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">What image formats are supported?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   You can download avatars as PNG (with transparency support) or JPG (smaller file size). PNG is 
                   recommended for web use as it preserves quality and supports transparency.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Can I generate the same avatar twice?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Can I generate the same avatar twice?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Yes! Enable &quot;Use seed for reproducibility&quot; and enter the same seed value. The same seed with the same 
                   settings will always generate the same avatar. Perfect for creating consistent user avatars based on 
                   usernames or user IDs.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">What&apos;s the maximum size I can generate?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">What&apos;s the maximum size I can generate?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   You can generate avatars from 100px to 512px. This covers everything from small icons to high-resolution 
                   profile pictures. For best results, use 200px or 256px for profile pictures.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Are the avatars unique?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Are the avatars unique?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Each generated avatar is algorithmically unique based on random values. With millions of possible 
                   combinations of patterns, colors, and complexity levels, the chance of generating identical avatars 
                   is extremely low.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Is my data stored or transmitted?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Is my data stored or transmitted?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   No, all avatar generation happens entirely in your browser. We never see, store, or transmit any of 
                   your settings or generated images. Your privacy is completely protected.
                 </p>
@@ -624,6 +707,11 @@ export default function AvatarGeneratorPage() {
           </section>
         </div>
       </div>
+      {/* Related Tools */}
+      {relatedTools.length > 0 && (
+        <RelatedTools tools={relatedTools} title="Related Generator Tools" />
+      )}
     </Layout>
+    </>
   )
 }

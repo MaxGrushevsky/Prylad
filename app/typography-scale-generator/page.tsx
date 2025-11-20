@@ -2,6 +2,10 @@
 
 import { useState, useCallback, useMemo } from 'react'
 import Layout from '@/components/Layout'
+import StructuredData from '@/components/StructuredData'
+import RelatedTools from '@/components/RelatedTools'
+import { generateFAQSchema, generateHowToSchema, generateSoftwareApplicationSchema } from '@/lib/structured-data'
+import { generateBreadcrumbs, getRelatedTools } from '@/lib/seo-helpers'
 type Ratio = 1.125 | 1.2 | 1.25 | 1.333 | 1.414 | 1.5 | 1.618 | 2
 type Unit = 'px' | 'rem' | 'em'
 
@@ -70,13 +74,93 @@ export default function TypographyScaleGeneratorPage() {
     { name: 'Octave', value: 2 }
   ]
 
+  // SEO data
+  const toolPath = '/typography-scale-generator'
+  const toolName = 'Typography Scale Generator'
+  const category = 'design'
+  const breadcrumbs = generateBreadcrumbs(toolName, toolPath, category)
+  const relatedTools = getRelatedTools(toolPath, category, 6)
+
+  // FAQ data
+  const faqs = [
+    {
+      question: "What is a typography scale?",
+      answer: "A typography scale is a system of font sizes that creates visual harmony in your design. It uses a mathematical ratio to generate a series of related font sizes, ensuring consistent and proportional typography throughout your website or application."
+    },
+    {
+      question: "How do I generate a typography scale?",
+      answer: "Set your base font size (typically 16px), choose a ratio (1.125 to 2.0), select a unit (px, rem, or em), and the scale is generated automatically. The scale includes sizes from Small 2 to Heading 6, with the base size in the middle."
+    },
+    {
+      question: "What ratios are available?",
+      answer: "Eight ratios: 1.125 (Minor Second), 1.2 (Major Second), 1.25 (Minor Third), 1.333 (Perfect Fourth), 1.414 (Augmented Fourth), 1.5 (Perfect Fifth), 1.618 (Golden Ratio), and 2.0 (Octave). Each creates a different visual rhythm."
+    },
+    {
+      question: "What units can I use?",
+      answer: "Three units: px (pixels, fixed size), rem (relative to root element, recommended for accessibility), and em (relative to parent element). The generator shows all three values for each scale item."
+    },
+    {
+      question: "How do I use the generated scale?",
+      answer: "Copy the CSS variables or individual values and use them in your stylesheets. The scale provides consistent font sizes for headings, body text, and small text that work harmoniously together."
+    },
+    {
+      question: "Is the typography scale generator free?",
+      answer: "Yes, completely free! No registration, no limits, no hidden fees. All scale generation happens in your browser - we never see or store your settings."
+    }
+  ]
+
+  // HowTo steps
+  const howToSteps = [
+    {
+      name: "Set Base Size",
+      text: "Enter your base font size in pixels (typically 16px). This is the size of your body text, and all other sizes in the scale are calculated relative to it."
+    },
+    {
+      name: "Choose Ratio",
+      text: "Select a ratio from 1.125 to 2.0. Smaller ratios create subtle differences between sizes, larger ratios create more dramatic differences. Common ratios are 1.25, 1.333, and 1.618 (Golden Ratio)."
+    },
+    {
+      name: "Select Unit",
+      text: "Choose your preferred unit: px (pixels), rem (recommended for accessibility), or em. The generator shows all three values for each scale item."
+    },
+    {
+      name: "View Scale",
+      text: "See the complete typography scale from Small 2 to Heading 6, with the base size in the middle. Each item shows the size in all three units (px, rem, em)."
+    },
+    {
+      name: "Copy CSS Code",
+      text: "Copy the CSS variables or individual values and use them in your stylesheets. The scale ensures consistent and harmonious typography throughout your design."
+    }
+  ]
+
+  // Structured data
+  const structuredData = [
+    generateFAQSchema(faqs),
+    generateHowToSchema(
+      "How to Generate Typography Scales",
+      "Learn how to generate typography scales for perfect font sizing using our free online typography scale generator tool.",
+      howToSteps,
+      "PT2M"
+    ),
+    generateSoftwareApplicationSchema(
+      "Typography Scale Generator",
+      "Free online typography scale generator. Create harmonious font size scales with different ratios. Export CSS variables. Perfect for web designers and developers.",
+      "https://prylad.pro/typography-scale-generator",
+      "WebApplication"
+    )
+  ]
+
   return (
-    <Layout
-      title="📐 Typography Scale Generator"
-      description="Generate typography scales for perfect font sizing. Create harmonious font size scales with different ratios."
+    <>
+      <StructuredData data={structuredData} />
+      <Layout
+        title="📐 Typography Scale Generator"
+        description="Generate typography scales for perfect font sizing. Create harmonious font size scales with different ratios."
+        breadcrumbs={breadcrumbs}
+      >
     >
       <div className="max-w-6xl mx-auto">
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 mb-6">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 mb-6 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
           <div className="space-y-6">
             {/* Settings */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -100,7 +184,7 @@ export default function TypographyScaleGeneratorPage() {
                 <select
                   value={ratio}
                   onChange={(e) => setRatio(parseFloat(e.target.value) as Ratio)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                 >
                   {ratioPresets.map(preset => (
                     <option key={preset.name} value={preset.value}>
@@ -116,7 +200,7 @@ export default function TypographyScaleGeneratorPage() {
                 <select
                   value={unit}
                   onChange={(e) => setUnit(e.target.value as Unit)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                 >
                   <option value="px">px</option>
                   <option value="rem">rem</option>
@@ -188,7 +272,7 @@ export default function TypographyScaleGeneratorPage() {
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Scale Values
               </label>
-              <div className="overflow-x-auto border border-gray-200 dark:border-gray-700 rounded-lg">
+              <div className="overflow-x-auto border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
                 <table className="w-full">
                   <thead className="bg-gray-50 dark:bg-gray-900">
                     <tr>
@@ -236,8 +320,8 @@ export default function TypographyScaleGeneratorPage() {
       </div>
 
       <div className="max-w-4xl mx-auto space-y-8 mt-10">
-        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">How to Build a Typography Scale</h2>
+        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white mb-4">How to Build a Typography Scale</h2>
           <ol className="list-decimal list-inside space-y-2 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
             <li>Select the base size. 16px is a safe default for body text on the web.</li>
             <li>Choose a ratio (Major Third, Perfect Fourth, Golden Ratio, etc.) that matches your brand personality.</li>
@@ -246,11 +330,11 @@ export default function TypographyScaleGeneratorPage() {
           </ol>
         </section>
 
-        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Ratio Cheat Sheet</h2>
+        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white mb-4">Ratio Cheat Sheet</h2>
           <div className="grid md:grid-cols-2 gap-4 text-sm text-gray-700 dark:text-gray-300">
             <div>
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Subtle Scales</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-gray-100 dark:text-white mb-2">Subtle Scales</h3>
               <ul className="list-disc list-inside space-y-1">
                 <li><strong>Major Second (1.125):</strong> Great for UI-heavy dashboards.</li>
                 <li><strong>Minor Third (1.2):</strong> Balanced spacing for product copy.</li>
@@ -258,7 +342,7 @@ export default function TypographyScaleGeneratorPage() {
               </ul>
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Expressive Scales</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-gray-100 dark:text-white mb-2">Expressive Scales</h3>
               <ul className="list-disc list-inside space-y-1">
                 <li><strong>Perfect Fourth (1.333):</strong> Strong contrast between headings.</li>
                 <li><strong>Golden Ratio (1.618):</strong> Dramatic hierarchy for marketing pages.</li>
@@ -268,8 +352,8 @@ export default function TypographyScaleGeneratorPage() {
           </div>
         </section>
 
-        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Tips for Better Type Scales</h2>
+        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white mb-4">Tips for Better Type Scales</h2>
           <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300 leading-relaxed list-disc list-inside">
             <li>Limit yourself to 5–7 steps in the scale to avoid overwhelming options.</li>
             <li>Pair type scales with consistent line-height (1.2 for headings, 1.5 for body).</li>
@@ -278,8 +362,12 @@ export default function TypographyScaleGeneratorPage() {
           </ul>
         </section>
       </div>
-
-      </Layout>
+      {/* Related Tools */}
+      {relatedTools.length > 0 && (
+        <RelatedTools tools={relatedTools} title="Related Design Tools" />
+      )}
+    </Layout>
+    </>
   )
 }
 

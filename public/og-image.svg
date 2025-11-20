@@ -5,61 +5,23 @@
       <stop offset="0%" style="stop-color:#0ea5e9;stop-opacity:1" />
       <stop offset="100%" style="stop-color:#a855f7;stop-opacity:1" />
     </linearGradient>
-    <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#e0f2fe;stop-opacity:1" />
-    </linearGradient>
   </defs>
   
   <!-- Background -->
   <rect width="1200" height="630" fill="url(#bgGradient)"/>
   
-  <!-- Decorative circles in background -->
-  <circle cx="200" cy="150" r="100" fill="white" opacity="0.08"/>
-  <circle cx="1000" cy="480" r="120" fill="white" opacity="0.08"/>
-  <circle cx="1100" cy="100" r="80" fill="white" opacity="0.1"/>
-  
-  <!-- Main logo/icon - matching favicon style -->
-  <g transform="translate(100, 165)">
-    <circle cx="60" cy="60" r="30" fill="white" opacity="0.9"/>
-    <circle cx="100" cy="60" r="30" fill="white" opacity="0.7"/>
-    <circle cx="80" cy="100" r="30" fill="white" opacity="0.8"/>
-  </g>
-  
-  <!-- Title -->
-  <text x="250" y="220" font-family="system-ui, -apple-system, sans-serif" font-size="72" font-weight="700" fill="url(#textGradient)">
-    Prylad
-  </text>
-  
-  <!-- Subtitle -->
-  <text x="250" y="290" font-family="system-ui, -apple-system, sans-serif" font-size="32" font-weight="400" fill="white" opacity="0.9">
-    Free Online Generators, Converters &amp; Utilities
-  </text>
-  
-  <!-- Features -->
-  <g transform="translate(250, 360)">
-    <text x="0" y="0" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="500" fill="white" opacity="0.85">
-      ✓ 100+ Free Tools
-    </text>
-    <text x="0" y="35" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="500" fill="white" opacity="0.85">
-      ✓ Code Formatters
-    </text>
-    <text x="0" y="70" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="500" fill="white" opacity="0.85">
-      ✓ Design Tools
-    </text>
-    <text x="400" y="0" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="500" fill="white" opacity="0.85">
-      ✓ Security Tools
-    </text>
-    <text x="400" y="35" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="500" fill="white" opacity="0.85">
-      ✓ Data Converters
-    </text>
-    <text x="400" y="70" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="500" fill="white" opacity="0.85">
-      ✓ Image Tools
+  <!-- Logo and title side by side, centered -->
+  <g transform="translate(600, 315)">
+    <!-- Logo - three overlapping circles -->
+    <g transform="translate(-280, -50)">
+      <circle cx="0" cy="0" r="50" fill="white" opacity="0.9"/>
+      <circle cx="70" cy="0" r="50" fill="white" opacity="0.7"/>
+      <circle cx="35" cy="70" r="50" fill="white" opacity="0.8"/>
+    </g>
+    
+    <!-- Title - bold, next to logo -->
+    <text x="-80" y="25" font-family="system-ui, -apple-system, sans-serif" font-size="130" font-weight="700" fill="white">
+      Prylad
     </text>
   </g>
-  
-  <!-- Bottom text -->
-  <text x="250" y="550" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="400" fill="white" opacity="0.7">
-    All tools work in your browser • No registration required
-  </text>
 </svg>

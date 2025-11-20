@@ -1,8 +1,12 @@
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useMemo } from 'react'
 import Layout from '@/components/Layout'
+import StructuredData from '@/components/StructuredData'
+import RelatedTools from '@/components/RelatedTools'
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
+import { generateFAQSchema, generateHowToSchema, generateSoftwareApplicationSchema } from '@/lib/structured-data'
+import { generateBreadcrumbs, getRelatedTools } from '@/lib/seo-helpers'
 type EncryptionMethod = 'caesar' | 'base64' | 'rot13' | 'atbash' | 'xor' | 'vigenere'
 
 interface EncryptionStats {
@@ -169,14 +173,13 @@ export default function TextEncryptionPage() {
     }
   }, [autoProcess, text, method, operation, caesarShift, xorKey, vigenereKey, process])
 
-  const getStats = useCallback((): EncryptionStats => {
+  // Оптимизировано: используем useMemo вместо useCallback + вызов
+  const stats = useMemo((): EncryptionStats => {
     const originalLength = text.length
     const encryptedLength = result.length
     const ratio = originalLength > 0 ? (encryptedLength / originalLength) : 0
     return { originalLength, encryptedLength, ratio }
   }, [text, result])
-
-  const stats = getStats()
 
   const copyResult = async () => {
     if (!result) return
@@ -220,28 +223,106 @@ export default function TextEncryptionPage() {
     onClear: () => clearAll()
   })
 
+  // SEO data
+  const toolPath = '/text-encryption'
+  const toolName = 'Text Encryption & Decryption'
+  const category = 'security'
+  const breadcrumbs = generateBreadcrumbs(toolName, toolPath, category)
+  const relatedTools = getRelatedTools(toolPath, category, 6)
+
+  // FAQ data
+  const faqs = [
+    {
+      question: "What encryption methods are supported?",
+      answer: "The tool supports multiple encryption methods: Caesar cipher (shift cipher), ROT13 (rotate by 13), Atbash (reverse alphabet), XOR (exclusive or), Vigenère cipher (polyalphabetic), and Base64 encoding. Each method has different security levels and use cases."
+    },
+    {
+      question: "How do I encrypt text?",
+      answer: "Select an encryption method, enter your text, configure method-specific options (like shift for Caesar cipher or key for XOR/Vigenère), choose 'Encrypt', and click 'Process'. The encrypted result appears instantly."
+    },
+    {
+      question: "Can I decrypt encrypted text?",
+      answer: "Yes! Select the same encryption method that was used to encrypt the text, enter the encrypted text, configure the same options (key, shift, etc.), choose 'Decrypt', and click 'Process' to recover the original text."
+    },
+    {
+      question: "Which encryption method is most secure?",
+      answer: "None of these methods are suitable for real security purposes. They're primarily for learning, obfuscation, or simple encoding. For real security, use modern encryption like AES. Base64 is encoding, not encryption. XOR and Vigenère are weak. Caesar and ROT13 are very weak."
+    },
+    {
+      question: "What is the difference between encryption and encoding?",
+      answer: "Encryption requires a key to decrypt and is designed for security. Encoding (like Base64) is reversible without a key and is designed for data representation. Base64 is encoding, not true encryption."
+    },
+    {
+      question: "Is the text encryption tool secure?",
+      answer: "Yes! All encryption/decryption happens entirely in your browser. We never see, store, transmit, or have access to your text or keys. Your privacy is completely protected."
+    }
+  ]
+
+  // HowTo steps
+  const howToSteps = [
+    {
+      name: "Select Encryption Method",
+      text: "Choose an encryption method: Caesar cipher, ROT13, Atbash, XOR, Vigenère, or Base64. Each method has different characteristics and security levels."
+    },
+    {
+      name: "Enter Your Text",
+      text: "Type or paste the text you want to encrypt or decrypt in the input field."
+    },
+    {
+      name: "Configure Method Options",
+      text: "Set method-specific options: shift value for Caesar, key for XOR/Vigenère. These options must match for encryption and decryption to work correctly."
+    },
+    {
+      name: "Choose Operation",
+      text: "Select 'Encrypt' to encrypt your text or 'Decrypt' to decrypt encrypted text. Make sure you're using the same method and options that were used originally."
+    },
+    {
+      name: "Process and Use",
+      text: "Click 'Process' to encrypt or decrypt. Copy the result for use in your projects, learning, or simple obfuscation needs."
+    }
+  ]
+
+  // Structured data
+  const structuredData = [
+    generateFAQSchema(faqs),
+    generateHowToSchema(
+      "How to Encrypt and Decrypt Text",
+      "Learn how to encrypt and decrypt text using various cipher methods (Caesar, ROT13, Atbash, XOR, Vigenère, Base64) using our free online encryption tool.",
+      howToSteps,
+      "PT3M"
+    ),
+    generateSoftwareApplicationSchema(
+      "Text Encryption & Decryption",
+      "Free online text encryption and decryption tool. Support for multiple methods: Caesar cipher, ROT13, Atbash, XOR, Vigenère, and Base64. Real-time processing. Perfect for learning cryptography.",
+      "https://prylad.pro/text-encryption",
+      "WebApplication"
+    )
+  ]
+
   return (
     <>
+      <StructuredData data={structuredData} />
       <Layout
-        title="🔒 Text Encryption & Decryption - Secure Text Cipher Online"
-      description="Encrypt and decrypt text using multiple methods: Caesar cipher, ROT13, Atbash, XOR, Vigenère, and Base64. Free online text encryption tool with real-time processing. Perfect for learning cryptography and securing messages."
-    >
+        title="🔒 Text Encryption & Decryption - Secure Text Cipher"
+        description="Encrypt and decrypt text using multiple methods: Caesar cipher, ROT13, Atbash, XOR, Vigenère, and Base64. Free online text encryption tool with real-time processing. Perfect for learning cryptography and securing messages."
+        breadcrumbs={breadcrumbs}
+      >
       <div className="max-w-6xl mx-auto space-y-6">
         <div className="grid lg:grid-cols-2 gap-6">
           {/* Input */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 space-y-6">
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold">Encryption Settings</h2>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Encryption Settings</h2>
               {totalOperations > 0 && (
-                <div className="text-sm text-gray-500">
-                  Operations: <span className="font-semibold text-gray-900">{totalOperations}</span>
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  Operations: <span className="font-semibold text-gray-900 dark:text-gray-100">{totalOperations}</span>
                 </div>
               )}
             </div>
 
             {/* Method Selection */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-3">Encryption Method:</label>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Encryption Method:</label>
               <div className="grid grid-cols-3 gap-2">
                 {(['caesar', 'rot13', 'atbash', 'xor', 'vigenere', 'base64'] as EncryptionMethod[]).map((m) => (
                   <button
@@ -250,7 +331,7 @@ export default function TextEncryptionPage() {
                     className={`px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
                       method === m
                         ? 'bg-primary-600 text-white shadow-lg'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                     }`}
                   >
                     {m.charAt(0).toUpperCase() + m.slice(1)}
@@ -261,14 +342,14 @@ export default function TextEncryptionPage() {
 
             {/* Operation Selection */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-3">Operation:</label>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Operation:</label>
               <div className="grid grid-cols-2 gap-2">
                 <button
                   onClick={() => setOperation('encrypt')}
                   className={`px-4 py-3 rounded-lg font-semibold transition-all ${
                     operation === 'encrypt'
                       ? 'bg-green-600 text-white shadow-lg'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
                   🔒 Encrypt
@@ -278,7 +359,7 @@ export default function TextEncryptionPage() {
                   className={`px-4 py-3 rounded-lg font-semibold transition-all ${
                     operation === 'decrypt'
                       ? 'bg-blue-600 text-white shadow-lg'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
                   🔓 Decrypt
@@ -289,7 +370,7 @@ export default function TextEncryptionPage() {
             {/* Method-specific Settings */}
             {method === 'caesar' && (
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   Shift: <span className="text-primary-600 font-bold">{caesarShift}</span>
                 </label>
                 <input
@@ -300,7 +381,7 @@ export default function TextEncryptionPage() {
                   onChange={(e) => setCaesarShift(Number(e.target.value))}
                   className="w-full accent-primary-600"
                 />
-                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
                   <span>1</span>
                   <span>25</span>
                 </div>
@@ -309,15 +390,15 @@ export default function TextEncryptionPage() {
 
             {method === 'xor' && (
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">XOR Key:</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">XOR Key:</label>
                 <input
                   type="text"
                   value={xorKey}
                   onChange={(e) => setXorKey(e.target.value)}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 font-mono text-sm"
+                  className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 font-mono text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                   placeholder="Enter key..."
                 />
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                   The same key must be used for encryption and decryption
                 </p>
               </div>
@@ -325,15 +406,15 @@ export default function TextEncryptionPage() {
 
             {method === 'vigenere' && (
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Vigenère Key:</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Vigenère Key:</label>
                 <input
                   type="text"
                   value={vigenereKey}
                   onChange={(e) => setVigenereKey(e.target.value.toUpperCase())}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 font-mono text-sm uppercase"
+                  className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 font-mono text-sm uppercase bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                   placeholder="Enter key..."
                 />
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                   Key will be converted to uppercase. Use the same key for encryption and decryption.
                 </p>
               </div>
@@ -341,16 +422,16 @@ export default function TextEncryptionPage() {
 
             {/* Quick Examples */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-3">Quick Examples:</label>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Quick Examples:</label>
               <div className="grid grid-cols-2 gap-2">
                 {encryptionExamples.map((example, i) => (
                   <button
                     key={i}
                     onClick={() => loadExample(example)}
-                    className="px-3 py-2 text-left bg-gray-50 hover:bg-gray-100 rounded-lg text-xs transition-colors"
+                    className="px-3 py-2 text-left bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-xs transition-colors"
                   >
-                    <div className="font-semibold text-gray-900">{example.method.toUpperCase()}</div>
-                    <div className="text-gray-500 truncate">{example.text}</div>
+                    <div className="font-semibold text-gray-900 dark:text-gray-100">{example.method.toUpperCase()}</div>
+                    <div className="text-gray-500 dark:text-gray-400 truncate">{example.text}</div>
                   </button>
                 ))}
               </div>
@@ -359,7 +440,7 @@ export default function TextEncryptionPage() {
             {/* Input Text */}
             <div>
               <div className="flex justify-between items-center mb-2">
-                <label className="block text-sm font-semibold text-gray-700">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
                   {operation === 'encrypt' ? 'Original Text' : 'Encrypted Text'}
                 </label>
                 <button
@@ -372,11 +453,11 @@ export default function TextEncryptionPage() {
               <textarea
                 value={text}
                 onChange={(e) => setText(e.target.value)}
-                className="w-full h-48 px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 resize-none font-mono text-sm"
+                className="w-full h-48 px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 resize-none font-mono text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                 placeholder="Enter text to encrypt/decrypt..."
                 spellCheck={false}
               />
-              <p className="mt-1 text-xs text-gray-500">
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                 Characters: {text.length}
               </p>
             </div>
@@ -389,7 +470,7 @@ export default function TextEncryptionPage() {
                 onChange={(e) => setAutoProcess(e.target.checked)}
                 className="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
               />
-              <span className="text-sm text-gray-700">Auto-process as you type</span>
+              <span className="text-sm text-gray-700 dark:text-gray-300">Auto-process as you type</span>
             </label>
 
             {!autoProcess && (
@@ -403,31 +484,31 @@ export default function TextEncryptionPage() {
           </div>
 
           {/* Output */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 space-y-6">
-            <h2 className="text-xl font-bold">Result</h2>
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 space-y-6">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Result</h2>
 
             {/* Error Display */}
             {error && (
-              <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-sm text-red-700 font-semibold mb-1">Error:</p>
-                <p className="text-sm text-red-600">{error}</p>
+              <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                <p className="text-sm text-red-700 dark:text-red-400 font-semibold mb-1">Error:</p>
+                <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
               </div>
             )}
 
             {/* Statistics */}
             {result && (
               <div className="grid grid-cols-3 gap-2 text-center">
-                <div className="p-3 bg-blue-50 rounded-lg">
+                <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                   <div className="text-2xl font-bold text-blue-600">{stats.originalLength}</div>
-                  <div className="text-xs text-gray-600">Original</div>
+                  <div className="text-xs text-gray-600 dark:text-gray-400">Original</div>
                 </div>
-                <div className="p-3 bg-green-50 rounded-lg">
+                <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
                   <div className="text-2xl font-bold text-green-600">{stats.encryptedLength}</div>
-                  <div className="text-xs text-gray-600">Result</div>
+                  <div className="text-xs text-gray-600 dark:text-gray-400">Result</div>
                 </div>
-                <div className="p-3 bg-purple-50 rounded-lg">
+                <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
                   <div className="text-2xl font-bold text-purple-600">{stats.ratio.toFixed(2)}</div>
-                  <div className="text-xs text-gray-600">Ratio</div>
+                  <div className="text-xs text-gray-600 dark:text-gray-400">Ratio</div>
                 </div>
               </div>
             )}
@@ -435,7 +516,7 @@ export default function TextEncryptionPage() {
             {/* Output Text */}
             <div>
               <div className="flex justify-between items-center mb-2">
-                <label className="block text-sm font-semibold text-gray-700">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
                   {operation === 'encrypt' ? 'Encrypted Text' : 'Decrypted Text'}
                 </label>
                 {result && (
@@ -458,22 +539,22 @@ export default function TextEncryptionPage() {
               <textarea
                 value={result}
                 readOnly
-                className="w-full h-48 px-4 py-3 border-2 border-gray-200 rounded-lg bg-gray-50 resize-none font-mono text-sm"
+                className="w-full h-48 px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 resize-none font-mono text-sm text-gray-900 dark:text-gray-100"
                 placeholder="Result will appear here..."
               />
               {result && (
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                   Characters: {result.length}
                 </p>
               )}
             </div>
 
             {/* Method Info */}
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <h3 className="text-sm font-semibold text-blue-900 mb-2">
+            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+              <h3 className="text-sm font-semibold text-blue-900 dark:text-blue-300 mb-2">
                 {method.charAt(0).toUpperCase() + method.slice(1)} Cipher
               </h3>
-              <p className="text-xs text-blue-700">
+              <p className="text-xs text-blue-700 dark:text-blue-400">
                 {method === 'caesar' && 'Shifts each letter by a fixed number of positions in the alphabet.'}
                 {method === 'rot13' && 'ROT13 is a special case of Caesar cipher with shift 13. It is its own inverse.'}
                 {method === 'atbash' && 'Replaces each letter with its mirror letter (A↔Z, B↔Y, etc.).'}
@@ -487,15 +568,15 @@ export default function TextEncryptionPage() {
 
         {/* SEO Content */}
         <div className="max-w-4xl mx-auto mt-16 space-y-8">
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">What is Text Encryption?</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">What is Text Encryption?</h2>
             <div className="prose prose-gray max-w-none">
-              <p className="text-gray-700 leading-relaxed mb-4">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                 Text encryption is the process of converting plain text into a coded format (ciphertext) that cannot be 
                 easily understood by unauthorized parties. Encryption uses algorithms and keys to transform data, ensuring 
                 that only those with the correct key can decrypt and read the original message.
               </p>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                 Our free text encryption tool supports multiple encryption methods, from simple ciphers like Caesar and ROT13 
                 to more complex methods like Vigenère and XOR. Perfect for learning cryptography, securing messages, and 
                 understanding how different encryption algorithms work.
@@ -503,87 +584,87 @@ export default function TextEncryptionPage() {
             </div>
           </section>
 
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Encryption Methods Explained</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Encryption Methods Explained</h2>
             <div className="space-y-6">
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">🔐 Caesar Cipher</h3>
-                <p className="text-gray-700 text-sm mb-2">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">🔐 Caesar Cipher</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-2">
                   One of the oldest and simplest encryption methods. Each letter is shifted by a fixed number of positions 
                   in the alphabet. For example, with shift 3: A→D, B→E, C→F. Easy to use but not secure for sensitive data.
                 </p>
-                <p className="text-gray-600 text-xs">
+                <p className="text-gray-600 dark:text-gray-400 text-xs">
                   <strong>Use case:</strong> Learning cryptography, simple message obfuscation, puzzles.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">🔄 ROT13</h3>
-                <p className="text-gray-700 text-sm mb-2">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">🔄 ROT13</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-2">
                   A special case of Caesar cipher with shift 13. ROT13 is its own inverse - applying ROT13 twice returns 
                   the original text. Commonly used in online forums to hide spoilers or offensive content.
                 </p>
-                <p className="text-gray-600 text-xs">
+                <p className="text-gray-600 dark:text-gray-400 text-xs">
                   <strong>Use case:</strong> Hiding spoilers, simple text obfuscation, reversible encoding.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">🪞 Atbash Cipher</h3>
-                <p className="text-gray-700 text-sm mb-2">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">🪞 Atbash Cipher</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-2">
                   A substitution cipher where each letter is replaced with its mirror letter in the alphabet. A↔Z, B↔Y, C↔X, etc. 
                   Like ROT13, Atbash is its own inverse.
                 </p>
-                <p className="text-gray-600 text-xs">
+                <p className="text-gray-600 dark:text-gray-400 text-xs">
                   <strong>Use case:</strong> Simple encoding, learning substitution ciphers, puzzles.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">🔑 XOR Cipher</h3>
-                <p className="text-gray-700 text-sm mb-2">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">🔑 XOR Cipher</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-2">
                   Uses bitwise XOR operation with a key. The same key is used for both encryption and decryption. XOR is 
                   fast and simple, but the key must be kept secret and should be as long as the message for best security.
                 </p>
-                <p className="text-gray-600 text-xs">
+                <p className="text-gray-600 dark:text-gray-400 text-xs">
                   <strong>Use case:</strong> Simple encryption, learning bitwise operations, basic data protection.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">🔐 Vigenère Cipher</h3>
-                <p className="text-gray-700 text-sm mb-2">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">🔐 Vigenère Cipher</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-2">
                   A polyalphabetic substitution cipher that uses a keyword. Each letter of the keyword determines the shift 
                   for the corresponding letter in the message. More secure than Caesar cipher but still breakable with 
                   frequency analysis.
                 </p>
-                <p className="text-gray-600 text-xs">
+                <p className="text-gray-600 dark:text-gray-400 text-xs">
                   <strong>Use case:</strong> Learning polyalphabetic ciphers, historical cryptography, moderate security needs.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">📦 Base64</h3>
-                <p className="text-gray-700 text-sm mb-2">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">📦 Base64</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-2">
                   Base64 is an encoding scheme, not true encryption. It converts binary data to ASCII text using 64 characters. 
                   It&apos;s reversible without a key and is commonly used for encoding data in URLs, emails, and data transmission.
                 </p>
-                <p className="text-gray-600 text-xs">
+                <p className="text-gray-600 dark:text-gray-400 text-xs">
                   <strong>Use case:</strong> Encoding binary data, data transmission, URL encoding, not for security.
                 </p>
               </div>
             </div>
           </section>
 
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Security Considerations</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Security Considerations</h2>
             <div className="space-y-4">
-              <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <h3 className="font-semibold text-yellow-900 mb-2">⚠️ Important Security Notice</h3>
-                <p className="text-yellow-800 text-sm">
+              <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                <h3 className="font-semibold text-yellow-900 dark:text-yellow-400 mb-2">⚠️ Important Security Notice</h3>
+                <p className="text-yellow-800 dark:text-yellow-300 text-sm">
                   The encryption methods provided in this tool are <strong>educational and basic</strong>. They are NOT suitable 
                   for protecting sensitive or confidential information. These ciphers can be easily broken by modern computers 
                   and should only be used for learning, puzzles, or non-sensitive data.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">For Real Security:</h3>
-                <ul className="text-sm text-gray-700 space-y-1 list-disc list-inside">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">For Real Security:</h3>
+                <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1 list-disc list-inside">
                   <li>Use modern encryption standards like AES-256 for sensitive data</li>
                   <li>Use HTTPS/TLS for data transmission</li>
                   <li>Use proper key management and secure key exchange</li>
@@ -594,33 +675,33 @@ export default function TextEncryptionPage() {
             </div>
           </section>
 
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Common Use Cases</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Common Use Cases</h2>
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">📚 Learning Cryptography</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">📚 Learning Cryptography</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Perfect for students and developers learning about encryption algorithms. Experiment with different methods 
                   to understand how they work.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">🎮 Puzzles & Games</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">🎮 Puzzles & Games</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Create encrypted messages for puzzles, escape rooms, or educational games. Simple ciphers add fun challenges 
                   without requiring complex tools.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">💬 Message Obfuscation</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">💬 Message Obfuscation</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Hide spoilers, sensitive information, or create simple encoded messages. Remember: these are not secure for 
                   truly sensitive data.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">🔍 Testing & Development</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">🔍 Testing & Development</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Test how your applications handle encrypted data, verify decryption logic, or create test data with 
                   different encryption methods.
                 </p>
@@ -628,9 +709,9 @@ export default function TextEncryptionPage() {
             </div>
           </section>
 
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Key Features</h2>
-            <ul className="space-y-3 text-gray-700">
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Key Features</h2>
+            <ul className="space-y-3 text-gray-700 dark:text-gray-300">
               <li className="flex items-start gap-2">
                 <span className="text-primary-600 font-bold">✓</span>
                 <span><strong>Multiple Methods:</strong> Caesar, ROT13, Atbash, XOR, Vigenère, and Base64 encryption.</span>
@@ -662,48 +743,48 @@ export default function TextEncryptionPage() {
             </ul>
           </section>
 
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Frequently Asked Questions</h2>
             <div className="space-y-6">
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Are these encryption methods secure?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Are these encryption methods secure?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   No, these are basic, educational encryption methods. They can be easily broken and should NOT be used for 
                   protecting sensitive information. For real security, use modern encryption standards like AES-256.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Can I use the same key for encryption and decryption?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Can I use the same key for encryption and decryption?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   For XOR and Vigenère ciphers, yes - you must use the same key for both encryption and decryption. For Caesar, 
                   ROT13, and Atbash, the process is automatically reversible. Base64 is encoding, not encryption, so no key is needed.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">What&apos;s the difference between encryption and encoding?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">What&apos;s the difference between encryption and encoding?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   <strong>Encryption</strong> requires a key and is designed to hide information from unauthorized parties. 
                   <strong>Encoding</strong> (like Base64) is a reversible transformation without a key, used for data format conversion, 
                   not security.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Is my data stored or transmitted?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Is my data stored or transmitted?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   No, all encryption and decryption happens entirely in your browser using JavaScript. We never see, store, 
                   or transmit any of your text. Your privacy is completely protected.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Which method should I use?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Which method should I use?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   For learning: start with Caesar cipher. For simple obfuscation: ROT13 or Atbash. For slightly better security: 
                   Vigenère. For encoding (not security): Base64. Remember: none of these are suitable for sensitive data.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Can I encrypt binary data or files?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Can I encrypt binary data or files?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   This tool works with text only. For binary data, you would need to convert it to text first (e.g., using Base64) 
                   or use specialized encryption tools designed for files.
                 </p>
@@ -712,6 +793,10 @@ export default function TextEncryptionPage() {
           </section>
         </div>
       </div>
+      {/* Related Tools */}
+      {relatedTools.length > 0 && (
+        <RelatedTools tools={relatedTools} title="Related Security Tools" />
+      )}
     </Layout>
     </>
   )

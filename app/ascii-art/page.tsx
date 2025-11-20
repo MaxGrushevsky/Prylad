@@ -2,7 +2,11 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react'
 import Layout from '@/components/Layout'
+import StructuredData from '@/components/StructuredData'
+import RelatedTools from '@/components/RelatedTools'
 import FileDropZone from '@/components/FileDropZone'
+import { generateFAQSchema, generateHowToSchema, generateSoftwareApplicationSchema } from '@/lib/structured-data'
+import { generateBreadcrumbs, getRelatedTools } from '@/lib/seo-helpers'
 
 type ASCIIStyle = 'simple' | 'medium' | 'complex' | 'blocks' | 'dots' | 'shades'
 type TextAlign = 'left' | 'center' | 'right'
@@ -248,27 +252,106 @@ ${useColor ? result : result.replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
     URL.revokeObjectURL(url)
   }
 
+  // SEO data
+  const toolPath = '/ascii-art'
+  const toolName = 'ASCII Art Generator'
+  const category = 'generator'
+  const breadcrumbs = generateBreadcrumbs(toolName, toolPath, category)
+  const relatedTools = getRelatedTools(toolPath, category, 6)
+
+  // FAQ data
+  const faqs = [
+    {
+      question: "What is ASCII art?",
+      answer: "ASCII art is a graphic design technique that uses printable ASCII characters (letters, numbers, and symbols) to create images or text art. It's commonly used in code comments, terminal displays, and retro-style designs."
+    },
+    {
+      question: "How do I create ASCII art from text?",
+      answer: "Enter your text, choose an ASCII style (simple, medium, complex, blocks, dots, or shades), set the width, and the ASCII art is generated automatically. You can customize colors and invert the output."
+    },
+    {
+      question: "Can I convert images to ASCII art?",
+      answer: "Yes! Upload an image file, set the width (number of characters), and the tool converts the image to ASCII art. The conversion analyzes the image and maps pixels to ASCII characters based on brightness."
+    },
+    {
+      question: "What ASCII styles are available?",
+      answer: "Six styles: Simple (basic characters), Medium (detailed characters), Complex (very detailed), Blocks (block characters), Dots (dot characters), and Shades (shaded characters). Each creates a different visual effect."
+    },
+    {
+      question: "Can I customize the colors?",
+      answer: "Yes! Enable color mode and choose a color for the ASCII art. The color is applied to the text output. You can also invert the colors for a different look."
+    },
+    {
+      question: "Is the ASCII art generator free?",
+      answer: "Yes, completely free! No registration, no limits, no hidden fees. All ASCII art generation happens in your browser - we never see or store your text or images."
+    }
+  ]
+
+  // HowTo steps
+  const howToSteps = [
+    {
+      name: "Choose Mode",
+      text: "Select 'Text' mode to create ASCII art from text, or 'Image' mode to convert an image to ASCII art."
+    },
+    {
+      name: "Enter Text or Upload Image",
+      text: "For text mode: enter your text. For image mode: upload an image file (JPEG, PNG, WebP)."
+    },
+    {
+      name: "Select Style",
+      text: "Choose an ASCII style: Simple, Medium, Complex, Blocks, Dots, or Shades. Each style uses different characters and creates a unique visual effect."
+    },
+    {
+      name: "Configure Settings",
+      text: "Set the width (number of characters per line), enable color mode and choose a color if desired, or invert the colors for a different look."
+    },
+    {
+      name: "Copy or Export",
+      text: "Copy the ASCII art as plain text or HTML. Use it in code comments, terminal displays, or any text-based environment."
+    }
+  ]
+
+  // Structured data
+  const structuredData = [
+    generateFAQSchema(faqs),
+    generateHowToSchema(
+      "How to Generate ASCII Art",
+      "Learn how to generate ASCII art from text or images using our free online ASCII art generator tool.",
+      howToSteps,
+      "PT2M"
+    ),
+    generateSoftwareApplicationSchema(
+      "ASCII Art Generator",
+      "Free online ASCII art generator. Create ASCII art from text or images. Choose from multiple styles, customize colors, and export as text or HTML. Perfect for code comments and retro aesthetics.",
+      "https://prylad.pro/ascii-art",
+      "UtilityApplication"
+    )
+  ]
+
   return (
-    <Layout
-      title="🎨 ASCII Art Generator - Create ASCII Art from Text and Images"
-      description="Generate ASCII art from text or images online for free. Choose from multiple styles, customize colors, and export as text or HTML. Perfect for code comments, art projects, and retro aesthetics."
-    >
+    <>
+      <StructuredData data={structuredData} />
+      <Layout
+        title="🎨 ASCII Art Generator"
+        description="Generate ASCII art from text or images online for free. Choose from multiple styles, customize colors, and export as text or HTML. Perfect for code comments, art projects, and retro aesthetics."
+        breadcrumbs={breadcrumbs}
+      >
       <div className="max-w-6xl mx-auto space-y-6">
         <div className="grid lg:grid-cols-2 gap-6">
           {/* Settings */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 space-y-6">
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold">ASCII Art Settings</h2>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">ASCII Art Settings</h2>
               {totalGenerated > 0 && (
-                <div className="text-sm text-gray-500">
-                  Generated: <span className="font-semibold text-gray-900">{totalGenerated}</span>
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  Generated: <span className="font-semibold text-gray-900 dark:text-gray-100">{totalGenerated}</span>
                 </div>
               )}
             </div>
 
             {/* Mode Selection */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-3">Mode:</label>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Mode:</label>
               <div className="grid grid-cols-2 gap-2">
                 <button
                   onClick={() => {
@@ -278,7 +361,7 @@ ${useColor ? result : result.replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
                   className={`px-4 py-2 rounded-lg font-semibold transition-all ${
                     mode === 'text'
                       ? 'bg-primary-600 text-white shadow-lg'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
                   Text
@@ -288,7 +371,7 @@ ${useColor ? result : result.replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
                   className={`px-4 py-2 rounded-lg font-semibold transition-all ${
                     mode === 'image'
                       ? 'bg-primary-600 text-white shadow-lg'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
                   Image
@@ -299,12 +382,12 @@ ${useColor ? result : result.replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
             {/* Text Mode */}
             {mode === 'text' && (
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Text</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Text</label>
                 <input
                   type="text"
                   value={text}
                   onChange={(e) => setText(e.target.value)}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500"
+                  className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                   placeholder="Enter text..."
                   maxLength={30}
                 />
@@ -314,7 +397,7 @@ ${useColor ? result : result.replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
             {/* Image Mode */}
             {mode === 'image' && (
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Upload Image</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Upload Image</label>
                 <FileDropZone
                   onFileSelect={handleFileSelect}
                   accept="image/*"
@@ -324,22 +407,22 @@ ${useColor ? result : result.replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
                     <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
-                    <p className="mt-2 text-sm text-gray-600">
+                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
                       <span className="font-semibold">Click to upload</span> or drag and drop
                     </p>
-                    <p className="mt-1 text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">PNG, JPG, GIF up to 10MB</p>
                   </div>
                 </FileDropZone>
                 {error && (
-                  <p className="mt-2 text-sm text-red-600">{error}</p>
+                  <p className="mt-2 text-sm text-red-600 dark:text-red-400">{error}</p>
                 )}
                 {image && (
-                  <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
-                    <p className="text-sm text-green-700">✓ Image loaded successfully</p>
+                  <div className="mt-3 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                    <p className="text-sm text-green-700 dark:text-green-400">✓ Image loaded successfully</p>
                   </div>
                 )}
                 <div className="mt-4">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                     Width: {imageWidth} characters
                   </label>
                   <input
@@ -357,7 +440,7 @@ ${useColor ? result : result.replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
             {/* Text Mode Width */}
             {mode === 'text' && (
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   Font Size: {width}px
                 </label>
                 <input
@@ -373,7 +456,7 @@ ${useColor ? result : result.replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
 
             {/* Style */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-3">ASCII Style:</label>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">ASCII Style:</label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                 {(['simple', 'medium', 'complex', 'blocks', 'dots', 'shades'] as ASCIIStyle[]).map((s) => (
                   <button
@@ -382,7 +465,7 @@ ${useColor ? result : result.replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
                     className={`px-3 py-2 rounded-lg text-xs font-semibold transition-all capitalize ${
                       style === s
                         ? 'bg-primary-600 text-white shadow-lg'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                     }`}
                   >
                     {s}
@@ -400,7 +483,7 @@ ${useColor ? result : result.replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
                   onChange={(e) => setInvert(e.target.checked)}
                   className="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
                 />
-                <span className="text-sm text-gray-700">Invert colors</span>
+                <span className="text-sm text-gray-700 dark:text-gray-300">Invert colors</span>
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
@@ -409,7 +492,7 @@ ${useColor ? result : result.replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
                   onChange={(e) => setUseColor(e.target.checked)}
                   className="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
                 />
-                <span className="text-sm text-gray-700">Use color (from image)</span>
+                <span className="text-sm text-gray-700 dark:text-gray-300">Use color (from image)</span>
               </label>
             </div>
 
@@ -421,7 +504,7 @@ ${useColor ? result : result.replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
                 onChange={(e) => setAutoGenerate(e.target.checked)}
                 className="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
               />
-              <span className="text-sm text-gray-700">Auto-generate as you edit</span>
+              <span className="text-sm text-gray-700 dark:text-gray-300">Auto-generate as you edit</span>
             </label>
 
             {!autoGenerate && (
@@ -436,8 +519,8 @@ ${useColor ? result : result.replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
           </div>
 
           {/* Preview */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 space-y-6">
-            <h2 className="text-xl font-bold">Preview</h2>
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 space-y-6">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Preview</h2>
 
             {/* Hidden canvas for image processing */}
             <canvas
@@ -447,7 +530,7 @@ ${useColor ? result : result.replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
 
             {result ? (
               <div className="space-y-4">
-                <div className="p-4 bg-gray-900 rounded-lg border-2 border-gray-200 overflow-auto max-h-[500px]">
+                <div className="p-4 bg-gray-900 rounded-lg border-2 border-gray-200 dark:border-gray-600 overflow-auto max-h-[500px]">
                   {useColor ? (
                     <pre 
                       className="text-green-400 font-mono text-xs whitespace-pre"
@@ -482,8 +565,8 @@ ${useColor ? result : result.replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
                 </div>
               </div>
             ) : (
-              <div className="border-2 border-dashed border-gray-200 rounded-xl p-8 bg-gray-50 text-center text-gray-400">
-                <p className="font-semibold text-gray-700 mb-2">ASCII art will appear here</p>
+              <div className="border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl p-8 bg-gray-50 dark:bg-gray-800 text-center text-gray-400 dark:text-gray-500">
+                <p className="font-semibold text-gray-700 dark:text-gray-300 mb-2">ASCII art will appear here</p>
                 <p className="text-sm">
                   {mode === 'text' 
                     ? 'Enter text and adjust settings'
@@ -496,15 +579,15 @@ ${useColor ? result : result.replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
 
         {/* SEO Content */}
         <div className="max-w-4xl mx-auto mt-16 space-y-8">
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">What is ASCII Art?</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">What is ASCII Art?</h2>
             <div className="prose prose-gray max-w-none">
-              <p className="text-gray-700 leading-relaxed mb-4">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                 ASCII art is a graphic design technique that uses printable ASCII characters to create images and 
                 text art. It was popular in the early days of computing when graphics capabilities were limited, 
                 and remains popular today for code comments, retro aesthetics, and text-based art.
               </p>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                 Our free ASCII art generator creates ASCII art from text or images instantly in your browser. 
                 Choose from multiple styles (simple, medium, complex, blocks, dots, shades), customize colors, 
                 and export as plain text or HTML. Perfect for developers, artists, and anyone who loves retro 
@@ -513,10 +596,10 @@ ${useColor ? result : result.replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
             </div>
           </section>
 
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">How to Use Our ASCII Art Generator</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">How to Use Our ASCII Art Generator</h2>
             <div className="prose prose-gray max-w-none">
-              <ol className="list-decimal list-inside space-y-3 text-gray-700">
+              <ol className="list-decimal list-inside space-y-3 text-gray-700 dark:text-gray-300">
                 <li><strong>Choose Mode:</strong> Select Text mode to convert text to ASCII art, or Image mode to convert images to ASCII art.</li>
                 <li><strong>Enter Text or Upload Image:</strong> For text mode, enter up to 30 characters. For image mode, upload a PNG, JPG, or other image file.</li>
                 <li><strong>Select Style:</strong> Choose from 6 ASCII styles: simple (basic characters), medium (detailed), complex (very detailed), blocks, dots, or shades.</li>
@@ -527,33 +610,33 @@ ${useColor ? result : result.replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
             </div>
           </section>
 
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Common Use Cases</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Common Use Cases</h2>
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">💻 Code Comments</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">💻 Code Comments</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Add ASCII art banners to your code comments for visual separation, headers, or just for fun. 
                   Export as plain text to paste directly into your code.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">🎨 Art Projects</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">🎨 Art Projects</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Create text-based art for social media, forums, or messaging apps. ASCII art works great in 
                   monospace fonts and adds a retro aesthetic to your projects.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">📱 Social Media</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">📱 Social Media</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Generate ASCII art text for Twitter, Discord, or other platforms that support monospace text. 
                   Perfect for creating eye-catching headers or signatures.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">🖼️ Image Conversion</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">🖼️ Image Conversion</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Convert photos or images to ASCII art. Great for creating unique profile pictures, art pieces, 
                   or converting images to text format for special purposes.
                 </p>
@@ -561,42 +644,42 @@ ${useColor ? result : result.replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
             </div>
           </section>
 
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Frequently Asked Questions</h2>
             <div className="space-y-6">
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">What image formats are supported?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">What image formats are supported?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   You can upload any common image format (PNG, JPG, JPEG, GIF, WebP). The generator will convert 
                   the image to ASCII art by analyzing pixel brightness and mapping it to ASCII characters.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Can I use color in ASCII art?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Can I use color in ASCII art?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Yes! Enable &quot;Use color (from image)&quot; to preserve colors from uploaded images. The color mode 
                   creates HTML output with color-coded characters. Note: Color only works in HTML export, not plain text.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">What&apos;s the difference between styles?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">What&apos;s the difference between styles?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Simple uses basic characters (@, %, #, *), medium uses more detailed characters for better gradients, 
                   complex uses the most detailed character set. Blocks, dots, and shades use special Unicode characters 
                   for different visual effects.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">How do I use the exported ASCII art?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">How do I use the exported ASCII art?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Plain text (TXT) can be pasted into code comments, text editors, or anywhere that supports monospace 
                   fonts. HTML export creates a complete HTML file with styling that you can open in a browser or embed 
                   in web pages.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Is my image stored or transmitted?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Is my image stored or transmitted?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   No, all ASCII art generation happens entirely in your browser. We never see, store, or transmit any 
                   of your images or settings. Your privacy is completely protected.
                 </p>
@@ -605,6 +688,11 @@ ${useColor ? result : result.replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
           </section>
         </div>
       </div>
+      {/* Related Tools */}
+      {relatedTools.length > 0 && (
+        <RelatedTools tools={relatedTools} title="Related Generator Tools" />
+      )}
     </Layout>
+    </>
   )
 }

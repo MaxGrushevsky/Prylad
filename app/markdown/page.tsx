@@ -2,7 +2,11 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import Layout from '@/components/Layout'
+import StructuredData from '@/components/StructuredData'
+import RelatedTools from '@/components/RelatedTools'
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
+import { generateFAQSchema, generateHowToSchema, generateSoftwareApplicationSchema } from '@/lib/structured-data'
+import { generateBreadcrumbs, getRelatedTools } from '@/lib/seo-helpers'
 interface MarkdownStats {
   words: number
   characters: number
@@ -148,7 +152,7 @@ export default function MarkdownPage() {
       }
       return '<tr>' + cells.map((cell: string) => `<td>${cell}</td>`).join('') + '</tr>'
     })
-    html = html.replace(/(<tr>.*<\/tr>)/gim, '<table class="border-collapse border border-gray-300 w-full my-4"><tbody>$1</tbody></table>')
+    html = html.replace(/(<tr>.*<\/tr>)/gim, '<table class="border-collapse border border-gray-300 dark:border-gray-600 w-full my-4"><tbody>$1</tbody></table>')
 
     // Unordered lists
     html = html.replace(/^[\*\-] (.*$)/gim, '<li>$1</li>')
@@ -288,36 +292,114 @@ ${preview}
     onClear: () => clearAll()
   })
 
+  // SEO data
+  const toolPath = '/markdown'
+  const toolName = 'Markdown Editor & Preview'
+  const category = 'code'
+  const breadcrumbs = generateBreadcrumbs(toolName, toolPath, category)
+  const relatedTools = getRelatedTools(toolPath, category, 6)
+
+  // FAQ data
+  const faqs = [
+    {
+      question: "What is Markdown?",
+      answer: "Markdown is a lightweight markup language that uses plain text formatting syntax to create formatted text. It's widely used for documentation, README files, blog posts, and formatted text that can be easily converted to HTML."
+    },
+    {
+      question: "How do I use the Markdown editor?",
+      answer: "Type or paste your Markdown text in the editor pane. The preview pane automatically shows the rendered HTML output in real-time. You can toggle between editor and preview, or view them side by side."
+    },
+    {
+      question: "What Markdown features are supported?",
+      answer: "The editor supports standard Markdown features including headings, bold/italic text, lists (ordered and unordered), links, images, code blocks, inline code, blockquotes, tables, horizontal rules, and more."
+    },
+    {
+      question: "Can I export Markdown to HTML?",
+      answer: "Yes! Click 'Export to HTML' to download the rendered Markdown as an HTML file. This is useful for creating web pages, documentation sites, or sharing formatted content."
+    },
+    {
+      question: "Does the editor support GitHub Flavored Markdown?",
+      answer: "The editor supports many GitHub Flavored Markdown features including tables, task lists, strikethrough, and more. It's perfect for writing README files and GitHub documentation."
+    },
+    {
+      question: "Is the Markdown editor free?",
+      answer: "Yes, completely free! No registration, no limits, no hidden fees. All Markdown processing happens in your browser - we never see or store your content."
+    }
+  ]
+
+  // HowTo steps
+  const howToSteps = [
+    {
+      name: "Enter Markdown Text",
+      text: "Type or paste your Markdown text in the editor pane. Use Markdown syntax for headings, lists, links, images, code blocks, and other formatting."
+    },
+    {
+      name: "View Live Preview",
+      text: "See the rendered HTML output in the preview pane in real-time. The preview updates automatically as you type, showing exactly how your Markdown will look when rendered."
+    },
+    {
+      name: "Use Examples",
+      text: "Click on Markdown examples (Basic Formatting, Lists, Links, etc.) to load sample Markdown and learn the syntax. Modify the examples to suit your needs."
+    },
+    {
+      name: "Check Statistics",
+      text: "View Markdown statistics including word count, character count, number of headings, links, images, and code blocks to understand your document structure."
+    },
+    {
+      name: "Export to HTML",
+      text: "Click 'Export to HTML' to download the rendered Markdown as an HTML file. Use it in your websites, documentation, or share it with others."
+    }
+  ]
+
+  // Structured data
+  const structuredData = [
+    generateFAQSchema(faqs),
+    generateHowToSchema(
+      "How to Use Markdown Editor and Preview",
+      "Learn how to edit and preview Markdown in real-time using our free online Markdown editor with live preview and export functionality.",
+      howToSteps,
+      "PT3M"
+    ),
+    generateSoftwareApplicationSchema(
+      "Markdown Editor & Preview",
+      "Free online Markdown editor with real-time preview. Edit Markdown, see live HTML output, export to HTML, and use comprehensive formatting support. Perfect for documentation and README files.",
+      "https://prylad.pro/markdown",
+      "WebApplication"
+    )
+  ]
+
   return (
     <>
+      <StructuredData data={structuredData} />
       <Layout
-        title="📄 Markdown Editor & Preview - Real-time Markdown Preview Online"
-      description="Edit and preview Markdown in real-time. Free online Markdown editor with live preview, syntax highlighting, export to HTML, and comprehensive formatting support. Perfect for writing documentation, README files, and formatted text."
-    >
+        title="📄 Markdown Editor & Preview"
+        description="Edit and preview Markdown in real-time. Free online Markdown editor with live preview, syntax highlighting, export to HTML, and comprehensive formatting support. Perfect for writing documentation, README files, and formatted text."
+        breadcrumbs={breadcrumbs}
+      >
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="grid lg:grid-cols-2 gap-6">
           {/* Editor */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 space-y-6">
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold">Markdown Editor</h2>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Markdown Editor</h2>
               {totalRendered > 0 && (
-                <div className="text-sm text-gray-500">
-                  Rendered: <span className="font-semibold text-gray-900">{totalRendered}</span>
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  Rendered: <span className="font-semibold text-gray-900 dark:text-gray-100">{totalRendered}</span>
                 </div>
               )}
             </div>
 
             {/* Quick Examples */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-3">Quick Examples:</label>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Quick Examples:</label>
               <div className="grid grid-cols-2 gap-2">
                 {markdownExamples.map((example) => (
                   <button
                     key={example.name}
                     onClick={() => loadExample(example)}
-                    className="px-3 py-2 text-left bg-gray-50 hover:bg-gray-100 rounded-lg text-xs transition-colors"
+                    className="px-3 py-2 text-left bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-xs transition-colors"
                   >
-                    <div className="font-semibold text-gray-900">{example.name}</div>
+                    <div className="font-semibold text-gray-900 dark:text-gray-100">{example.name}</div>
                   </button>
                 ))}
               </div>
@@ -326,7 +408,7 @@ ${preview}
             {/* Editor */}
             <div>
               <div className="flex justify-between items-center mb-2">
-                <label className="block text-sm font-semibold text-gray-700">Markdown Source</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Markdown Source</label>
                 <div className="flex gap-2">
                   <button
                     onClick={copyMarkdown}
@@ -345,11 +427,11 @@ ${preview}
               <textarea
                 value={markdown}
                 onChange={(e) => setMarkdown(e.target.value)}
-                className="w-full h-96 px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 resize-none font-mono text-sm"
+                className="w-full h-96 px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 resize-none font-mono text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                 placeholder="# Heading...&#10;&#10;**Bold text** and *italic*"
                 spellCheck={false}
               />
-              <p className="mt-2 text-xs text-gray-500">
+              <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
                 Characters: {stats.characters} | Words: {stats.words} | Lines: {stats.lines}
               </p>
             </div>
@@ -362,7 +444,7 @@ ${preview}
                 onChange={(e) => setAutoPreview(e.target.checked)}
                 className="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
               />
-              <span className="text-sm text-gray-700">Auto-preview as you type</span>
+              <span className="text-sm text-gray-700 dark:text-gray-300">Auto-preview as you type</span>
             </label>
 
             {!autoPreview && (
@@ -397,9 +479,9 @@ ${preview}
           </div>
 
           {/* Preview */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 space-y-6">
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold">Preview</h2>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Preview</h2>
               <button
                 onClick={copyHtml}
                 className="px-3 py-1 bg-gray-600 text-white text-sm rounded-lg hover:bg-gray-700 transition-colors"
@@ -410,38 +492,38 @@ ${preview}
 
             {/* Statistics */}
             <div className="grid grid-cols-3 gap-2 text-center">
-              <div className="p-3 bg-blue-50 rounded-lg">
-                <div className="text-2xl font-bold text-blue-600">{stats.headings}</div>
-                <div className="text-xs text-gray-600">Headings</div>
+              <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{stats.headings}</div>
+                <div className="text-xs text-gray-600 dark:text-gray-400">Headings</div>
               </div>
-              <div className="p-3 bg-green-50 rounded-lg">
-                <div className="text-2xl font-bold text-green-600">{stats.links}</div>
-                <div className="text-xs text-gray-600">Links</div>
+              <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                <div className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.links}</div>
+                <div className="text-xs text-gray-600 dark:text-gray-400">Links</div>
               </div>
-              <div className="p-3 bg-purple-50 rounded-lg">
-                <div className="text-2xl font-bold text-purple-600">{stats.codeBlocks}</div>
-                <div className="text-xs text-gray-600">Code Blocks</div>
+              <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{stats.codeBlocks}</div>
+                <div className="text-xs text-gray-600 dark:text-gray-400">Code Blocks</div>
               </div>
             </div>
 
             {/* Preview Content */}
             <div
-              className="w-full h-96 px-4 py-3 border-2 border-gray-200 rounded-lg bg-white overflow-y-auto prose prose-gray max-w-none"
-              dangerouslySetInnerHTML={{ __html: preview || '<p class="text-gray-400">Preview will appear here...</p>' }}
+              className="w-full h-96 px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 overflow-y-auto prose prose-gray dark:prose-invert max-w-none"
+              dangerouslySetInnerHTML={{ __html: preview || '<p class="text-gray-400 dark:text-gray-500">Preview will appear here...</p>' }}
             />
           </div>
         </div>
 
         {/* SEO Content */}
         <div className="max-w-4xl mx-auto mt-16 space-y-8">
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">What is Markdown?</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">What is Markdown?</h2>
             <div className="prose prose-gray max-w-none">
-              <p className="text-gray-700 leading-relaxed mb-4">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                 Markdown is a lightweight markup language that you can use to add formatting elements to plaintext text documents. 
                 Created by John Gruber in 2004, Markdown is now one of the world&apos;s most popular markup languages.
               </p>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                 Our free Markdown editor provides a real-time preview of your formatted text. Write in Markdown syntax and see 
                 the rendered HTML instantly. Perfect for writing documentation, README files, blog posts, and any formatted text 
                 that needs to be converted to HTML.
@@ -449,42 +531,42 @@ ${preview}
             </div>
           </section>
 
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Markdown Syntax Guide</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Markdown Syntax Guide</h2>
             <div className="space-y-6">
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Headings</h3>
-                <pre className="bg-gray-100 p-3 rounded text-sm overflow-x-auto">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Headings</h3>
+                <pre className="bg-gray-100 dark:bg-gray-700 p-3 rounded text-sm overflow-x-auto">
 {`# Heading 1
 ## Heading 2
 ### Heading 3`}
                 </pre>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Text Formatting</h3>
-                <pre className="bg-gray-100 p-3 rounded text-sm overflow-x-auto">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Text Formatting</h3>
+                <pre className="bg-gray-100 dark:bg-gray-700 p-3 rounded text-sm overflow-x-auto">
 {`**bold text**
 *italic text*
 ~~strikethrough~~`}
                 </pre>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Lists</h3>
-                <pre className="bg-gray-100 p-3 rounded text-sm overflow-x-auto">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Lists</h3>
+                <pre className="bg-gray-100 dark:bg-gray-700 p-3 rounded text-sm overflow-x-auto">
 {`- Unordered item
 1. Ordered item`}
                 </pre>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Links and Images</h3>
-                <pre className="bg-gray-100 p-3 rounded text-sm overflow-x-auto">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Links and Images</h3>
+                <pre className="bg-gray-100 dark:bg-gray-700 p-3 rounded text-sm overflow-x-auto">
 {`[Link text](https://example.com)
 ![Alt text](image.jpg)`}
                 </pre>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Code</h3>
-                <pre className="bg-gray-100 p-3 rounded text-sm overflow-x-auto">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Code</h3>
+                <pre className="bg-gray-100 dark:bg-gray-700 p-3 rounded text-sm overflow-x-auto">
 {`\`inline code\`
 
 \`\`\`javascript
@@ -493,8 +575,8 @@ ${preview}
                 </pre>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Tables</h3>
-                <pre className="bg-gray-100 p-3 rounded text-sm overflow-x-auto">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Tables</h3>
+                <pre className="bg-gray-100 dark:bg-gray-700 p-3 rounded text-sm overflow-x-auto">
 {`| Column 1 | Column 2 |
 |----------|----------|
 | Data 1   | Data 2   |`}
@@ -503,33 +585,33 @@ ${preview}
             </div>
           </section>
 
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Common Use Cases</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Common Use Cases</h2>
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">📝 Documentation</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">📝 Documentation</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Write README files, API documentation, and technical guides in Markdown. Easy to read in source form 
                   and beautifully rendered when converted to HTML.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">📚 Blog Posts</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">📚 Blog Posts</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Many static site generators and blogging platforms support Markdown. Write your posts in Markdown and 
                   let the platform handle the HTML conversion.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">💬 Comments & Messages</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">💬 Comments & Messages</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   GitHub, Reddit, Discord, and many other platforms support Markdown formatting. Use Markdown to format 
                   your comments and messages.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">📊 Notes & Documentation</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">📊 Notes & Documentation</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Keep notes, meeting minutes, and documentation in Markdown format. Easy to version control with Git 
                   and readable in any text editor.
                 </p>
@@ -537,9 +619,9 @@ ${preview}
             </div>
           </section>
 
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Key Features</h2>
-            <ul className="space-y-3 text-gray-700">
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Key Features</h2>
+            <ul className="space-y-3 text-gray-700 dark:text-gray-300">
               <li className="flex items-start gap-2">
                 <span className="text-primary-600 font-bold">✓</span>
                 <span><strong>Real-time Preview:</strong> See your Markdown rendered as HTML instantly as you type.</span>
@@ -567,41 +649,41 @@ ${preview}
             </ul>
           </section>
 
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Frequently Asked Questions</h2>
             <div className="space-y-6">
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">What Markdown features are supported?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">What Markdown features are supported?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Our editor supports headings (H1-H6), bold, italic, strikethrough, unordered and ordered lists, links, 
                   images, inline code, code blocks, blockquotes, horizontal rules, and tables. This covers most common 
                   Markdown use cases.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Can I export my Markdown?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Can I export my Markdown?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Yes! You can export your Markdown source as a .md file, or export the rendered HTML as a complete HTML 
                   document with embedded styles.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Is my content stored or transmitted?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Is my content stored or transmitted?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   No, all Markdown processing happens entirely in your browser. We never see, store, or transmit any of 
                   your content. Your privacy is completely protected.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Can I use this for GitHub README files?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Can I use this for GitHub README files?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Yes! Our Markdown editor supports the syntax commonly used in GitHub README files. Write your README 
                   here, preview it, and then copy it to your GitHub repository.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Does the editor support syntax highlighting for code blocks?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Does the editor support syntax highlighting for code blocks?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Code blocks are preserved with language identifiers, but full syntax highlighting in the preview requires 
                   additional CSS libraries. The exported HTML includes basic styling for code blocks.
                 </p>
@@ -610,6 +692,10 @@ ${preview}
           </section>
         </div>
       </div>
+      {/* Related Tools */}
+      {relatedTools.length > 0 && (
+        <RelatedTools tools={relatedTools} title="Related Developer Tools" />
+      )}
     </Layout>
     </>
   )

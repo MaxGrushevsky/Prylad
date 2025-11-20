@@ -2,7 +2,11 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react'
 import Layout from '@/components/Layout'
+import StructuredData from '@/components/StructuredData'
+import RelatedTools from '@/components/RelatedTools'
 import FileDropZone from '@/components/FileDropZone'
+import { generateFAQSchema, generateHowToSchema, generateSoftwareApplicationSchema } from '@/lib/structured-data'
+import { generateBreadcrumbs, getRelatedTools } from '@/lib/seo-helpers'
 
 type ColorBlindnessType = 'normal' | 'protanopia' | 'deuteranopia' | 'tritanopia'
 
@@ -123,13 +127,93 @@ export default function ColorBlindnessSimulatorPage() {
     })
   }
 
+  // SEO data
+  const toolPath = '/color-blindness-simulator'
+  const toolName = 'Color Blindness Simulator'
+  const category = 'design'
+  const breadcrumbs = generateBreadcrumbs(toolName, toolPath, category)
+  const relatedTools = getRelatedTools(toolPath, category, 6)
+
+  // FAQ data
+  const faqs = [
+    {
+      question: "What is color blindness?",
+      answer: "Color blindness (color vision deficiency) is a condition where people have difficulty distinguishing certain colors. The most common types are Protanopia (red-green), Deuteranopia (red-green), and Tritanopia (blue-yellow)."
+    },
+    {
+      question: "Why should I test images for color blindness?",
+      answer: "Testing images for color blindness ensures your designs are accessible to all users. Approximately 8% of men and 0.5% of women have some form of color vision deficiency. Accessible designs improve user experience for everyone."
+    },
+    {
+      question: "What types of color blindness can I simulate?",
+      answer: "Three types: Protanopia (red-green color blindness, difficulty seeing red), Deuteranopia (red-green color blindness, difficulty seeing green), and Tritanopia (blue-yellow color blindness, difficulty seeing blue)."
+    },
+    {
+      question: "How do I use the color blindness simulator?",
+      answer: "Upload your image, select a color blindness type (Protanopia, Deuteranopia, or Tritanopia), and see how the image appears to people with that type of color vision deficiency. Compare with the normal view."
+    },
+    {
+      question: "What should I look for when testing?",
+      answer: "Check if important information relies solely on color. Ensure text is readable, buttons are distinguishable, and information is conveyed through shapes, patterns, or text labels in addition to color."
+    },
+    {
+      question: "Is the color blindness simulator free?",
+      answer: "Yes, completely free! No registration, no limits, no hidden fees. All image processing happens in your browser - we never see or store your images."
+    }
+  ]
+
+  // HowTo steps
+  const howToSteps = [
+    {
+      name: "Upload Image",
+      text: "Upload your image by dragging and dropping it or clicking to select. Supported formats: JPEG, PNG, WebP. The image loads instantly for simulation."
+    },
+    {
+      name: "Select Color Blindness Type",
+      text: "Choose a color blindness type: Protanopia (red-green, difficulty seeing red), Deuteranopia (red-green, difficulty seeing green), or Tritanopia (blue-yellow, difficulty seeing blue)."
+    },
+    {
+      name: "View Simulation",
+      text: "See how your image appears to people with the selected type of color vision deficiency. The simulation applies color filters to approximate the visual experience."
+    },
+    {
+      name: "Compare Views",
+      text: "Switch between 'Normal' and color blindness types to compare how the image looks. This helps identify potential accessibility issues."
+    },
+    {
+      name: "Make Improvements",
+      text: "If important information is lost in the simulation, improve your design by adding text labels, patterns, or shapes in addition to color to convey information."
+    }
+  ]
+
+  // Structured data
+  const structuredData = [
+    generateFAQSchema(faqs),
+    generateHowToSchema(
+      "How to Test Images for Color Blindness Accessibility",
+      "Learn how to test images for color blindness accessibility using our free online color blindness simulator tool.",
+      howToSteps,
+      "PT2M"
+    ),
+    generateSoftwareApplicationSchema(
+      "Color Blindness Simulator",
+      "Free online color blindness simulator. Test images for accessibility by simulating Protanopia, Deuteranopia, and Tritanopia color vision deficiencies. Perfect for web designers and developers.",
+      "https://prylad.pro/color-blindness-simulator",
+      "WebApplication"
+    )
+  ]
+
   return (
-    <Layout
-      title="👁️ Color Blindness Simulator"
-      description="Simulate color blindness to test image accessibility. Preview how images look with different types of color vision deficiency."
+    <>
+      <StructuredData data={structuredData} />
+      <Layout
+        title="👁️ Color Blindness Simulator"
+        description="Simulate color blindness to test image accessibility. Preview how images look with different types of color vision deficiency."
+        breadcrumbs={breadcrumbs}
+      >
     >
       <div className="max-w-6xl mx-auto">
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 mb-6">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 mb-6 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
           <div className="space-y-6">
             {/* Type Selection */}
             <div>
@@ -212,7 +296,7 @@ export default function ColorBlindnessSimulatorPage() {
                     Download
                   </button>
                 </div>
-                <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
                   <canvas
                     ref={canvasRef}
                     className="w-full h-auto max-h-96 object-contain"
@@ -244,8 +328,8 @@ export default function ColorBlindnessSimulatorPage() {
       </div>
 
       <div className="max-w-4xl mx-auto space-y-8 mt-10">
-        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">How to Simulate Color Blindness</h2>
+        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white mb-4">How to Simulate Color Blindness</h2>
           <ol className="list-decimal list-inside space-y-2 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
             <li>Upload a screenshot, UI mockup, or illustration that you want to test.</li>
             <li>Select the color vision deficiency: Protanopia, Deuteranopia, or Tritanopia.</li>
@@ -257,26 +341,26 @@ export default function ColorBlindnessSimulatorPage() {
           </p>
         </section>
 
-        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Color Blindness Types Explained</h2>
+        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white mb-4">Color Blindness Types Explained</h2>
           <div className="grid md:grid-cols-3 gap-4 text-sm text-gray-700 dark:text-gray-300">
             <div>
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Protanopia</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-gray-100 dark:text-white mb-2">Protanopia</h3>
               <p>Red cones missing. Reds look darker and blend with greens. Affects ~1% of males.</p>
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Deuteranopia</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-gray-100 dark:text-white mb-2">Deuteranopia</h3>
               <p>Green cones missing. Greens fade toward beige. Also affects ~1% of males.</p>
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Tritanopia</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-gray-100 dark:text-white mb-2">Tritanopia</h3>
               <p>Blue cones missing. Blues and yellows shift dramatically. Rare (&lt;0.01% population).</p>
             </div>
           </div>
         </section>
 
-        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Accessibility Best Practices</h2>
+        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white mb-4">Accessibility Best Practices</h2>
           <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300 leading-relaxed list-disc list-inside">
             <li>Use redundant cues: combine color with icons, labels, or patterns.</li>
             <li>Maintain sufficient contrast (WCAG AA) so text remains legible for most users.</li>
@@ -285,8 +369,12 @@ export default function ColorBlindnessSimulatorPage() {
           </ul>
         </section>
       </div>
-
-      </Layout>
+      {/* Related Tools */}
+      {relatedTools.length > 0 && (
+        <RelatedTools tools={relatedTools} title="Related Design Tools" />
+      )}
+    </Layout>
+    </>
   )
 }
 

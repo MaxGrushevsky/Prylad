@@ -2,7 +2,12 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Layout from '@/components/Layout'
+import StructuredData from '@/components/StructuredData'
+import RelatedTools from '@/components/RelatedTools'
 import FileDropZone from '@/components/FileDropZone'
+import { generateFAQSchema, generateHowToSchema, generateSoftwareApplicationSchema } from '@/lib/structured-data'
+import { generateBreadcrumbs, getRelatedTools } from '@/lib/seo-helpers'
+
 type Mode = 'text' | 'image'
 type Format = 'standard' | 'url-safe'
 
@@ -15,6 +20,82 @@ export default function Base64ConverterPage() {
   const [imagePreview, setImagePreview] = useState('')
   const [error, setError] = useState('')
   const [totalOperations, setTotalOperations] = useState(0)
+
+  // SEO data
+  const toolPath = '/base64-converter'
+  const toolName = 'Base64 Converter'
+  const category = 'converters'
+  const breadcrumbs = generateBreadcrumbs(toolName, toolPath, category)
+  const relatedTools = getRelatedTools(toolPath, category, 6)
+
+  // FAQ data
+  const faqs = [
+    {
+      question: "What's the difference between standard and URL-safe Base64?",
+      answer: "Standard Base64 uses + and / characters, which need URL encoding in URLs. URL-safe Base64 replaces + with - and / with _, making it safe to use directly in URLs without additional encoding."
+    },
+    {
+      question: "How much does Base64 encoding increase file size?",
+      answer: "Base64 encoding increases data size by approximately 33%. This is because every 3 bytes of binary data becomes 4 Base64 characters. The exact increase depends on the original data."
+    },
+    {
+      question: "Can I encode images larger than 10MB?",
+      answer: "Our tool limits image uploads to 10MB to ensure good performance. For larger images, consider compressing them first or using server-side encoding tools."
+    },
+    {
+      question: "Is Base64 encoding secure?",
+      answer: "Base64 is an encoding scheme, not encryption. It doesn't provide security or privacy - it's just a way to represent binary data as text. Anyone can decode Base64-encoded data."
+    },
+    {
+      question: "Do you store my encoded/decoded data?",
+      answer: "No, absolutely not. All encoding and decoding happens entirely in your browser. We never see, store, transmit, or have any access to your data. Your privacy is completely protected."
+    },
+    {
+      question: "Can I use Base64 for binary files other than images?",
+      answer: "Yes! While our tool focuses on text and images, Base64 can encode any binary data. You can encode documents, audio files, or any other binary content using Base64 encoding."
+    }
+  ]
+
+  // HowTo steps
+  const howToSteps = [
+    {
+      name: "Choose Mode",
+      text: "Select Text mode for encoding/decoding text strings, or Image mode for converting images to Base64."
+    },
+    {
+      name: "Enter Your Data",
+      text: "For text mode, paste or type your text. For image mode, upload an image file (up to 10MB)."
+    },
+    {
+      name: "Select Format (Text Mode)",
+      text: "Choose between Standard Base64 or URL-safe Base64 encoding. URL-safe is better for use in URLs."
+    },
+    {
+      name: "Enable Auto-Convert (Optional)",
+      text: "Turn on auto-convert to automatically encode text as you type or decode Base64 strings in real-time."
+    },
+    {
+      name: "Copy or Export",
+      text: "Copy the Base64 string to your clipboard or export it to a file. For images, download the decoded image."
+    }
+  ]
+
+  // Structured data
+  const structuredData = [
+    generateFAQSchema(faqs),
+    generateHowToSchema(
+      "How to Use Base64 Encoder and Decoder",
+      "Learn how to encode and decode text and images using Base64 encoding with our free online converter tool.",
+      howToSteps,
+      "PT3M"
+    ),
+    generateSoftwareApplicationSchema(
+      "Base64 Converter",
+      "Free online Base64 encoder and decoder. Encode text and images to Base64 format with support for standard and URL-safe encoding.",
+      "https://prylad.pro/base64-converter",
+      "UtilityApplication"
+    )
+  ]
   const encodeText = useCallback((input: string, fmt: Format): string => {
     try {
       const encoded = btoa(unescape(encodeURIComponent(input)))
@@ -153,16 +234,18 @@ export default function Base64ConverterPage() {
 
   return (
     <>
+      <StructuredData data={structuredData} />
       <Layout
         title="📦 Base64 Encoder/Decoder"
-      description="Encode and decode text and images to Base64 format. Free online Base64 converter with URL-safe encoding, auto-convert, and image support."
-    >
+        description="Encode and decode text and images to Base64 format. Free online Base64 converter with URL-safe encoding, auto-convert, and image support."
+        breadcrumbs={breadcrumbs}
+      >
       <div className="max-w-6xl mx-auto">
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 mb-6">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 mb-6 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
           <div className="space-y-6">
             {/* Mode Selection */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-3">Mode:</label>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Mode:</label>
               <div className="flex gap-3">
                 <button
                   onClick={() => {
@@ -173,7 +256,7 @@ export default function Base64ConverterPage() {
                   className={`flex-1 px-6 py-3 rounded-xl font-semibold transition-all ${
                     mode === 'text'
                       ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
                   Text
@@ -188,7 +271,7 @@ export default function Base64ConverterPage() {
                   className={`flex-1 px-6 py-3 rounded-xl font-semibold transition-all ${
                     mode === 'image'
                       ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
                   Image
@@ -199,14 +282,14 @@ export default function Base64ConverterPage() {
             {/* Format Selection (for text mode) */}
             {mode === 'text' && (
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-3">Base64 Format:</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Base64 Format:</label>
                 <div className="flex gap-3">
                   <button
                     onClick={() => setFormat('standard')}
                     className={`flex-1 px-4 py-2 rounded-lg font-medium text-sm transition-all ${
                       format === 'standard'
                         ? 'bg-primary-600 text-white shadow-md'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                     }`}
                   >
                     Standard
@@ -216,13 +299,13 @@ export default function Base64ConverterPage() {
                     className={`flex-1 px-4 py-2 rounded-lg font-medium text-sm transition-all ${
                       format === 'url-safe'
                         ? 'bg-primary-600 text-white shadow-md'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                     }`}
                   >
                     URL-Safe
                   </button>
                 </div>
-                <p className="text-xs text-gray-500 mt-2">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
                   URL-Safe replaces + with - and / with _ for use in URLs
                 </p>
               </div>
@@ -233,7 +316,7 @@ export default function Base64ConverterPage() {
               <>
                 <div>
                   <div className="flex justify-between items-center mb-2">
-                    <label className="block text-sm font-semibold text-gray-700">Text Input:</label>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Text Input:</label>
                     <div className="flex items-center gap-2">
                       <input
                         type="checkbox"
@@ -242,7 +325,7 @@ export default function Base64ConverterPage() {
                         onChange={(e) => setAutoConvert(e.target.checked)}
                         className="w-4 h-4 accent-primary-600"
                       />
-                      <label htmlFor="auto-convert" className="text-xs text-gray-600 cursor-pointer">
+                      <label htmlFor="auto-convert" className="text-xs text-gray-600 dark:text-gray-400 cursor-pointer">
                         Auto-convert
                       </label>
                     </div>
@@ -253,11 +336,11 @@ export default function Base64ConverterPage() {
                       setText(e.target.value)
                       setError('')
                     }}
-                    className="w-full h-40 px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 resize-none font-mono text-sm"
+                    className="w-full h-40 px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 resize-none font-mono text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                     placeholder="Enter text to encode..."
                   />
                   {text && (
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                       {text.length} characters, {textSize} bytes
                     </p>
                   )}
@@ -291,7 +374,7 @@ export default function Base64ConverterPage() {
             {/* Image Mode */}
             {mode === 'image' && (
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Upload Image:</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Upload Image:</label>
                 <FileDropZone
                   onFileSelect={handleImageUpload}
                   accept="image/*"
@@ -303,7 +386,7 @@ export default function Base64ConverterPage() {
             {/* Base64 Output */}
             <div>
               <div className="flex justify-between items-center mb-2">
-                <label className="block text-sm font-semibold text-gray-700">Base64 Output:</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Base64 Output:</label>
                 <div className="flex gap-2">
                   <button
                     onClick={exportToFile}
@@ -330,11 +413,11 @@ export default function Base64ConverterPage() {
                   setBase64(e.target.value)
                   setError('')
                 }}
-                className="w-full h-40 px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 resize-none font-mono text-xs"
+                className="w-full h-40 px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 resize-none font-mono text-xs bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                 placeholder="Base64 string will appear here..."
               />
               {base64 && (
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   {base64.length} characters, {base64Size} bytes
                   {mode === 'text' && text && (
                     <span className="ml-2">({sizeIncrease}% size increase)</span>
@@ -345,7 +428,7 @@ export default function Base64ConverterPage() {
 
             {/* Error Message */}
             {error && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+              <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-sm">
                 {error}
               </div>
             )}
@@ -354,7 +437,7 @@ export default function Base64ConverterPage() {
             {imagePreview && (
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <label className="block text-sm font-semibold text-gray-700">Image Preview:</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Image Preview:</label>
                   <button
                     onClick={downloadImage}
                     className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm"
@@ -365,14 +448,14 @@ export default function Base64ConverterPage() {
                 <img 
                   src={imagePreview} 
                   alt="Preview" 
-                  className="max-w-full h-auto max-h-96 rounded-lg border-2 border-gray-200 mx-auto block" 
+                  className="max-w-full h-auto max-h-96 rounded-lg border-2 border-gray-200 dark:border-gray-700 mx-auto block bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100" 
                 />
               </div>
             )}
 
             {/* Statistics */}
             {totalOperations > 0 && (
-              <div className="text-center text-sm text-gray-600 pt-2 border-t border-gray-200">
+              <div className="text-center text-sm text-gray-600 dark:text-gray-400 pt-2 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
                 Total operations: <span className="font-semibold text-primary-600">{totalOperations}</span>
               </div>
             )}
@@ -382,15 +465,15 @@ export default function Base64ConverterPage() {
         {/* SEO Content */}
         <div className="max-w-4xl mx-auto mt-16 space-y-8">
           {/* Introduction */}
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">What is Base64 Encoding?</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">What is Base64 Encoding?</h2>
             <div className="prose prose-gray max-w-none">
-              <p className="text-gray-700 leading-relaxed mb-4">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                 Base64 is a binary-to-text encoding scheme that represents binary data in an ASCII string format. 
                 It&apos;s commonly used to encode data that needs to be stored or transferred over media designed to 
                 deal with text. Base64 encoding converts binary data into a string of 64 characters (A-Z, a-z, 0-9, +, /).
               </p>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                 Base64 encoding increases the size of the data by approximately 33%, but it ensures that the data 
                 can be safely transmitted through text-based protocols like email, JSON, XML, or URLs. It&apos;s widely 
                 used in web development, data storage, and API communications.
@@ -399,33 +482,33 @@ export default function Base64ConverterPage() {
           </section>
 
           {/* Use Cases */}
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Common Use Cases</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Common Use Cases</h2>
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">🌐 Web Development</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">🌐 Web Development</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Embed images directly in HTML/CSS using data URIs. Encode API payloads, authentication tokens, 
                   or binary data for JSON transmission.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">📧 Email Attachments</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">📧 Email Attachments</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Encode binary attachments (images, documents) for email transmission. Many email systems use 
                   Base64 encoding for attachments.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">🔐 Data Storage</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">🔐 Data Storage</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Store binary data in text-based storage systems like databases, configuration files, or JSON 
                   documents that don&apos;t support binary data natively.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">🔗 URL Encoding</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">🔗 URL Encoding</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Use URL-safe Base64 encoding for data in URLs. URL-safe Base64 replaces + with - and / with _ 
                   to avoid URL encoding issues.
                 </p>
@@ -434,14 +517,14 @@ export default function Base64ConverterPage() {
           </section>
 
           {/* Features */}
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Key Features</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Key Features</h2>
             <div className="grid md:grid-cols-2 gap-6">
               <div className="flex items-start gap-3">
                 <span className="text-2xl">📝</span>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Text & Image Support</h3>
-                  <p className="text-gray-700 text-sm">
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Text & Image Support</h3>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">
                     Encode and decode both text strings and images. Upload images to get Base64 data URIs, or 
                     decode Base64 back to images.
                   </p>
@@ -450,8 +533,8 @@ export default function Base64ConverterPage() {
               <div className="flex items-start gap-3">
                 <span className="text-2xl">🔗</span>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">URL-Safe Encoding</h3>
-                  <p className="text-gray-700 text-sm">
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">URL-Safe Encoding</h3>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">
                     Choose between standard Base64 or URL-safe Base64 encoding. URL-safe format is perfect for 
                     embedding in URLs or query parameters.
                   </p>
@@ -460,8 +543,8 @@ export default function Base64ConverterPage() {
               <div className="flex items-start gap-3">
                 <span className="text-2xl">⚡</span>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Auto-Convert</h3>
-                  <p className="text-gray-700 text-sm">
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Auto-Convert</h3>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">
                     Enable auto-convert to automatically encode text as you type or decode Base64 strings. 
                     Real-time conversion for faster workflow.
                   </p>
@@ -470,8 +553,8 @@ export default function Base64ConverterPage() {
               <div className="flex items-start gap-3">
                 <span className="text-2xl">📊</span>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Size Information</h3>
-                  <p className="text-gray-700 text-sm">
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Size Information</h3>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">
                     See character count, byte size, and size increase percentage. Understand the encoding 
                     overhead for your data.
                   </p>
@@ -480,8 +563,8 @@ export default function Base64ConverterPage() {
               <div className="flex items-start gap-3">
                 <span className="text-2xl">📥</span>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Export Options</h3>
-                  <p className="text-gray-700 text-sm">
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Export Options</h3>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">
                     Copy Base64 strings to clipboard or export to text files. Download decoded images directly 
                     from Base64 data URIs.
                   </p>
@@ -490,8 +573,8 @@ export default function Base64ConverterPage() {
               <div className="flex items-start gap-3">
                 <span className="text-2xl">🔒</span>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Privacy First</h3>
-                  <p className="text-gray-700 text-sm">
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Privacy First</h3>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">
                     All encoding and decoding happens locally in your browser. We never see, store, or have 
                     access to your data.
                   </p>
@@ -501,40 +584,40 @@ export default function Base64ConverterPage() {
           </section>
 
           {/* FAQ */}
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Frequently Asked Questions</h2>
             <div className="space-y-6">
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">What&apos;s the difference between standard and URL-safe Base64?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">What&apos;s the difference between standard and URL-safe Base64?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Standard Base64 uses + and / characters, which need URL encoding in URLs. URL-safe Base64 
                   replaces + with - and / with _, making it safe to use directly in URLs without additional encoding.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">How much does Base64 encoding increase file size?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">How much does Base64 encoding increase file size?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Base64 encoding increases data size by approximately 33%. This is because every 3 bytes of 
                   binary data becomes 4 Base64 characters. The exact increase depends on the original data.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Can I encode images larger than 10MB?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Can I encode images larger than 10MB?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Our tool limits image uploads to 10MB to ensure good performance. For larger images, consider 
                   compressing them first or using server-side encoding tools.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Is Base64 encoding secure?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Is Base64 encoding secure?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Base64 is an encoding scheme, not encryption. It doesn&apos;t provide security or privacy - it&apos;s 
                   just a way to represent binary data as text. Anyone can decode Base64-encoded data.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Do you store my encoded/decoded data?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Do you store my encoded/decoded data?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   No, absolutely not. All encoding and decoding happens entirely in your browser. We never see, 
                   store, transmit, or have any access to your data. Your privacy is completely protected.
                 </p>
@@ -543,6 +626,11 @@ export default function Base64ConverterPage() {
           </section>
         </div>
       </div>
+
+      {/* Related Tools */}
+      {relatedTools.length > 0 && (
+        <RelatedTools tools={relatedTools} title="Related Converter Tools" />
+      )}
     </Layout>
     </>
   )

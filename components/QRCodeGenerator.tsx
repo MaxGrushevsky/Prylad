@@ -180,7 +180,7 @@ export default function QRCodeGenerator() {
       <div className="max-w-7xl mx-auto">
         {/* QR Type selector */}
         <div className="mb-6">
-          <label className="block text-sm font-semibold text-gray-700 mb-3 text-center">
+          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 text-center">
             QR Code Type
           </label>
           <div className="flex flex-wrap gap-3 justify-center">
@@ -189,7 +189,7 @@ export default function QRCodeGenerator() {
               className={`px-6 py-3 rounded-xl font-semibold transition-all ${
                 qrType === 'text'
                   ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
               }`}
             >
               📝 Text
@@ -199,7 +199,7 @@ export default function QRCodeGenerator() {
               className={`px-6 py-3 rounded-xl font-semibold transition-all ${
                 qrType === 'url'
                   ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
               }`}
             >
               🌐 URL
@@ -209,7 +209,7 @@ export default function QRCodeGenerator() {
               className={`px-6 py-3 rounded-xl font-semibold transition-all ${
                 qrType === 'wifi'
                   ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
               }`}
             >
               📶 WiFi
@@ -219,7 +219,7 @@ export default function QRCodeGenerator() {
               className={`px-6 py-3 rounded-xl font-semibold transition-all ${
                 qrType === 'email'
                   ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
               }`}
             >
               ✉️ Email
@@ -229,8 +229,8 @@ export default function QRCodeGenerator() {
 
         <div className="grid lg:grid-cols-2 gap-6 lg:gap-8">
           {/* Left column - Settings */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold mb-6 text-gray-900">
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+            <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">
               Settings
             </h2>
 
@@ -238,7 +238,7 @@ export default function QRCodeGenerator() {
             {qrType === 'wifi' ? (
               <div className="mb-6 space-y-4">
                 <div>
-                  <label htmlFor="wifi-ssid" className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label htmlFor="wifi-ssid" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                     Network Name (SSID) *
                   </label>
                   <input
@@ -246,13 +246,13 @@ export default function QRCodeGenerator() {
                     type="text"
                     value={wifiSsid}
                     onChange={(e) => setWifiSsid(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"
+                    className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                     placeholder="MyWiFiNetwork"
                     aria-label="WiFi network name"
                   />
                 </div>
                 <div>
-                  <label htmlFor="wifi-password" className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label htmlFor="wifi-password" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                     Password
                   </label>
                   <input
@@ -260,20 +260,20 @@ export default function QRCodeGenerator() {
                     type="password"
                     value={wifiPassword}
                     onChange={(e) => setWifiPassword(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"
+                    className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                     placeholder="Enter password"
                     aria-label="WiFi password"
                   />
                 </div>
                 <div>
-                  <label htmlFor="wifi-security" className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label htmlFor="wifi-security" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                     Security Type
                   </label>
                   <select
                     id="wifi-security"
                     value={wifiSecurity}
                     onChange={(e) => setWifiSecurity(e.target.value as 'WPA' | 'WEP' | 'nopass')}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all bg-white"
+                    className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                     aria-label="WiFi security type"
                   >
                     <option value="WPA">WPA/WPA2</option>
@@ -289,20 +289,20 @@ export default function QRCodeGenerator() {
                       onChange={(e) => setWifiHidden(e.target.checked)}
                       className="w-4 h-4 accent-primary-600"
                     />
-                    <span className="text-sm font-medium text-gray-700">Hidden network</span>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Hidden network</span>
                   </label>
                 </div>
               </div>
             ) : (
               <div className="mb-6">
-                <label htmlFor="qr-text" className="block text-sm font-semibold text-gray-700 mb-2">
+                <label htmlFor="qr-text" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   {qrType === 'url' ? 'URL' : qrType === 'email' ? 'Email' : 'Text'}
                 </label>
                 <textarea
                   id="qr-text"
                   value={text}
                   onChange={(e) => setText(e.target.value)}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 resize-none transition-all"
+                  className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 resize-none transition-all bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                   rows={4}
                   placeholder={
                     qrType === 'url' 
@@ -313,7 +313,7 @@ export default function QRCodeGenerator() {
                   }
                   aria-label="Text for QR code"
                 />
-                <p className="text-xs text-gray-500 mt-2">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
                   {text.length} characters
                 </p>
               </div>
@@ -321,7 +321,7 @@ export default function QRCodeGenerator() {
 
             {/* Size */}
             <div className="mb-6">
-              <label htmlFor="qr-size" className="block text-sm font-semibold text-gray-700 mb-3">
+              <label htmlFor="qr-size" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
                 Size: <span className="text-primary-600 font-bold">{options.width}px</span>
               </label>
               <input
@@ -338,7 +338,7 @@ export default function QRCodeGenerator() {
                 }}
                 aria-label="QR code size"
               />
-              <div className="flex justify-between text-xs text-gray-500 mt-2">
+              <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-2">
                 <span>200px</span>
                 <span>600px</span>
               </div>
@@ -346,12 +346,12 @@ export default function QRCodeGenerator() {
 
             {/* Colors */}
             <div className="mb-6">
-              <label className="block text-sm font-semibold text-gray-700 mb-3">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
                 Colors
               </label>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="qr-color-dark" className="block text-xs font-medium text-gray-600 mb-2">
+                  <label htmlFor="qr-color-dark" className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
                     Code color
                   </label>
                   <label htmlFor="qr-color-dark" className="relative block cursor-pointer group">
@@ -360,22 +360,22 @@ export default function QRCodeGenerator() {
                       type="color"
                       value={options.color.dark}
                       onChange={(e) => handleColorChange('dark', e.target.value)}
-                      className="w-full h-14 rounded-xl cursor-pointer border-2 border-gray-200 group-hover:border-primary-400 group-hover:shadow-md transition-all opacity-0 absolute"
+                      className="w-full h-14 rounded-xl cursor-pointer border-2 border-gray-200 dark:border-gray-700 group-hover:border-primary-400 group-hover:shadow-md transition-all opacity-0 absolute bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                       aria-label="QR code color"
                     />
                     <div 
-                      className="w-full h-14 rounded-xl border-2 border-gray-200 group-hover:border-primary-400 group-hover:shadow-md transition-all flex items-center justify-center relative overflow-hidden"
+                      className="w-full h-14 rounded-xl border-2 border-gray-200 dark:border-gray-700 group-hover:border-primary-400 group-hover:shadow-md transition-all flex items-center justify-end px-4 relative overflow-hidden"
                       style={{ backgroundColor: options.color.dark }}
                     >
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
-                      <span className="text-white text-xs font-medium drop-shadow-lg relative z-10 opacity-70 group-hover:opacity-100 transition-opacity">
-                        Click to choose
-                      </span>
+                      <svg className="w-5 h-5 text-white relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ filter: 'drop-shadow(0 0 2px rgba(0,0,0,0.8)) drop-shadow(0 0 1px rgba(0,0,0,0.9))' }}>
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                      </svg>
                     </div>
                   </label>
                 </div>
                 <div>
-                  <label htmlFor="qr-color-light" className="block text-xs font-medium text-gray-600 mb-2">
+                  <label htmlFor="qr-color-light" className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
                     Background
                   </label>
                   <label htmlFor="qr-color-light" className="relative block cursor-pointer group">
@@ -384,17 +384,17 @@ export default function QRCodeGenerator() {
                       type="color"
                       value={options.color.light}
                       onChange={(e) => handleColorChange('light', e.target.value)}
-                      className="w-full h-14 rounded-xl cursor-pointer border-2 border-gray-200 group-hover:border-primary-400 group-hover:shadow-md transition-all opacity-0 absolute"
+                      className="w-full h-14 rounded-xl cursor-pointer border-2 border-gray-200 dark:border-gray-700 group-hover:border-primary-400 group-hover:shadow-md transition-all opacity-0 absolute bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                       aria-label="Background color"
                     />
                     <div 
-                      className="w-full h-14 rounded-xl border-2 border-gray-200 group-hover:border-primary-400 group-hover:shadow-md transition-all flex items-center justify-center relative overflow-hidden"
+                      className="w-full h-14 rounded-xl border-2 border-gray-200 dark:border-gray-700 group-hover:border-primary-400 group-hover:shadow-md transition-all flex items-center justify-end px-4 relative overflow-hidden"
                       style={{ backgroundColor: options.color.light }}
                     >
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
-                      <span className="text-gray-700 text-xs font-medium drop-shadow-lg relative z-10 opacity-70 group-hover:opacity-100 transition-opacity">
-                        Click to choose
-                      </span>
+                      <svg className="w-5 h-5 text-white relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ filter: 'drop-shadow(0 0 2px rgba(0,0,0,0.8)) drop-shadow(0 0 1px rgba(0,0,0,0.9))' }}>
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                      </svg>
                     </div>
                   </label>
                 </div>
@@ -403,7 +403,7 @@ export default function QRCodeGenerator() {
 
             {/* Error correction level */}
             <div className="mb-6">
-              <label className="block text-sm font-semibold text-gray-700 mb-3">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
                 Error correction level
               </label>
               <div className="grid grid-cols-2 gap-3">
@@ -417,7 +417,7 @@ export default function QRCodeGenerator() {
                   className={`px-4 py-3 rounded-xl font-semibold transition-all ${
                     options.errorCorrectionLevel === 'L'
                       ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
                   L - Low (~7%)
@@ -432,7 +432,7 @@ export default function QRCodeGenerator() {
                   className={`px-4 py-3 rounded-xl font-semibold transition-all ${
                     options.errorCorrectionLevel === 'M'
                       ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
                   M - Medium (~15%)
@@ -447,7 +447,7 @@ export default function QRCodeGenerator() {
                   className={`px-4 py-3 rounded-xl font-semibold transition-all ${
                     options.errorCorrectionLevel === 'Q'
                       ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
                   Q - High (~25%)
@@ -462,7 +462,7 @@ export default function QRCodeGenerator() {
                   className={`px-4 py-3 rounded-xl font-semibold transition-all ${
                     options.errorCorrectionLevel === 'H'
                       ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
                   H - Maximum (~30%)
@@ -485,7 +485,7 @@ export default function QRCodeGenerator() {
               <button
                 onClick={copyToClipboard}
                 disabled={!qrCodeUrl || isGenerating}
-                className="flex-1 bg-white border-2 border-primary-600 text-primary-600 font-semibold py-3 px-6 rounded-xl hover:bg-primary-50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transform hover:-translate-y-0.5 flex items-center justify-center gap-2"
+                className="flex-1 bg-white dark:bg-gray-800 border-2 border-primary-600 text-primary-600 dark:text-primary-400 font-semibold py-3 px-6 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transform hover:-translate-y-0.5 flex items-center justify-center gap-2"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -496,11 +496,11 @@ export default function QRCodeGenerator() {
           </div>
 
           {/* Right column - Preview */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold mb-6 text-gray-900">
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+            <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">
               Preview
             </h2>
-            <div className="flex flex-col items-center justify-center min-h-[400px] bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-8 border-2 border-dashed border-gray-200">
+            <div className="flex flex-col items-center justify-center min-h-[400px] bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-xl p-8 border-2 border-dashed border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
               {isGenerating ? (
                 <div className="text-center">
                   <div className="relative w-64 h-64 mx-auto mb-4">
@@ -508,11 +508,11 @@ export default function QRCodeGenerator() {
                     <div className="absolute inset-4 border-4 border-primary-400 rounded-xl animate-pulse" style={{ animationDelay: '0.2s' }} />
                     <div className="absolute inset-8 border-4 border-primary-600 rounded-xl animate-pulse" style={{ animationDelay: '0.4s' }} />
                   </div>
-                  <p className="text-gray-600 font-medium">Generating QR code...</p>
+                  <p className="text-gray-600 dark:text-gray-400 font-medium">Generating QR code...</p>
                 </div>
               ) : qrCodeUrl ? (
                 <div className="text-center animate-fade-in">
-                  <div className="relative inline-block p-4 bg-white rounded-2xl shadow-2xl transform transition-transform hover:scale-105">
+                  <div className="relative inline-block p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl transform transition-transform hover:scale-105">
                     <img
                       src={qrCodeUrl}
                       alt="QR Code"
@@ -520,17 +520,17 @@ export default function QRCodeGenerator() {
                       loading="lazy"
                     />
                   </div>
-                  <p className="mt-6 text-sm text-gray-600 font-medium">
+                  <p className="mt-6 text-sm text-gray-600 dark:text-gray-400 font-medium">
                     Scan QR code to verify
                   </p>
                 </div>
               ) : (
-                <div className="text-center text-gray-400">
+                <div className="text-center text-gray-400 dark:text-gray-500">
                   <svg className="w-32 h-32 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
                   </svg>
-                  <p className="text-lg font-medium">Enter text to generate QR code</p>
-                  <p className="text-sm mt-2">Use quick presets above</p>
+                  <p className="text-lg font-medium dark:text-gray-300">Enter text to generate QR code</p>
+                  <p className="text-sm mt-2 dark:text-gray-400">Use quick presets above</p>
                 </div>
               )}
             </div>

@@ -353,7 +353,7 @@ export default function MinifierPage() {
 
   return (
     <Layout
-      title="⚡ Code Minifier & Beautifier - Minify and Format CSS, JS, JSON, HTML Online"
+      title="⚡ Code Minifier & Beautifier - Minify and Format CSS, JS, JSON, HTML"
       description="Minify and beautify CSS, JavaScript, JSON, and HTML code online for free. Reduce file size, improve performance, and format code with proper indentation. Perfect for web development."
     >
       <div className="max-w-6xl mx-auto space-y-6">

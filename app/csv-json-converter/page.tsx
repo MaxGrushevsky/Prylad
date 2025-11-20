@@ -2,7 +2,11 @@
 
 import { useState, useCallback } from 'react'
 import Layout from '@/components/Layout'
+import StructuredData from '@/components/StructuredData'
+import RelatedTools from '@/components/RelatedTools'
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
+import { generateFAQSchema, generateHowToSchema, generateSoftwareApplicationSchema } from '@/lib/structured-data'
+import { generateBreadcrumbs, getRelatedTools } from '@/lib/seo-helpers'
 type ConversionMode = 'csv-to-json' | 'json-to-csv'
 type Delimiter = ',' | ';' | '\t' | '|'
 
@@ -14,6 +18,82 @@ export default function CSVJSONConverterPage() {
   const [hasHeaders, setHasHeaders] = useState(true)
   const [error, setError] = useState('')
   const [totalConversions, setTotalConversions] = useState(0)
+
+  // SEO data
+  const toolPath = '/csv-json-converter'
+  const toolName = 'CSV to JSON Converter'
+  const category = 'converters'
+  const breadcrumbs = generateBreadcrumbs(toolName, toolPath, category)
+  const relatedTools = getRelatedTools(toolPath, category, 6)
+
+  // FAQ data
+  const faqs = [
+    {
+      question: "What is CSV to JSON conversion?",
+      answer: "CSV to JSON conversion transforms comma-separated values (CSV) data into JavaScript Object Notation (JSON) format. This is useful when you need to work with CSV data in web applications, APIs, or JavaScript code that expects JSON format."
+    },
+    {
+      question: "Can I convert JSON back to CSV?",
+      answer: "Yes! Our tool supports bidirectional conversion. You can convert CSV to JSON and JSON back to CSV, making it easy to work with data in either format."
+    },
+    {
+      question: "What delimiters are supported?",
+      answer: "Our converter supports multiple delimiters: comma (,), semicolon (;), tab (\\t), and pipe (|). This allows you to work with various CSV formats used in different regions and systems."
+    },
+    {
+      question: "How does header handling work?",
+      answer: "When converting CSV to JSON, you can choose whether the first row contains headers. If enabled, headers become object keys in the JSON output. If disabled, rows are converted to arrays."
+    },
+    {
+      question: "Is the CSV to JSON converter free to use?",
+      answer: "Yes, absolutely! Our CSV to JSON converter is completely free to use. There are no hidden fees, subscriptions, or usage limits. You can convert as much data as you need."
+    },
+    {
+      question: "Do you store my CSV or JSON data?",
+      answer: "No, absolutely not. All conversion happens entirely in your browser. We never see, store, transmit, or have any access to your CSV or JSON data. Your privacy is completely protected."
+    }
+  ]
+
+  // HowTo steps
+  const howToSteps = [
+    {
+      name: "Choose Conversion Direction",
+      text: "Select CSV to JSON to convert CSV data to JSON format, or JSON to CSV to convert JSON back to CSV."
+    },
+    {
+      name: "Configure Settings",
+      text: "For CSV to JSON, choose the delimiter (comma, semicolon, tab, or pipe) and whether the first row contains headers."
+    },
+    {
+      name: "Enter Your Data",
+      text: "Paste your CSV or JSON data into the input area. The tool will automatically detect the format based on your selection."
+    },
+    {
+      name: "Convert",
+      text: "Click Convert or the conversion will happen automatically. The result will appear in the output area."
+    },
+    {
+      name: "Copy or Export",
+      text: "Copy the converted data to your clipboard or export it to a file for use in your projects."
+    }
+  ]
+
+  // Structured data
+  const structuredData = [
+    generateFAQSchema(faqs),
+    generateHowToSchema(
+      "How to Convert CSV to JSON and JSON to CSV",
+      "Learn how to convert between CSV and JSON formats using our free online converter tool with support for custom delimiters and header handling.",
+      howToSteps,
+      "PT2M"
+    ),
+    generateSoftwareApplicationSchema(
+      "CSV to JSON Converter",
+      "Free online CSV to JSON and JSON to CSV converter. Convert between CSV and JSON formats with support for custom delimiters and header handling.",
+      "https://prylad.pro/csv-json-converter",
+      "UtilityApplication"
+    )
+  ]
   const csvToJSON = useCallback((csv: string, delimiter: Delimiter, headers: boolean): string => {
     try {
       const lines = csv.trim().split('\n').filter(line => line.trim())
@@ -197,10 +277,10 @@ export default function CSVJSONConverterPage() {
       description="Convert CSV to JSON and JSON to CSV online. Parse CSV with custom delimiters and handle headers."
     >
       <div className="max-w-6xl mx-auto">
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 mb-6">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 mb-6 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
           <div className="space-y-6">
             {/* Mode Selection */}
-            <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+            <div className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="radio"
@@ -210,7 +290,7 @@ export default function CSVJSONConverterPage() {
                   onChange={(e) => setMode(e.target.value as ConversionMode)}
                   className="w-4 h-4 accent-primary-600"
                 />
-                <span className="font-medium text-gray-700">CSV to JSON</span>
+                <span className="font-medium text-gray-700 dark:text-gray-300">CSV to JSON</span>
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
@@ -221,20 +301,20 @@ export default function CSVJSONConverterPage() {
                   onChange={(e) => setMode(e.target.value as ConversionMode)}
                   className="w-4 h-4 accent-primary-600"
                 />
-                <span className="font-medium text-gray-700">JSON to CSV</span>
+                <span className="font-medium text-gray-700 dark:text-gray-300">JSON to CSV</span>
               </label>
             </div>
 
             {/* Settings */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   Delimiter
                 </label>
                 <select
                   value={delimiter}
                   onChange={(e) => setDelimiter(e.target.value as Delimiter)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                 >
                   <option value=",">Comma (,)</option>
                   <option value=";">Semicolon (;)</option>
@@ -250,7 +330,7 @@ export default function CSVJSONConverterPage() {
                     onChange={(e) => setHasHeaders(e.target.checked)}
                     className="w-4 h-4 accent-primary-600"
                   />
-                  <span className="text-sm font-medium text-gray-700">First row/object contains headers</span>
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">First row/object contains headers</span>
                 </label>
               </div>
             </div>
@@ -258,7 +338,7 @@ export default function CSVJSONConverterPage() {
             {/* Input */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="block text-sm font-semibold text-gray-700">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
                   {mode === 'csv-to-json' ? 'CSV Input' : 'JSON Input'}
                 </label>
                 <button
@@ -267,7 +347,7 @@ export default function CSVJSONConverterPage() {
                     setOutput('')
                     setError('')
                   }}
-                  className="text-xs text-gray-500 hover:text-gray-700 font-medium"
+                  className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 font-medium"
                 >
                   Clear
                 </button>
@@ -280,10 +360,10 @@ export default function CSVJSONConverterPage() {
                     ? 'name,age,city\nJohn Doe,30,New York\nJane Smith,25,Los Angeles'
                     : '[\n  {"name": "John Doe", "age": 30, "city": "New York"},\n  {"name": "Jane Smith", "age": 25, "city": "Los Angeles"}\n]'
                 }
-                className="w-full h-64 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent font-mono text-sm resize-none"
+                className="w-full h-64 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent font-mono text-sm resize-none bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
               />
               {error && (
-                <p className="text-sm text-red-600 mt-2">{error}</p>
+                <p className="text-sm text-red-600 dark:text-red-400 mt-2">{error}</p>
               )}
               <div className="flex items-center justify-end mt-3">
                 <button
@@ -299,7 +379,7 @@ export default function CSVJSONConverterPage() {
             {output && (
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="block text-sm font-semibold text-gray-700">
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
                     {mode === 'csv-to-json' ? 'JSON Output' : 'CSV Output'}
                   </label>
                   <div className="flex gap-2">
@@ -317,7 +397,7 @@ export default function CSVJSONConverterPage() {
                     </button>
                   </div>
                 </div>
-                <pre className="bg-gray-50 border border-gray-200 rounded-lg p-4 overflow-x-auto text-sm font-mono max-h-96 overflow-y-auto">
+                <pre className="bg-gray-50 dark:bg-gray-800 border border-gray-200 rounded-lg p-4 overflow-x-auto text-sm font-mono max-h-96 overflow-y-auto bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
                   {output}
                 </pre>
               </div>
@@ -327,8 +407,8 @@ export default function CSVJSONConverterPage() {
 
         {/* Stats */}
         {totalConversions > 0 && (
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 border border-gray-100">
-            <p className="text-sm text-gray-600">
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
               Total conversions: <span className="font-semibold text-primary-600">{totalConversions}</span>
             </p>
           </div>
@@ -337,7 +417,7 @@ export default function CSVJSONConverterPage() {
 
       {/* SEO Content */}
       <div className="max-w-4xl mx-auto mt-16 space-y-8">
-        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">CSV vs JSON: Understanding the Formats</h2>
           <div className="prose prose-gray dark:prose-invert max-w-none">
             <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
@@ -353,7 +433,7 @@ export default function CSVJSONConverterPage() {
           </div>
         </section>
 
-        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Common Use Cases</h2>
           <div className="grid md:grid-cols-2 gap-6">
             <div>
@@ -383,7 +463,7 @@ export default function CSVJSONConverterPage() {
           </div>
         </section>
 
-        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+        <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Best Practices</h2>
           <ul className="space-y-3 text-gray-700 dark:text-gray-300">
             <li className="flex items-start gap-2">
@@ -406,7 +486,11 @@ export default function CSVJSONConverterPage() {
         </section>
       </div>
 
-      </Layout>
+      {/* Related Tools */}
+      {relatedTools.length > 0 && (
+        <RelatedTools tools={relatedTools} title="Related Converter Tools" />
+      )}
+    </Layout>
   )
 }
 

@@ -2,6 +2,10 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import Layout from '@/components/Layout'
+import StructuredData from '@/components/StructuredData'
+import RelatedTools from '@/components/RelatedTools'
+import { generateFAQSchema, generateHowToSchema, generateSoftwareApplicationSchema } from '@/lib/structured-data'
+import { generateBreadcrumbs, getRelatedTools } from '@/lib/seo-helpers'
 
 type ColorType = 'random' | 'bright' | 'pastel' | 'dark' | 'light' | 'warm' | 'cool'
 type PaletteType = 'random' | 'complementary' | 'triadic' | 'analogous' | 'monochromatic'
@@ -14,6 +18,86 @@ export default function ColorGeneratorPage() {
   const [baseColor, setBaseColor] = useState('#3b82f6')
   const [useHarmony, setUseHarmony] = useState(false)
   const [totalGenerated, setTotalGenerated] = useState(0)
+
+  // SEO data
+  const toolPath = '/color-generator'
+  const toolName = 'Color Generator'
+  const category = 'colors'
+  const breadcrumbs = generateBreadcrumbs(toolName, toolPath, category)
+  const relatedTools = getRelatedTools(toolPath, category, 6)
+
+  // FAQ data
+  const faqs = [
+    {
+      question: "How does the color generator work?",
+      answer: "Our color generator uses algorithms to create random colors and harmonious color palettes. You can generate random colors, or create palettes using color theory principles like complementary, triadic, analogous, or monochromatic schemes."
+    },
+    {
+      question: "Can I generate color palettes?",
+      answer: "Yes! You can generate color palettes with 2-10 colors. Choose from random palettes or use color harmony options like complementary, triadic, analogous, or monochromatic schemes for professional color combinations."
+    },
+    {
+      question: "What color formats are supported?",
+      answer: "All generated colors are displayed in HEX format, and you can view them in RGB and HSL formats as well. You can export palettes in CSS, TXT, or JSON formats for use in your projects."
+    },
+    {
+      question: "What are complementary colors?",
+      answer: "Complementary colors are opposite each other on the color wheel (e.g., red and cyan, blue and orange). They create high contrast and vibrant combinations when used together."
+    },
+    {
+      question: "What are triadic colors?",
+      answer: "Triadic colors are three colors evenly spaced around the color wheel (120 degrees apart). They provide balanced, vibrant color schemes while maintaining harmony."
+    },
+    {
+      question: "Can I export color palettes?",
+      answer: "Yes! You can export color palettes in multiple formats: CSS (as CSS variables or color list), TXT (plain text), or JSON (structured data). Perfect for design tools and development workflows."
+    },
+    {
+      question: "Do you store my generated colors?",
+      answer: "No, absolutely not. All color generation happens entirely in your browser. We never see, store, or have access to any colors or palettes you generate. Your privacy is completely protected."
+    }
+  ]
+
+  // HowTo steps
+  const howToSteps = [
+    {
+      name: "Choose Color Type",
+      text: "Select the type of colors you want: random, bright, pastel, dark, light, warm, or cool colors."
+    },
+    {
+      name: "Set Palette Size",
+      text: "Choose how many colors you want in your palette (2-10 colors)."
+    },
+    {
+      name: "Select Palette Type",
+      text: "Choose from random palettes or color harmony options: complementary, triadic, analogous, or monochromatic."
+    },
+    {
+      name: "Generate Colors",
+      text: "Click Generate to create your color palette. Colors will appear with HEX, RGB, and HSL values."
+    },
+    {
+      name: "Copy or Export",
+      text: "Copy individual colors or export the entire palette in CSS, TXT, or JSON format for your projects."
+    }
+  ]
+
+  // Structured data
+  const structuredData = [
+    generateFAQSchema(faqs),
+    generateHowToSchema(
+      "How to Generate Colors and Color Palettes",
+      "Learn how to generate random colors and create harmonious color palettes using our free online color generator tool.",
+      howToSteps,
+      "PT2M"
+    ),
+    generateSoftwareApplicationSchema(
+      "Color Generator",
+      "Free online color generator. Generate random colors and harmonious color palettes with support for complementary, triadic, analogous, and monochromatic schemes.",
+      "https://prylad.pro/color-generator",
+      "UtilityApplication"
+    )
+  ]
 
   const generateColor = useCallback((type: ColorType = 'random'): string => {
     let r: number, g: number, b: number
@@ -323,15 +407,18 @@ export default function ColorGeneratorPage() {
   }, [])
 
   return (
-    <Layout
-      title="🎨 Random Color Generator"
-      description="Generate random colors and color palettes in HEX, RGB, and HSL formats. Create bright, pastel, dark, warm, cool colors for design projects. Free online color generator."
-    >
+    <>
+      <StructuredData data={structuredData} />
+      <Layout
+        title="🎨 Random Color Generator"
+        description="Generate random colors and color palettes in HEX, RGB, and HSL formats. Create bright, pastel, dark, warm, cool colors for design projects. Free online color generator."
+        breadcrumbs={breadcrumbs}
+      >
       <div className="max-w-6xl mx-auto">
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 mb-6">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 mb-6">
           <div className="space-y-6">
             {/* Harmony Mode Toggle */}
-            <div className="flex items-center gap-2 p-4 bg-gray-50 rounded-xl border border-gray-200">
+            <div className="flex items-center gap-2 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-700">
               <input
                 type="checkbox"
                 id="use-harmony"
@@ -339,7 +426,7 @@ export default function ColorGeneratorPage() {
                 onChange={(e) => setUseHarmony(e.target.checked)}
                 className="w-4 h-4 accent-primary-600"
               />
-              <label htmlFor="use-harmony" className="text-sm font-medium text-gray-700 cursor-pointer flex-1">
+              <label htmlFor="use-harmony" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer flex-1">
                 Generate harmonious palette (based on color theory)
               </label>
             </div>
@@ -348,19 +435,30 @@ export default function ColorGeneratorPage() {
             {useHarmony && (
               <>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Base Color:</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Base Color:</label>
                   <div className="flex items-center gap-3">
-                    <input
-                      type="color"
-                      value={baseColor}
-                      onChange={(e) => setBaseColor(e.target.value)}
-                      className="w-20 h-12 rounded-lg cursor-pointer border-2 border-gray-200"
-                    />
-                    <span className="font-mono text-sm text-gray-600">{baseColor}</span>
+                    <label className="relative block cursor-pointer group">
+                      <input
+                        type="color"
+                        value={baseColor}
+                        onChange={(e) => setBaseColor(e.target.value)}
+                        className="w-20 h-12 rounded-lg border-2 border-gray-200 dark:border-gray-700 group-hover:border-primary-400 transition-all opacity-0 absolute bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                      />
+                      <div 
+                        className="w-20 h-12 rounded-lg border-2 border-gray-200 dark:border-gray-700 group-hover:border-primary-400 transition-all flex items-center justify-center relative overflow-hidden"
+                        style={{ backgroundColor: baseColor }}
+                      >
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
+                        <svg className="w-4 h-4 text-white relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ filter: 'drop-shadow(0 0 2px rgba(0,0,0,0.8)) drop-shadow(0 0 1px rgba(0,0,0,0.9))' }}>
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    </label>
+                    <span className="font-mono text-sm text-gray-600 dark:text-gray-400">{baseColor}</span>
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-3">Palette Harmony:</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Palette Harmony:</label>
                   <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
                     {(['complementary', 'triadic', 'analogous', 'monochromatic'] as PaletteType[]).map((type) => (
                       <button
@@ -369,14 +467,14 @@ export default function ColorGeneratorPage() {
                         className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
                           paletteType === type
                             ? 'bg-primary-600 text-white shadow-md'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            : 'bg-gray-100 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                         }`}
                       >
                         {type.charAt(0).toUpperCase() + type.slice(1)}
                       </button>
                     ))}
                   </div>
-                  <p className="text-xs text-gray-500 mt-2">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
                     {paletteType === 'complementary' && 'Opposite colors on color wheel - high contrast'}
                     {paletteType === 'triadic' && 'Three evenly spaced colors - balanced and vibrant'}
                     {paletteType === 'analogous' && 'Adjacent colors - harmonious and natural'}
@@ -389,7 +487,7 @@ export default function ColorGeneratorPage() {
             {/* Color Type Selection (when not using harmony) */}
             {!useHarmony && (
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-3">Color Type:</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Color Type:</label>
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2">
                   {(['random', 'bright', 'pastel', 'dark', 'light', 'warm', 'cool'] as ColorType[]).map((type) => (
                     <button
@@ -398,7 +496,7 @@ export default function ColorGeneratorPage() {
                       className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
                         colorType === type
                           ? 'bg-primary-600 text-white shadow-md'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                       }`}
                     >
                       {type.charAt(0).toUpperCase() + type.slice(1)}
@@ -417,14 +515,14 @@ export default function ColorGeneratorPage() {
                 Generate One Color
               </button>
               <div className="flex items-center gap-3">
-                <label className="text-sm font-medium text-gray-700">Palette size:</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Palette size:</label>
                 <input
                   type="number"
                   min="2"
                   max="20"
                   value={paletteSize}
                   onChange={(e) => setPaletteSize(Math.min(20, Math.max(2, Number(e.target.value))))}
-                  className="w-20 px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500"
+                  className="w-20 px-3 py-2 border-2 border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                 />
               </div>
               <button
@@ -437,7 +535,7 @@ export default function ColorGeneratorPage() {
 
             {/* Statistics */}
             {totalGenerated > 0 && (
-              <div className="text-center text-sm text-gray-600 pt-2 border-t border-gray-200">
+              <div className="text-center text-sm text-gray-600 dark:text-gray-400 pt-2 border-t border-gray-200 dark:border-gray-700">
                 Total generated: <span className="font-semibold text-primary-600">{totalGenerated}</span> colors
               </div>
             )}
@@ -448,7 +546,7 @@ export default function ColorGeneratorPage() {
         {colors.length > 0 && (
           <div className="space-y-4">
             <div className="flex justify-between items-center flex-wrap gap-2">
-              <h3 className="text-lg font-bold text-gray-900">
+              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">
                 {colors.length === 1 ? 'Generated Color' : `Color Palette (${colors.length} colors)`}
               </h3>
               <div className="flex gap-2">
@@ -483,7 +581,7 @@ export default function ColorGeneratorPage() {
               {colors.map((color, index) => (
                 <div
                   key={index}
-                  className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-shadow"
+                  className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-shadow"
                 >
                   <div
                     className="h-40 w-full relative group"
@@ -496,7 +594,7 @@ export default function ColorGeneratorPage() {
                       <span className="font-mono font-bold text-lg flex-1">{color}</span>
                       <button
                         onClick={() => copyToClipboard(color)}
-                        className="text-gray-500 hover:text-primary-600 transition-colors text-lg"
+                        className="text-gray-500 dark:text-gray-400 hover:text-primary-600 transition-colors text-lg"
                         title="Copy HEX"
                       >
                         📋
@@ -504,20 +602,20 @@ export default function ColorGeneratorPage() {
                     </div>
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono text-sm text-gray-600 flex-1">{hexToRgb(color)}</span>
+                        <span className="font-mono text-sm text-gray-600 dark:text-gray-400 flex-1">{hexToRgb(color)}</span>
                         <button
                           onClick={() => copyToClipboard(hexToRgb(color))}
-                          className="text-gray-500 hover:text-primary-600 transition-colors"
+                          className="text-gray-500 dark:text-gray-400 hover:text-primary-600 transition-colors"
                           title="Copy RGB"
                         >
                           📋
                         </button>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="font-mono text-sm text-gray-600 flex-1">{hexToHsl(color)}</span>
+                        <span className="font-mono text-sm text-gray-600 dark:text-gray-400 flex-1">{hexToHsl(color)}</span>
                         <button
                           onClick={() => copyToClipboard(hexToHsl(color))}
-                          className="text-gray-500 hover:text-primary-600 transition-colors"
+                          className="text-gray-500 dark:text-gray-400 hover:text-primary-600 transition-colors"
                           title="Copy HSL"
                         >
                           📋
@@ -531,8 +629,8 @@ export default function ColorGeneratorPage() {
 
             {/* UI Preview */}
             {colors.length >= 3 && (
-              <div className="mt-8 bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">UI Preview</h3>
+              <div className="mt-8 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">UI Preview</h3>
                 <div className="space-y-4">
                   {/* Buttons */}
                   <div className="flex flex-wrap gap-3">
@@ -582,16 +680,16 @@ export default function ColorGeneratorPage() {
         {/* SEO Content */}
         <div className="max-w-4xl mx-auto mt-16 space-y-8">
           {/* Introduction */}
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Why Use a Color Generator?</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Why Use a Color Generator?</h2>
             <div className="prose prose-gray max-w-none">
-              <p className="text-gray-700 leading-relaxed mb-4">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                 Colors are fundamental to design, branding, and visual communication. Whether you&apos;re working on a 
                 website, mobile app, graphic design project, or just need inspiration, having access to a diverse 
                 palette of colors is essential. Coming up with the perfect color scheme can be challenging, especially 
                 when you need multiple harmonious colors or want to explore different color moods and styles.
               </p>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                 Our free color generator provides instant access to random colors in multiple formats (HEX, RGB, HSL) 
                 and various color types. Generate single colors for specific needs or create entire palettes for 
                 comprehensive design projects. All color generation happens locally in your browser, ensuring complete 
@@ -601,96 +699,96 @@ export default function ColorGeneratorPage() {
           </section>
 
           {/* Color Types */}
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Color Types Explained</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Color Types Explained</h2>
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Random Colors</h3>
-                <p className="text-gray-700 text-sm mb-3">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Random Colors</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-3">
                   Completely random colors across the full spectrum. Perfect for exploring unexpected color combinations 
                   and finding unique hues you might not have considered.
                 </p>
-                <p className="text-xs text-gray-600"><strong>Best for:</strong> Exploration, inspiration, diverse palettes</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400"><strong>Best for:</strong> Exploration, inspiration, diverse palettes</p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Bright Colors</h3>
-                <p className="text-gray-700 text-sm mb-3">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Bright Colors</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-3">
                   Vibrant, saturated colors with high intensity. These colors are eye-catching and energetic, perfect 
                   for attention-grabbing designs and youthful brands.
                 </p>
-                <p className="text-xs text-gray-600"><strong>Best for:</strong> Energetic designs, youth brands, highlights</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400"><strong>Best for:</strong> Energetic designs, youth brands, highlights</p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Pastel Colors</h3>
-                <p className="text-gray-700 text-sm mb-3">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Pastel Colors</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-3">
                   Soft, muted colors with high lightness and medium saturation. Pastels create a gentle, calming 
                   aesthetic perfect for delicate designs and soothing interfaces.
                 </p>
-                <p className="text-xs text-gray-600"><strong>Best for:</strong> Soft designs, calming interfaces, spring themes</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400"><strong>Best for:</strong> Soft designs, calming interfaces, spring themes</p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Dark Colors</h3>
-                <p className="text-gray-700 text-sm mb-3">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Dark Colors</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-3">
                   Deep, rich colors with low brightness. Dark colors create a sophisticated, dramatic look and work 
                   excellently for backgrounds and elegant designs.
                 </p>
-                <p className="text-xs text-gray-600"><strong>Best for:</strong> Dark themes, elegant designs, backgrounds</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400"><strong>Best for:</strong> Dark themes, elegant designs, backgrounds</p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Light Colors</h3>
-                <p className="text-gray-700 text-sm mb-3">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Light Colors</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-3">
                   Bright, airy colors with high lightness. Light colors create a clean, spacious feeling and are 
                   perfect for minimalist designs and fresh aesthetics.
                 </p>
-                <p className="text-xs text-gray-600"><strong>Best for:</strong> Minimalist designs, clean interfaces, fresh themes</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400"><strong>Best for:</strong> Minimalist designs, clean interfaces, fresh themes</p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Warm Colors</h3>
-                <p className="text-gray-700 text-sm mb-3">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Warm Colors</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-3">
                   Colors in the red, orange, and yellow spectrum. Warm colors evoke energy, passion, and warmth, 
                   making them perfect for dynamic, inviting designs.
                 </p>
-                <p className="text-xs text-gray-600"><strong>Best for:</strong> Energetic designs, food brands, inviting interfaces</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400"><strong>Best for:</strong> Energetic designs, food brands, inviting interfaces</p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Cool Colors</h3>
-                <p className="text-gray-700 text-sm mb-3">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Cool Colors</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-3">
                   Colors in the blue, green, and purple spectrum. Cool colors create a calm, professional atmosphere 
                   and are ideal for tech companies and serene designs.
                 </p>
-                <p className="text-xs text-gray-600"><strong>Best for:</strong> Professional designs, tech brands, calming themes</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400"><strong>Best for:</strong> Professional designs, tech brands, calming themes</p>
               </div>
             </div>
           </section>
 
           {/* Use Cases */}
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Common Use Cases</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Common Use Cases</h2>
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">🎨 Web & App Design</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">🎨 Web & App Design</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Generate color palettes for websites, mobile apps, and user interfaces. Create cohesive color 
                   schemes that enhance usability and brand identity.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">📊 Data Visualization</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">📊 Data Visualization</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Create distinct colors for charts, graphs, and data visualizations. Generate palettes that ensure 
                   good contrast and accessibility.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">🎭 Brand Identity</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">🎭 Brand Identity</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Explore color options for logos, brand guidelines, and marketing materials. Find colors that 
                   represent your brand&apos;s personality and values.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">🎨 Creative Projects</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">🎨 Creative Projects</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Get inspiration for art projects, illustrations, and creative designs. Discover unexpected color 
                   combinations that spark creativity.
                 </p>
@@ -699,48 +797,48 @@ export default function ColorGeneratorPage() {
           </section>
 
           {/* Color Formats */}
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Color Formats</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Color Formats</h2>
             <div className="grid md:grid-cols-3 gap-6">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">HEX (#RRGGBB)</h3>
-                <p className="text-gray-700 text-sm mb-2">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">HEX (#RRGGBB)</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-2">
                   Hexadecimal format is the standard for web development. Each color is represented by a 6-digit 
                   code prefixed with #, using values 0-9 and A-F.
                 </p>
-                <p className="text-xs text-gray-600"><strong>Example:</strong> #FF5733</p>
-                <p className="text-xs text-gray-600"><strong>Used in:</strong> CSS, HTML, web design</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400"><strong>Example:</strong> #FF5733</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400"><strong>Used in:</strong> CSS, HTML, web design</p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">RGB (Red, Green, Blue)</h3>
-                <p className="text-gray-700 text-sm mb-2">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">RGB (Red, Green, Blue)</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-2">
                   RGB format specifies colors using three values (0-255) representing red, green, and blue channels. 
                   This is the additive color model used by screens.
                 </p>
-                <p className="text-xs text-gray-600"><strong>Example:</strong> rgb(255, 87, 51)</p>
-                <p className="text-xs text-gray-600"><strong>Used in:</strong> CSS, image editing, design software</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400"><strong>Example:</strong> rgb(255, 87, 51)</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400"><strong>Used in:</strong> CSS, image editing, design software</p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">HSL (Hue, Saturation, Lightness)</h3>
-                <p className="text-gray-700 text-sm mb-2">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">HSL (Hue, Saturation, Lightness)</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-2">
                   HSL format represents colors using hue (0-360°), saturation (0-100%), and lightness (0-100%). 
                   This format is intuitive for adjusting color properties.
                 </p>
-                <p className="text-xs text-gray-600"><strong>Example:</strong> hsl(11, 100%, 60%)</p>
-                <p className="text-xs text-gray-600"><strong>Used in:</strong> CSS, color manipulation, design tools</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400"><strong>Example:</strong> hsl(11, 100%, 60%)</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400"><strong>Used in:</strong> CSS, color manipulation, design tools</p>
               </div>
             </div>
           </section>
 
           {/* Features */}
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Key Features</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Key Features</h2>
             <div className="grid md:grid-cols-2 gap-6">
               <div className="flex items-start gap-3">
                 <span className="text-2xl">🎨</span>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Multiple Color Types</h3>
-                  <p className="text-gray-700 text-sm">
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Multiple Color Types</h3>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">
                     Generate random, bright, pastel, dark, light, warm, or cool colors. Each type creates colors 
                     with specific characteristics to match your design needs.
                   </p>
@@ -749,8 +847,8 @@ export default function ColorGeneratorPage() {
               <div className="flex items-start gap-3">
                 <span className="text-2xl">🌈</span>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Color Palettes</h3>
-                  <p className="text-gray-700 text-sm">
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Color Palettes</h3>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">
                     Generate palettes with 2-20 colors at once. Perfect for creating comprehensive color schemes 
                     for entire design projects.
                   </p>
@@ -759,8 +857,8 @@ export default function ColorGeneratorPage() {
               <div className="flex items-start gap-3">
                 <span className="text-2xl">📋</span>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Multiple Formats</h3>
-                  <p className="text-gray-700 text-sm">
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Multiple Formats</h3>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">
                     Each color is displayed in HEX, RGB, and HSL formats. Copy any format with a single click for 
                     easy integration into your projects.
                   </p>
@@ -769,8 +867,8 @@ export default function ColorGeneratorPage() {
               <div className="flex items-start gap-3">
                 <span className="text-2xl">📥</span>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Export Options</h3>
-                  <p className="text-gray-700 text-sm">
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Export Options</h3>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">
                     Copy individual colors or export entire palettes to a text file. All formats included for 
                     seamless workflow integration.
                   </p>
@@ -779,8 +877,8 @@ export default function ColorGeneratorPage() {
               <div className="flex items-start gap-3">
                 <span className="text-2xl">⚡</span>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Instant Generation</h3>
-                  <p className="text-gray-700 text-sm">
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Instant Generation</h3>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">
                     Colors are generated instantly in your browser. No waiting, no API calls, no server processing. 
                     Get results immediately.
                   </p>
@@ -789,8 +887,8 @@ export default function ColorGeneratorPage() {
               <div className="flex items-start gap-3">
                 <span className="text-2xl">🔒</span>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Privacy First</h3>
-                  <p className="text-gray-700 text-sm">
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Privacy First</h3>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">
                     All color generation happens locally in your browser. We never see, store, or have access to 
                     any generated colors or your preferences.
                   </p>
@@ -800,50 +898,50 @@ export default function ColorGeneratorPage() {
           </section>
 
           {/* Color Theory Reference */}
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Understanding Color Theory</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Understanding Color Theory</h2>
             <div className="space-y-6">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">The Color Wheel</h3>
-                <p className="text-gray-700 text-sm mb-3">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">The Color Wheel</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-3">
                   The color wheel is a fundamental tool in color theory, organizing colors in a circular format to show 
                   their relationships. It consists of primary colors (red, blue, yellow), secondary colors (created by mixing 
                   primaries), and tertiary colors (mixes of primary and secondary colors).
                 </p>
-                <p className="text-gray-700 text-sm">
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Understanding the color wheel helps you create harmonious color palettes. Colors opposite each other are 
                   complementary, colors forming a triangle are triadic, and adjacent colors are analogous.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">Color Harmony Types</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">Color Harmony Types</h3>
                 <div className="space-y-3">
                   <div>
-                    <h4 className="font-semibold text-gray-900 mb-1">Complementary Colors</h4>
-                    <p className="text-gray-700 text-sm">
+                    <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Complementary Colors</h4>
+                    <p className="text-gray-700 dark:text-gray-300 text-sm">
                       Colors directly opposite on the color wheel (e.g., red and green, blue and orange). They create 
                       high contrast and visual tension, making each other appear more vibrant. Use complementary colors 
                       when you want elements to stand out dramatically.
                     </p>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-gray-900 mb-1">Triadic Colors</h4>
-                    <p className="text-gray-700 text-sm">
+                    <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Triadic Colors</h4>
+                    <p className="text-gray-700 dark:text-gray-300 text-sm">
                       Three colors evenly spaced around the color wheel (forming a triangle). Triadic schemes are vibrant 
                       and balanced, offering rich contrast while maintaining harmony. They work well for designs that need 
                       energy and visual interest.
                     </p>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-gray-900 mb-1">Analogous Colors</h4>
-                    <p className="text-gray-700 text-sm">
+                    <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Analogous Colors</h4>
+                    <p className="text-gray-700 dark:text-gray-300 text-sm">
                       Colors adjacent to each other on the color wheel (e.g., blue, blue-green, green). Analogous schemes 
                       create serene and comfortable designs, perfect for backgrounds or when you want a cohesive, unified look.
                     </p>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-gray-900 mb-1">Monochromatic Colors</h4>
-                    <p className="text-gray-700 text-sm">
+                    <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Monochromatic Colors</h4>
+                    <p className="text-gray-700 dark:text-gray-300 text-sm">
                       Variations in lightness and saturation of a single hue. Monochromatic schemes are elegant and 
                       sophisticated, creating a sense of unity and simplicity. They&apos;re ideal for minimalist designs or 
                       when you want to create depth through shading.
@@ -852,21 +950,21 @@ export default function ColorGeneratorPage() {
                 </div>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">Color Psychology</h3>
-                <p className="text-gray-700 text-sm mb-3">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">Color Psychology</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-3">
                   Colors evoke emotional responses and can influence perception. Warm colors (reds, oranges, yellows) 
                   tend to feel energetic and inviting, while cool colors (blues, greens, purples) are calming and 
                   professional. Understanding color psychology helps you choose colors that align with your design goals.
                 </p>
-                <p className="text-gray-700 text-sm">
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Bright colors grab attention and convey excitement, pastels feel soft and approachable, dark colors 
                   suggest sophistication and depth, and light colors create an airy, clean aesthetic. Consider your 
                   target audience and message when selecting color types.
                 </p>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">Practical Color Selection Tips</h3>
-                <ul className="list-disc list-inside space-y-2 text-gray-700 text-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">Practical Color Selection Tips</h3>
+                <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300 text-sm">
                   <li><strong>Start with a base color:</strong> Choose one color you love, then use harmony rules to find complementary colors.</li>
                   <li><strong>Consider context:</strong> Colors look different on screens vs. print, in light vs. dark environments.</li>
                   <li><strong>Test accessibility:</strong> Ensure sufficient contrast between text and background colors for readability.</li>
@@ -878,41 +976,41 @@ export default function ColorGeneratorPage() {
           </section>
 
           {/* FAQ */}
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
+          <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Frequently Asked Questions</h2>
             <div className="space-y-6">
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Can I use these colors for commercial projects?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Can I use these colors for commercial projects?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Yes! All generated colors are free to use for any purpose, including commercial projects. Colors 
                   themselves cannot be copyrighted, so you&apos;re free to use them however you like.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">What&apos;s the difference between HEX, RGB, and HSL?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">What&apos;s the difference between HEX, RGB, and HSL?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   HEX is a compact hexadecimal representation (#RRGGBB), RGB uses decimal values (0-255) for each 
                   channel, and HSL represents colors using hue, saturation, and lightness. All three represent the 
                   same color, just in different formats. Choose the format that works best for your project.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">How many colors can I generate at once?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">How many colors can I generate at once?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   You can generate palettes with 2-20 colors in a single batch. If you need more, simply generate 
                   another palette. There&apos;s no limit on the total number of colors you can generate.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Do you store the generated colors?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Do you store the generated colors?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   No, absolutely not. All color generation happens entirely in your browser using JavaScript. We never 
                   see, store, transmit, or have any access to the colors you generate. Your privacy is completely protected.
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Can I generate harmonious color palettes?</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Can I generate harmonious color palettes?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   While our generator creates random colors, you can use the color type filters (warm, cool, pastel, etc.) 
                   to generate colors within similar ranges. For perfectly harmonious palettes, consider using color theory 
                   tools alongside our generator.
@@ -922,7 +1020,13 @@ export default function ColorGeneratorPage() {
           </section>
         </div>
       </div>
+
+      {/* Related Tools */}
+      {relatedTools.length > 0 && (
+        <RelatedTools tools={relatedTools} title="Related Color Tools" />
+      )}
     </Layout>
+    </>
   )
 }
 
