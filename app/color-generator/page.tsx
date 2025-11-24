@@ -17,7 +17,6 @@ export default function ColorGeneratorPage() {
   const [paletteType, setPaletteType] = useState<PaletteType>('random')
   const [baseColor, setBaseColor] = useState('#3b82f6')
   const [useHarmony, setUseHarmony] = useState(false)
-  const [totalGenerated, setTotalGenerated] = useState(0)
   const [savedPalettes, setSavedPalettes] = useState<Array<{ id: string; name: string; colors: string[]; createdAt: number }>>([])
   const [showSavePalette, setShowSavePalette] = useState(false)
   const [paletteName, setPaletteName] = useState('')
@@ -163,7 +162,6 @@ export default function ColorGeneratorPage() {
   const generateSingle = useCallback(() => {
     const newColor = generateColor(colorType)
     setColors([newColor])
-    setTotalGenerated(prev => prev + 1)
   }, [colorType, generateColor])
 
   // Convert HEX to HSL
@@ -287,7 +285,6 @@ export default function ColorGeneratorPage() {
     }
     
     setColors(newColors)
-    setTotalGenerated(prev => prev + newColors.length)
   }, [paletteSize, colorType, paletteType, baseColor, useHarmony, generateColor, generateHarmoniousPalette])
 
   const hexToRgb = (hex: string) => {
@@ -558,7 +555,6 @@ export default function ColorGeneratorPage() {
         newColors = Array.from({ length: loadedSize }, () => generateColor(loadedType))
       }
       setColors(newColors)
-      setTotalGenerated(prev => prev + newColors.length)
     }, 0)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -690,12 +686,6 @@ export default function ColorGeneratorPage() {
               </button>
             </div>
 
-            {/* Statistics */}
-            {totalGenerated > 0 && (
-              <div className="text-center text-sm text-gray-600 dark:text-gray-400 pt-2 border-t border-gray-200 dark:border-gray-700">
-                Total generated: <span className="font-semibold text-primary-600">{totalGenerated}</span> colors
-              </div>
-            )}
           </div>
         </div>
 

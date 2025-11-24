@@ -25,7 +25,6 @@ export default function FaviconGeneratorPage() {
   const [fontSize, setFontSize] = useState(24)
   const [autoGenerate, setAutoGenerate] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [totalGenerated, setTotalGenerated] = useState(0)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
@@ -131,12 +130,6 @@ export default function FaviconGeneratorPage() {
     return null
   }, [mode, size, image, generateFaviconFromImage, generateFaviconFromText])
 
-  // Separate effect for counting generations (not for preview)
-  useEffect(() => {
-    if (autoGenerate && (image || mode === 'text') && previewUrl) {
-      setTotalGenerated(prev => prev + 1)
-    }
-  }, [previewUrl]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const downloadFavicon = async (targetSize: number = size, filename?: string) => {
     const dataUrl = await generateFavicon(targetSize)
@@ -316,11 +309,6 @@ export default function FaviconGeneratorPage() {
           <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold">Favicon Settings</h2>
-              {totalGenerated > 0 && (
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Generated: <span className="font-semibold text-gray-900 dark:text-gray-100">{totalGenerated}</span>
-                </div>
-              )}
             </div>
 
             {/* Mode Selection */}
@@ -534,7 +522,6 @@ export default function FaviconGeneratorPage() {
               <button
                 onClick={async () => {
                   await generateFavicon()
-                  setTotalGenerated(prev => prev + 1)
                 }}
                 disabled={!image && mode !== 'text'}
                 className="w-full bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold py-3 px-6 rounded-xl hover:from-primary-700 hover:to-primary-800 transition-all shadow-lg disabled:opacity-50"

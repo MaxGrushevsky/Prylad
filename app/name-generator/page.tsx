@@ -51,7 +51,6 @@ export default function NameGeneratorPage() {
   const [includeNumbers, setIncludeNumbers] = useState(true)
   const [count, setCount] = useState(5)
   const [results, setResults] = useState<string[]>([])
-  const [totalGenerated, setTotalGenerated] = useState(0)
   const generate = useCallback(() => {
     if (type === 'full') {
       const newNames = Array.from({ length: count }, () => {
@@ -71,7 +70,6 @@ export default function NameGeneratorPage() {
         return `${firstName} ${lastName}`
       })
       setResults(newNames)
-      setTotalGenerated(prev => prev + newNames.length)
     } else {
       const styleNicknames = nicknames[nicknameStyle]
       const newNicknames = Array.from({ length: count }, () => {
@@ -83,7 +81,6 @@ export default function NameGeneratorPage() {
         return nickname
       })
       setResults(newNicknames)
-      setTotalGenerated(prev => prev + newNicknames.length)
     }
   }, [type, nameStyle, gender, nicknameStyle, includeNumbers, count])
 
@@ -187,7 +184,6 @@ export default function NameGeneratorPage() {
           return `${firstName} ${lastName}`
         })
         setResults(newNames)
-        setTotalGenerated(prev => prev + newNames.length)
       } else {
         const styleNicknames = nicknames[loadedNicknameStyle]
         const newNicknames = Array.from({ length: loadedCount }, () => {
@@ -199,7 +195,6 @@ export default function NameGeneratorPage() {
           return nickname
         })
         setResults(newNicknames)
-        setTotalGenerated(prev => prev + newNicknames.length)
       }
     }, 0)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -426,12 +421,6 @@ export default function NameGeneratorPage() {
               Generate {count > 1 ? `${count} ${type === 'full' ? 'Names' : 'Nicknames'}` : type === 'full' ? 'Name' : 'Nickname'}
             </button>
 
-            {/* Statistics */}
-            {totalGenerated > 0 && (
-              <div className="text-center text-sm text-gray-600 dark:text-gray-400 pt-2 border-t border-gray-200 dark:border-gray-700">
-                Total generated: <span className="font-semibold text-primary-600">{totalGenerated}</span> {totalGenerated === 1 ? 'item' : 'items'}
-              </div>
-            )}
           </div>
         </div>
 

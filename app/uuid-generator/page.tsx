@@ -19,7 +19,6 @@ export default function UUIDGeneratorPage() {
   const [count, setCount] = useState(1)
   const [version, setVersion] = useState<UUIDVersion>('v4')
   const [format, setFormat] = useState<UUIDFormat>('standard')
-  const [totalGenerated, setTotalGenerated] = useState(0)
   const [mode, setMode] = useState<Mode>('generate')
   const [validateInput, setValidateInput] = useState('')
   const [validationResult, setValidationResult] = useState<{
@@ -227,7 +226,6 @@ export default function UUIDGeneratorPage() {
       }
       
       setUuids(newUuids)
-      setTotalGenerated(prev => prev + newUuids.length)
       setValidationResult(null)
       
       // Add to history
@@ -400,7 +398,6 @@ export default function UUIDGeneratorPage() {
             newUuids.push(formatUUID(uuid, loadedFormat))
           }
           setUuids(newUuids)
-          setTotalGenerated(prev => prev + newUuids.length)
         } catch (e) {
           // Ignore errors on auto-generate
         }
@@ -792,12 +789,6 @@ export default function UUIDGeneratorPage() {
               </>
             )}
 
-            {/* Statistics */}
-            {totalGenerated > 0 && (
-              <div className="text-center text-sm text-gray-600 dark:text-gray-400 pt-2 border-t border-gray-200 dark:border-gray-700">
-                Total generated: <span className="font-semibold text-primary-600">{totalGenerated}</span> UUIDs
-              </div>
-            )}
           </div>
         </div>
 

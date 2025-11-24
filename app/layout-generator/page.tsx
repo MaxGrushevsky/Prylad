@@ -114,7 +114,6 @@ export default function LayoutGeneratorPage() {
   })
 
   const [autoGenerate, setAutoGenerate] = useState(true)
-  const [totalGenerated, setTotalGenerated] = useState(0)
   const [containerHeight, setContainerHeight] = useState(400)
 
   const generateGridCSS = useCallback((): string => {
@@ -185,7 +184,6 @@ export default function LayoutGeneratorPage() {
       }
       styleObj.minHeight = `${containerHeight}px`
       setContainerStyle(styleObj)
-      setTotalGenerated(prev => prev + 1)
     }
   }, [type, gridSettings, flexboxSettings, blocks, autoGenerate, generateGridCSS, generateFlexboxCSS, containerHeight])
 
@@ -344,11 +342,6 @@ export default function LayoutGeneratorPage() {
           <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Layout Controls</h2>
-              {totalGenerated > 0 && (
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Generated: <span className="font-semibold text-gray-900 dark:text-gray-100">{totalGenerated}</span>
-                </div>
-              )}
             </div>
 
             {/* Type Selection */}
@@ -755,7 +748,6 @@ export default function LayoutGeneratorPage() {
                 onClick={() => {
                   const cssCode = type === 'grid' ? generateGridCSS() : generateFlexboxCSS()
                   setCss(cssCode)
-                  setTotalGenerated(prev => prev + 1)
                 }}
                 className="w-full bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold py-3 px-6 rounded-xl hover:from-primary-700 hover:to-primary-800 transition-all shadow-lg"
               >

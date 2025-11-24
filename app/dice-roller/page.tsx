@@ -35,8 +35,6 @@ export default function DiceRollerPage() {
   ])
   const [results, setResults] = useState<RollResult[]>([])
   const [resultDice, setResultDice] = useState<Dice[]>([]) // Store dice config for results
-  const [coinResult, setCoinResult] = useState<'heads' | 'tails' | null>(null)
-  const [coinHistory, setCoinHistory] = useState<Array<'heads' | 'tails'>>([])
   const [rollHistory, setRollHistory] = useState<RollHistory[]>([])
   const [preset, setPreset] = useState<Preset>('custom')
   const [totalRolls, setTotalRolls] = useState(0)
@@ -93,38 +91,21 @@ export default function DiceRollerPage() {
     setDice(newDice)
   }
 
-  const flipCoin = () => {
-    const result: 'heads' | 'tails' = Math.random() < 0.5 ? 'heads' : 'tails'
-    setCoinResult(result)
-    setCoinHistory(prev => [result, ...prev].slice(0, 20)) // Keep last 20 flips
-  }
-
   const clearHistory = () => {
     setRollHistory([])
-    setCoinHistory([])
   }
 
   const exportResults = () => {
-    if (rollHistory.length === 0 && coinHistory.length === 0) return
+    if (rollHistory.length === 0) return
     
     let content = 'Dice Roll History\n'
     content += '='.repeat(30) + '\n\n'
     
-    if (rollHistory.length > 0) {
-      content += 'Dice Rolls:\n'
-      rollHistory.forEach((entry, index) => {
-        const diceStr = `${entry.dice.count}d${entry.dice.sides}${entry.dice.bonus !== 0 ? (entry.dice.bonus > 0 ? '+' : '') + entry.dice.bonus : ''}`
-        content += `${index + 1}. ${diceStr}: [${entry.result.rolls.join(', ')}] = ${entry.result.total}\n`
-      })
-      content += '\n'
-    }
-    
-    if (coinHistory.length > 0) {
-      content += 'Coin Flips:\n'
-      coinHistory.forEach((result, index) => {
-        content += `${index + 1}. ${result}\n`
-      })
-    }
+    content += 'Dice Rolls:\n'
+    rollHistory.forEach((entry, index) => {
+      const diceStr = `${entry.dice.count}d${entry.dice.sides}${entry.dice.bonus !== 0 ? (entry.dice.bonus > 0 ? '+' : '') + entry.dice.bonus : ''}`
+      content += `${index + 1}. ${diceStr}: [${entry.result.rolls.join(', ')}] = ${entry.result.total}\n`
+    })
     
     const blob = new Blob([content], { type: 'text/plain' })
     const url = URL.createObjectURL(blob)
@@ -256,7 +237,7 @@ export default function DiceRollerPage() {
     <>
       <StructuredData data={structuredData} />
       <Layout
-        title="🎲 Dice Roller & Coin Flip"
+        title="🎲 Dice Roller"
         description="Roll dice for D&D, tabletop games, and more. Free online dice roller with multiple dice types, bonuses, history tracking, and statistics. Perfect for D&D 5e, Pathfinder, and other RPGs."
         breadcrumbs={breadcrumbs}
       >
@@ -267,57 +248,12 @@ export default function DiceRollerPage() {
             Quick Roll
           </label>
           <div className="flex flex-wrap gap-2 justify-center">
-            {[2, 3, 4, 6, 8, 10, 12, 20, 100].map(sides => (
-              <button
-                key={sides}
-                onClick={() => quickRoll(sides)}
-                className="px-4 py-2 text-sm rounded-lg bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold hover:from-primary-600 hover:to-primary-700 transition-all shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95"
-              >
-                d{sides}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Coin */}
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold">🪙 Coin Flip</h2>
-            {coinHistory.length > 0 && (
-              <div className="text-sm text-gray-600 dark:text-gray-400">
-                History: {coinHistory.filter(h => h === 'heads').length}H / {coinHistory.filter(h => h === 'tails').length}T
-              </div>
-            )}
-          </div>
-          <div className="flex flex-col items-center gap-4">
             <button
-              onClick={flipCoin}
-              className="w-32 h-32 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 text-white text-4xl font-bold shadow-lg hover:shadow-xl transition-all transform hover:scale-105 active:scale-95"
+              onClick={() => quickRoll(2)}
+              className="px-4 py-2 text-sm rounded-lg bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold hover:from-primary-600 hover:to-primary-700 transition-all shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95"
             >
-              {coinResult === null ? '🪙' : coinResult === 'heads' ? '👑' : '⚫'}
+              d2
             </button>
-            {coinResult && (
-              <div className="text-2xl font-bold">
-                {coinResult === 'heads' ? 'Heads!' : 'Tails!'}
-              </div>
-            )}
-            {coinHistory.length > 0 && (
-              <div className="flex flex-wrap gap-2 justify-center max-w-md">
-                {coinHistory.slice(0, 10).map((result, index) => (
-                  <span
-                    key={index}
-                    className={`px-2 py-1 rounded text-sm font-medium ${
-                      result === 'heads' ? 'bg-yellow-200 text-yellow-800' : 'bg-gray-200 text-gray-800'
-                    }`}
-                  >
-                    {result === 'heads' ? 'H' : 'T'}
-                  </span>
-                ))}
-                {coinHistory.length > 10 && (
-                  <span className="text-sm text-gray-500 dark:text-gray-400">+{coinHistory.length - 10} more</span>
-                )}
-              </div>
-            )}
           </div>
         </div>
 
@@ -560,13 +496,6 @@ export default function DiceRollerPage() {
               </p>
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">🪙 Decision Making</h3>
-              <p className="text-gray-700 dark:text-gray-300 text-sm">
-                Use our coin flip feature for quick decisions. Track your flip history to see patterns or just 
-                make random choices fairly.
-              </p>
-            </div>
-            <div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">📊 Statistics & Analysis</h3>
               <p className="text-gray-700 dark:text-gray-300 text-sm">
                 View statistics on your rolls including averages, min/max values, and count natural 20s and 1s. 
@@ -624,15 +553,6 @@ export default function DiceRollerPage() {
                 <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Track your roll history, view statistics, and see natural 20s and 1s. Export your history 
                   for analysis or record-keeping.
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <span className="text-2xl">🪙</span>
-              <div>
-                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Coin Flip</h3>
-                <p className="text-gray-700 dark:text-gray-300 text-sm">
-                  Flip a virtual coin for quick decisions. Track your flip history to see heads/tails distribution.
                 </p>
               </div>
             </div>

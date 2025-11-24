@@ -16,7 +16,6 @@ export default function SlugGeneratorPage() {
   const [lowercase, setLowercase] = useState(true)
   const [removeSpecialChars, setRemoveSpecialChars] = useState(true)
   const [autoGenerate, setAutoGenerate] = useState(true)
-  const [totalGenerated, setTotalGenerated] = useState(0)
   const generate = useCallback(() => {
     if (!input.trim()) {
       setSlug('')
@@ -47,7 +46,6 @@ export default function SlugGeneratorPage() {
     }
     
     setSlug(result)
-    setTotalGenerated(prev => prev + 1)
   }, [input, separator, lowercase, removeSpecialChars])
 
   // Auto-generate on input or settings change
@@ -296,11 +294,6 @@ export default function SlugGeneratorPage() {
                     <strong>URL Preview:</strong> <span className="font-mono text-xs">https://example.com/{slug}</span>
                   </p>
                 </div>
-                {totalGenerated > 0 && (
-                  <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
-                    Total generated: <span className="font-semibold text-primary-600">{totalGenerated}</span> slugs
-                  </p>
-                )}
               </div>
             )}
           </div>

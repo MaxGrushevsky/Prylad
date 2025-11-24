@@ -36,7 +36,6 @@ export default function PlaceholderGeneratorPage() {
   const [preset, setPreset] = useState<PresetSize>('custom')
   const [autoGenerate, setAutoGenerate] = useState(true)
   const [imageUrl, setImageUrl] = useState('')
-  const [totalGenerated, setTotalGenerated] = useState(0)
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   const generatePlaceholder = useCallback(() => {
@@ -113,7 +112,6 @@ export default function PlaceholderGeneratorPage() {
     }
 
     setImageUrl(canvas.toDataURL('image/png'))
-    setTotalGenerated(prev => prev + 1)
   }, [width, height, bgColor, bgColor2, textColor, text, fontSize, fontFamily, fontWeight, style, showText])
 
   useEffect(() => {
@@ -565,11 +563,6 @@ export default function PlaceholderGeneratorPage() {
           <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold">Preview</h2>
-              {totalGenerated > 0 && (
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Generated: <span className="font-semibold text-gray-900 dark:text-gray-100">{totalGenerated}</span>
-                </div>
-              )}
             </div>
 
             <div className="space-y-4">

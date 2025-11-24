@@ -33,7 +33,6 @@ export default function ASCIIArtPage() {
   const [imageWidth, setImageWidth] = useState(100)
   const [autoGenerate, setAutoGenerate] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [totalGenerated, setTotalGenerated] = useState(0)
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   const generateASCIIFromText = useCallback(() => {
@@ -82,7 +81,6 @@ export default function ASCIIArtPage() {
     }
 
     setResult(ascii)
-    setTotalGenerated(prev => prev + 1)
   }, [text, style, width, invert, useColor])
 
   const rgbToHex = (r: number, g: number, b: number): string => {
@@ -140,7 +138,6 @@ export default function ASCIIArtPage() {
       }
 
       setResult(ascii)
-      setTotalGenerated(prev => prev + 1)
     }
     img.src = image
   }, [image, style, imageWidth, invert, useColor])
@@ -342,11 +339,6 @@ ${useColor ? result : result.replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
           <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">ASCII Art Settings</h2>
-              {totalGenerated > 0 && (
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Generated: <span className="font-semibold text-gray-900 dark:text-gray-100">{totalGenerated}</span>
-                </div>
-              )}
             </div>
 
             {/* Mode Selection */}

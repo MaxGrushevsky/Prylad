@@ -21,7 +21,6 @@ export default function LoremGeneratorPage() {
   const [listType, setListType] = useState<ListType>('unordered')
   const [startWithLorem, setStartWithLorem] = useState(true)
   const [output, setOutput] = useState('')
-  const [totalGenerated, setTotalGenerated] = useState(0)
 
   const generate = useCallback(() => {
     const wordsArray = loremText.split(' ')
@@ -80,7 +79,6 @@ export default function LoremGeneratorPage() {
     }
 
     setOutput(result.trim())
-    setTotalGenerated(prev => prev + 1)
   }, [paragraphs, words, bytes, listItems, outputFormat, listType, startWithLorem])
 
   const copyToClipboard = () => {
@@ -397,12 +395,6 @@ export default function LoremGeneratorPage() {
               Generate Lorem Ipsum
             </button>
 
-            {/* Statistics */}
-            {totalGenerated > 0 && (
-              <div className="text-center text-sm text-gray-600 dark:text-gray-400 pt-2 border-t border-gray-200 dark:border-gray-700">
-                Total generated: <span className="font-semibold text-primary-600">{totalGenerated}</span> {totalGenerated === 1 ? 'time' : 'times'}
-              </div>
-            )}
           </div>
         </div>
 

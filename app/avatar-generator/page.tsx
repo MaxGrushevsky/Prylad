@@ -8,7 +8,7 @@ import { generateFAQSchema, generateHowToSchema, generateSoftwareApplicationSche
 import { generateBreadcrumbs, getRelatedTools } from '@/lib/seo-helpers'
 
 type PatternType = 'geometric' | 'dots' | 'lines' | 'triangles' | 'grid' | 'waves' | 'mosaic' | 'abstract'
-type ColorScheme = 'vibrant' | 'pastel' | 'monochrome' | 'warm' | 'cool' | 'random'
+type ColorScheme = 'vibrant' | 'pastel' | 'monochrome' | 'warm' | 'cool' | 'random' | 'custom'
 type ShapeType = 'circle' | 'square' | 'rounded'
 
 export default function AvatarGeneratorPage() {
@@ -20,8 +20,10 @@ export default function AvatarGeneratorPage() {
   const [seed, setSeed] = useState<string>('')
   const [useSeed, setUseSeed] = useState(false)
   const [autoGenerate, setAutoGenerate] = useState(true)
-  const [totalGenerated, setTotalGenerated] = useState(0)
+  const [customColors, setCustomColors] = useState<string[]>(['#FF6B6B', '#4ECDC4', '#45B7D1'])
+  const [generatedImageData, setGeneratedImageData] = useState<string | null>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const patternCanvasRef = useRef<HTMLCanvasElement>(null)
 
   // Seeded random number generator
   const seededRandom = useCallback((seedStr: string): (() => number) => {
@@ -37,7 +39,11 @@ export default function AvatarGeneratorPage() {
     }
   }, [])
 
-  const getColors = useCallback((scheme: ColorScheme, random: () => number): string[] => {
+  const getColors = useCallback((scheme: ColorScheme, random: () => number, custom?: string[]): string[] => {
+    if (scheme === 'custom' && custom && custom.length > 0) {
+      return custom
+    }
+    
     switch (scheme) {
       case 'vibrant':
         return [
@@ -81,56 +87,38 @@ export default function AvatarGeneratorPage() {
     }
   }, [])
 
-  const generateAvatar = useCallback(() => {
-    if (!canvasRef.current) return
+  // Generate pattern on a square canvas (without shape clipping)
+  const generatePattern = useCallback(() => {
+    if (!patternCanvasRef.current) return
 
-    const canvas = canvasRef.current
+    const canvas = patternCanvasRef.current
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    canvas.width = size
-    canvas.height = size
+    // Use a base size for pattern generation (we'll scale it later)
+    const baseSize = 512
+    canvas.width = baseSize
+    canvas.height = baseSize
 
     // Clear canvas
-    ctx.clearRect(0, 0, size, size)
-
-    // Setup clipping for shape
-    if (shape === 'circle') {
-      ctx.beginPath()
-      ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2)
-      ctx.clip()
-    } else if (shape === 'rounded') {
-      const radius = size * 0.15
-      ctx.beginPath()
-      ctx.moveTo(radius, 0)
-      ctx.lineTo(size - radius, 0)
-      ctx.quadraticCurveTo(size, 0, size, radius)
-      ctx.lineTo(size, size - radius)
-      ctx.quadraticCurveTo(size, size, size - radius, size)
-      ctx.lineTo(radius, size)
-      ctx.quadraticCurveTo(0, size, 0, size - radius)
-      ctx.lineTo(0, radius)
-      ctx.quadraticCurveTo(0, 0, radius, 0)
-      ctx.closePath()
-      ctx.clip()
-    }
+    ctx.clearRect(0, 0, baseSize, baseSize)
 
     // Initialize random function
     const random = useSeed && seed ? seededRandom(seed) : () => Math.random()
-    const colors = getColors(colorScheme, random)
+    const colors = getColors(colorScheme, random, customColors)
 
     // Fill background
     ctx.fillStyle = colors[0]
-    ctx.fillRect(0, 0, size, size)
+    ctx.fillRect(0, 0, baseSize, baseSize)
 
     // Generate pattern
     if (pattern === 'geometric') {
       for (let i = 0; i < complexity; i++) {
         ctx.fillStyle = colors[Math.floor(random() * colors.length)]
-        const x = random() * size
-        const y = random() * size
-        const w = random() * (size / 2) + size / 4
-        const h = random() * (size / 2) + size / 4
+        const x = random() * baseSize
+        const y = random() * baseSize
+        const w = random() * (baseSize / 2) + baseSize / 4
+        const h = random() * (baseSize / 2) + baseSize / 4
 
         if (random() > 0.5) {
           ctx.fillRect(x, y, w, h)
@@ -144,8 +132,8 @@ export default function AvatarGeneratorPage() {
       ctx.fillStyle = colors[1]
       const dotCount = complexity * 10
       for (let i = 0; i < dotCount; i++) {
-        const x = random() * size
-        const y = random() * size
+        const x = random() * baseSize
+        const y = random() * baseSize
         const radius = random() * 10 + 2
         ctx.beginPath()
         ctx.arc(x, y, radius, 0, Math.PI * 2)
@@ -156,20 +144,20 @@ export default function AvatarGeneratorPage() {
       ctx.lineWidth = 3 + random() * 4
       for (let i = 0; i < complexity * 2; i++) {
         ctx.beginPath()
-        ctx.moveTo(random() * size, random() * size)
-        ctx.lineTo(random() * size, random() * size)
+        ctx.moveTo(random() * baseSize, random() * baseSize)
+        ctx.lineTo(random() * baseSize, random() * baseSize)
         ctx.stroke()
       }
     } else if (pattern === 'triangles') {
       for (let i = 0; i < complexity * 2; i++) {
         ctx.fillStyle = colors[Math.floor(random() * colors.length)]
         ctx.beginPath()
-        const x1 = random() * size
-        const y1 = random() * size
-        const x2 = random() * size
-        const y2 = random() * size
-        const x3 = random() * size
-        const y3 = random() * size
+        const x1 = random() * baseSize
+        const y1 = random() * baseSize
+        const x2 = random() * baseSize
+        const y2 = random() * baseSize
+        const x3 = random() * baseSize
+        const y3 = random() * baseSize
         ctx.moveTo(x1, y1)
         ctx.lineTo(x2, y2)
         ctx.lineTo(x3, y3)
@@ -178,7 +166,7 @@ export default function AvatarGeneratorPage() {
       }
     } else if (pattern === 'grid') {
       const gridSize = 4 + Math.floor(complexity / 2)
-      const cellSize = size / gridSize
+      const cellSize = baseSize / gridSize
       for (let x = 0; x < gridSize; x++) {
         for (let y = 0; y < gridSize; y++) {
           if (random() > 0.5) {
@@ -192,20 +180,20 @@ export default function AvatarGeneratorPage() {
       ctx.lineWidth = 3
       for (let i = 0; i < complexity; i++) {
         ctx.beginPath()
-        const amplitude = size * 0.1 + random() * size * 0.2
+        const amplitude = baseSize * 0.1 + random() * baseSize * 0.2
         const frequency = 2 + random() * 4
-        const y = size / 2 + Math.sin(0) * amplitude
+        const y = baseSize / 2 + Math.sin(0) * amplitude
         ctx.moveTo(0, y)
-        for (let x = 0; x <= size; x += 5) {
-          const y = size / 2 + Math.sin((x / size) * frequency * Math.PI * 2) * amplitude
+        for (let x = 0; x <= baseSize; x += 5) {
+          const y = baseSize / 2 + Math.sin((x / baseSize) * frequency * Math.PI * 2) * amplitude
           ctx.lineTo(x, y)
         }
         ctx.stroke()
       }
     } else if (pattern === 'mosaic') {
-      const tileSize = size / (3 + Math.floor(complexity / 2))
-      for (let x = 0; x < size; x += tileSize) {
-        for (let y = 0; y < size; y += tileSize) {
+      const tileSize = baseSize / (3 + Math.floor(complexity / 2))
+      for (let x = 0; x < baseSize; x += tileSize) {
+        for (let y = 0; y < baseSize; y += tileSize) {
           ctx.fillStyle = colors[Math.floor(random() * colors.length)]
           ctx.fillRect(x, y, tileSize, tileSize)
           if (random() > 0.7) {
@@ -222,40 +210,113 @@ export default function AvatarGeneratorPage() {
         if (shapeType === 0) {
           // Circle
           ctx.beginPath()
-          ctx.arc(random() * size, random() * size, random() * size * 0.3, 0, Math.PI * 2)
+          ctx.arc(random() * baseSize, random() * baseSize, random() * baseSize * 0.3, 0, Math.PI * 2)
           ctx.fill()
         } else if (shapeType === 1) {
           // Rectangle
-          ctx.fillRect(random() * size, random() * size, random() * size * 0.5, random() * size * 0.5)
+          ctx.fillRect(random() * baseSize, random() * baseSize, random() * baseSize * 0.5, random() * baseSize * 0.5)
         } else if (shapeType === 2) {
           // Triangle
           ctx.beginPath()
-          ctx.moveTo(random() * size, random() * size)
-          ctx.lineTo(random() * size, random() * size)
-          ctx.lineTo(random() * size, random() * size)
+          ctx.moveTo(random() * baseSize, random() * baseSize)
+          ctx.lineTo(random() * baseSize, random() * baseSize)
+          ctx.lineTo(random() * baseSize, random() * baseSize)
           ctx.closePath()
           ctx.fill()
         } else {
           // Arc
           ctx.beginPath()
-          ctx.arc(random() * size, random() * size, random() * size * 0.3, 0, Math.PI * 2)
+          ctx.arc(random() * baseSize, random() * baseSize, random() * baseSize * 0.3, 0, Math.PI * 2)
           ctx.stroke()
         }
       }
       ctx.globalAlpha = 1.0
     }
 
-    setTotalGenerated(prev => prev + 1)
-  }, [size, shape, pattern, colorScheme, complexity, seed, useSeed, seededRandom, getColors])
+    // Save the generated pattern as data URL
+    const dataUrl = canvas.toDataURL('image/png')
+    setGeneratedImageData(dataUrl)
+  }, [pattern, colorScheme, complexity, seed, useSeed, seededRandom, getColors, customColors])
 
+  // Apply shape to the generated pattern
+  const applyShape = useCallback(() => {
+    if (!canvasRef.current || !generatedImageData) return
+
+    const canvas = canvasRef.current
+    canvas.width = size
+    canvas.height = size
+
+    // Draw the generated pattern image first
+    const img = new Image()
+    img.onload = () => {
+      if (!canvasRef.current) return
+      
+      const ctx = canvasRef.current.getContext('2d')
+      if (!ctx) return
+      
+      // Clear canvas
+      ctx.clearRect(0, 0, size, size)
+      
+      // Save context state
+      ctx.save()
+
+      // Setup clipping for shape
+      if (shape === 'circle') {
+        ctx.beginPath()
+        ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2)
+        ctx.clip()
+      } else if (shape === 'rounded') {
+        const radius = size * 0.15
+        ctx.beginPath()
+        ctx.moveTo(radius, 0)
+        ctx.lineTo(size - radius, 0)
+        ctx.quadraticCurveTo(size, 0, size, radius)
+        ctx.lineTo(size, size - radius)
+        ctx.quadraticCurveTo(size, size, size - radius, size)
+        ctx.lineTo(radius, size)
+        ctx.quadraticCurveTo(0, size, 0, size - radius)
+        ctx.lineTo(0, radius)
+        ctx.quadraticCurveTo(0, 0, radius, 0)
+        ctx.closePath()
+        ctx.clip()
+      }
+      // For square, no clipping needed
+
+      // Draw the image
+      ctx.drawImage(img, 0, 0, size, size)
+      ctx.restore()
+    }
+    img.src = generatedImageData
+  }, [size, shape, generatedImageData])
+
+  // Main function to generate avatar (only regenerates pattern)
+  const generateAvatar = useCallback(() => {
+    generatePattern()
+  }, [generatePattern])
+
+  // Generate pattern when pattern, colorScheme, or customColors change
   useEffect(() => {
     if (autoGenerate) {
       const timeoutId = setTimeout(() => {
-        generateAvatar()
+        generatePattern()
       }, 300)
       return () => clearTimeout(timeoutId)
     }
-  }, [autoGenerate, generateAvatar])
+  }, [autoGenerate, pattern, colorScheme, customColors, generatePattern])
+
+  // Apply shape when shape or size changes (only if we have a generated image)
+  useEffect(() => {
+    if (generatedImageData) {
+      applyShape()
+    }
+  }, [shape, size, generatedImageData, applyShape])
+
+  // Initial generation
+  useEffect(() => {
+    if (!generatedImageData && autoGenerate) {
+      generatePattern()
+    }
+  }, [generatedImageData, autoGenerate, generatePattern])
 
   const downloadAvatar = (format: 'png' | 'jpg' = 'png') => {
     if (!canvasRef.current) return
@@ -373,11 +434,6 @@ export default function AvatarGeneratorPage() {
           <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold">Avatar Settings</h2>
-              {totalGenerated > 0 && (
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Generated: <span className="font-semibold text-gray-900 dark:text-gray-100">{totalGenerated}</span>
-                </div>
-              )}
             </div>
 
             {/* Size */}
@@ -472,7 +528,7 @@ export default function AvatarGeneratorPage() {
             <div>
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Color Scheme:</label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                {(['vibrant', 'pastel', 'monochrome', 'warm', 'cool', 'random'] as ColorScheme[]).map((cs) => (
+                {(['vibrant', 'pastel', 'monochrome', 'warm', 'cool', 'random', 'custom'] as ColorScheme[]).map((cs) => (
                   <button
                     key={cs}
                     onClick={() => setColorScheme(cs)}
@@ -486,6 +542,43 @@ export default function AvatarGeneratorPage() {
                   </button>
                 ))}
               </div>
+              {colorScheme === 'custom' && (
+                <div className="mt-3 space-y-2">
+                  <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300">Custom Colors:</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {customColors.map((color, index) => (
+                      <div key={index} className="flex gap-2 items-center">
+                        <input
+                          type="color"
+                          value={color}
+                          onChange={(e) => {
+                            const newColors = [...customColors]
+                            newColors[index] = e.target.value
+                            setCustomColors(newColors)
+                          }}
+                          className="w-full h-10 rounded border-2 border-gray-200 dark:border-gray-700 cursor-pointer"
+                        />
+                        <input
+                          type="text"
+                          value={color}
+                          onChange={(e) => {
+                            const newColors = [...customColors]
+                            newColors[index] = e.target.value
+                            setCustomColors(newColors)
+                          }}
+                          className="w-20 px-2 py-1 text-xs border-2 border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  <button
+                    onClick={() => setCustomColors([...customColors, '#000000'])}
+                    className="text-xs text-primary-600 dark:text-primary-400 hover:underline"
+                  >
+                    + Add Color
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Complexity */}
@@ -563,13 +656,16 @@ export default function AvatarGeneratorPage() {
             <h2 className="text-xl font-bold">Preview</h2>
 
             <div className="border-2 border-gray-200 dark:border-gray-700 rounded-xl p-6 bg-gray-50 dark:bg-gray-800 flex flex-col items-center">
-              <canvas
-                ref={canvasRef}
-                className={`${
-                  shape === 'circle' ? 'rounded-full' : shape === 'rounded' ? 'rounded-2xl' : 'rounded-lg'
-                } border-2 border-gray-300 dark:border-gray-600 shadow-lg`}
-                style={{ maxWidth: '100%', height: 'auto' }}
-              />
+              <div className={`${
+                shape === 'circle' ? 'rounded-full' : shape === 'rounded' ? 'rounded-2xl' : 'rounded-lg'
+              } border-2 border-gray-300 dark:border-gray-600 shadow-lg overflow-hidden`}>
+                <canvas
+                  ref={canvasRef}
+                  style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
+                />
+              </div>
+              {/* Hidden canvas for pattern generation */}
+              <canvas ref={patternCanvasRef} style={{ display: 'none' }} />
             </div>
 
             <div className="space-y-2">

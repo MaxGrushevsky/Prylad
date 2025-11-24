@@ -44,7 +44,6 @@ export default function MemeGeneratorPage() {
   const [fontFamily, setFontFamily] = useState<FontFamily>('Impact')
   const [autoGenerate, setAutoGenerate] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [totalGenerated, setTotalGenerated] = useState(0)
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -141,8 +140,6 @@ export default function MemeGeneratorPage() {
         ctx.strokeText(bottomText, x, y)
         ctx.fillText(bottomText, x, y)
       }
-
-      setTotalGenerated(prev => prev + 1)
     }
     img.src = imageSource
   }, [image, imageUrl, topText, bottomText, fontSize, fontColor, strokeColor, strokeWidth, fontFamily])
@@ -276,11 +273,6 @@ export default function MemeGeneratorPage() {
           <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Meme Settings</h2>
-              {totalGenerated > 0 && (
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Generated: <span className="font-semibold text-gray-900 dark:text-gray-100">{totalGenerated}</span>
-                </div>
-              )}
             </div>
 
             {/* Popular Templates */}

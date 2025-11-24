@@ -17,7 +17,6 @@ export default function HashGeneratorPage() {
   const [autoHash, setAutoHash] = useState(true)
   const [useHMAC, setUseHMAC] = useState(false)
   const [secretKey, setSecretKey] = useState('')
-  const [totalGenerated, setTotalGenerated] = useState(0)
 
   // SEO data
   const toolPath = '/hash-generator'
@@ -189,14 +188,12 @@ export default function HashGeneratorPage() {
         const hashArray = Array.from(new Uint8Array(signature))
         const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
         setHash(hashHex)
-        setTotalGenerated(prev => prev + 1)
         return
       }
 
       // Regular hash mode
       if (algorithm === 'md5') {
         setHash(generateMD5(text))
-        setTotalGenerated(prev => prev + 1)
         return
       }
 
@@ -224,7 +221,6 @@ export default function HashGeneratorPage() {
       const hashArray = Array.from(new Uint8Array(hashBuffer))
       const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
       setHash(hashHex)
-      setTotalGenerated(prev => prev + 1)
     } catch (error) {
       setHash('Error generating hash')
     }
@@ -451,12 +447,6 @@ export default function HashGeneratorPage() {
               </div>
             )}
 
-            {/* Statistics */}
-            {totalGenerated > 0 && (
-              <div className="text-center text-sm text-gray-600 dark:text-gray-400 pt-2 border-t border-gray-200 dark:border-gray-700">
-                Total hashes generated: <span className="font-semibold text-primary-600">{totalGenerated}</span>
-              </div>
-            )}
           </div>
         </div>
 

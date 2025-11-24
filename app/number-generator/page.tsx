@@ -17,7 +17,6 @@ export default function NumberGeneratorPage() {
   const [allowDuplicates, setAllowDuplicates] = useState(false)
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc')
   const [results, setResults] = useState<number[]>([])
-  const [totalGenerated, setTotalGenerated] = useState(0)
   const [preset, setPreset] = useState<Preset>('custom')
   const applyPreset = useCallback((presetType: Preset) => {
     setPreset(presetType)
@@ -70,7 +69,6 @@ export default function NumberGeneratorPage() {
     }
 
     setResults(sortedNumbers)
-    setTotalGenerated(prev => prev + sortedNumbers.length)
   }, [min, max, count, allowDuplicates, sortOrder, ])
 
   const copyToClipboard = async (text: string) => {
@@ -373,11 +371,6 @@ export default function NumberGeneratorPage() {
               Generate {count > 1 ? `${count} Numbers` : 'Number'}
             </button>
 
-            {totalGenerated > 0 && (
-              <div className="text-center text-sm text-gray-600 dark:text-gray-400 pt-2 border-t border-gray-200 dark:border-gray-700">
-                Total generated: <span className="font-semibold text-primary-600">{totalGenerated}</span> numbers
-              </div>
-            )}
           </div>
         </div>
 
