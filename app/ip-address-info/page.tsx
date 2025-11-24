@@ -2,6 +2,10 @@
 
 import { useState, useCallback } from 'react'
 import Layout from '@/components/Layout'
+import StructuredData from '@/components/StructuredData'
+import RelatedTools from '@/components/RelatedTools'
+import { generateFAQSchema, generateHowToSchema, generateSoftwareApplicationSchema } from '@/lib/structured-data'
+import { generateBreadcrumbs, getRelatedTools } from '@/lib/seo-helpers'
 interface IPInfo {
   ip: string
   city?: string
@@ -178,11 +182,79 @@ export default function IPAddressInfoPage() {
     }
   }
 
+  // SEO data
+  const toolPath = '/ip-address-info'
+  const toolName = 'IP Address Info'
+  const category = 'network'
+  const breadcrumbs = generateBreadcrumbs(toolName, toolPath, category)
+  const relatedTools = getRelatedTools(toolPath, category, 6)
+
+  const faqs = [
+    {
+      question: "What is an IP address lookup?",
+      answer: "An IP address lookup is a process of retrieving information about an IP address, including its geographic location (city, region, country), ISP (Internet Service Provider), organization, ASN (Autonomous System Number), timezone, and coordinates. This information is useful for network troubleshooting, security analysis, and understanding the origin of network traffic."
+    },
+    {
+      question: "How accurate is IP geolocation?",
+      answer: "IP geolocation accuracy varies. It's generally accurate at the country level (95%+), city level (60-80%), and less accurate for specific addresses. Accuracy can be affected by VPNs, proxies, mobile networks, and the location of the ISP's infrastructure rather than the actual user location."
+    },
+    {
+      question: "Can I lookup any IP address?",
+      answer: "Yes, you can lookup any public IPv4 address. However, some IP addresses may return limited information, especially for private networks (192.168.x.x, 10.x.x.x, 172.16-31.x.x) which are not routable on the public internet. Our tool focuses on public IPv4 addresses."
+    },
+    {
+      question: "What is ASN (Autonomous System Number)?",
+      answer: "An ASN is a unique identifier assigned to an autonomous system (AS), which is a collection of IP networks and routers under the control of a single organization. ASNs are used in BGP (Border Gateway Protocol) routing and help identify the network operator or organization managing a particular IP address range."
+    },
+    {
+      question: "Is IP address lookup legal?",
+      answer: "Yes, looking up public IP addresses is legal. However, how you use this information matters. Respect privacy laws (GDPR, CCPA) and use IP data responsibly. Do not use IP information for harassment, stalking, or other malicious purposes. This tool is intended for legitimate purposes like network troubleshooting, security analysis, and educational use."
+    }
+  ]
+
+  const howToSteps = [
+    {
+      name: "Enter IP Address",
+      text: "Type an IPv4 address (e.g., 8.8.8.8) in the input field, or click 'My IP' to automatically fill in your current public IP address."
+    },
+    {
+      name: "Lookup Information",
+      text: "Click the 'Lookup' button to fetch detailed information about the IP address. The tool uses multiple APIs to ensure reliable results."
+    },
+    {
+      name: "Review Results",
+      text: "View the location information (city, region, country, coordinates), network details (ISP, organization, ASN), and timezone. Click 'Copy' to copy any value to your clipboard."
+    },
+    {
+      name: "View on Map",
+      text: "If coordinates are available, click 'View on Google Maps' to see the approximate location on a map."
+    }
+  ]
+
+  const structuredData = [
+    generateFAQSchema(faqs),
+    generateHowToSchema(
+      "How to Lookup an IP Address",
+      "Learn how to use our free IP address lookup tool to find location, ISP, organization, and network details for any public IPv4 address.",
+      howToSteps,
+      "PT2M"
+    ),
+    generateSoftwareApplicationSchema(
+      "IP Address Info",
+      "Free online IP address lookup tool. Get detailed information about any IP address including location, ISP, organization, ASN, and network details.",
+      "https://prylad.pro/ip-address-info",
+      "WebApplication"
+    )
+  ]
+
   return (
-    <Layout
-      title="🌐 IP Address Info"
-      description="Get detailed information about any IP address. Find location, ISP, organization, and network details."
-    >
+    <>
+      <StructuredData data={structuredData} />
+      <Layout
+        title="🌐 IP Address Info"
+        description="Get detailed information about any IP address. Find location, ISP, organization, and network details."
+        breadcrumbs={breadcrumbs}
+      >
       <div className="max-w-4xl mx-auto">
         <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 mb-6 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
           <div className="space-y-6">
@@ -416,7 +488,11 @@ export default function IPAddressInfoPage() {
         </section>
       </div>
 
+      {relatedTools.length > 0 && (
+        <RelatedTools tools={relatedTools} title="Related Network Tools" />
+      )}
       </Layout>
+    </>
   )
 }
 

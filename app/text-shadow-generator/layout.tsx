@@ -1,7 +1,7 @@
-import { generatePageMetadata } from '@/lib/seo'
+import { generateRedirectMetadata } from '@/lib/seo'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = generatePageMetadata({
+export const metadata: Metadata = generateRedirectMetadata({
   title: 'Free Text Shadow Generator - CSS Text Shadow Tool Online',
   description: 'Generate CSS text-shadow values with visual preview. Create beautiful text shadows with multiple layers. Copy CSS code instantly. No registration required.',
   keywords: [
@@ -14,7 +14,7 @@ export const metadata: Metadata = generatePageMetadata({
   ],
   path: '/text-shadow-generator',
   category: 'CSS/Design'
-})
+}, '/css-generators#text-shadow')
 
 export default function TextShadowGeneratorLayout({
   children,

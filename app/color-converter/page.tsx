@@ -50,6 +50,11 @@ export default function ColorConverterPage() {
       : null
   }
 
+  const hexToRgbString = (hex: string): string => {
+    const rgb = hexToRgb(hex)
+    return rgb ? `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})` : ''
+  }
+
   const rgbToHsl = (r: number, g: number, b: number): HSL => {
     r /= 255
     g /= 255
@@ -209,6 +214,31 @@ export default function ColorConverterPage() {
     return Math.round((r * 299 + g * 587 + b * 114) / 1000)
   }
 
+  // Generate shades (darker) and tints (lighter) of a color
+  const generateShades = (r: number, g: number, b: number, count: number = 10): string[] => {
+    const shades: string[] = []
+    for (let i = count; i >= 1; i--) {
+      const factor = i / (count + 1)
+      const newR = Math.round(r * factor)
+      const newG = Math.round(g * factor)
+      const newB = Math.round(b * factor)
+      shades.push(`#${newR.toString(16).padStart(2, '0')}${newG.toString(16).padStart(2, '0')}${newB.toString(16).padStart(2, '0')}`)
+    }
+    return shades
+  }
+
+  const generateTints = (r: number, g: number, b: number, count: number = 10): string[] => {
+    const tints: string[] = []
+    for (let i = 1; i <= count; i++) {
+      const factor = i / (count + 1)
+      const newR = Math.round(r + (255 - r) * factor)
+      const newG = Math.round(g + (255 - g) * factor)
+      const newB = Math.round(b + (255 - b) * factor)
+      tints.push(`#${newR.toString(16).padStart(2, '0')}${newG.toString(16).padStart(2, '0')}${newB.toString(16).padStart(2, '0')}`)
+    }
+    return tints
+  }
+
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text)
   }
@@ -272,6 +302,10 @@ export default function ColorConverterPage() {
       answer: "Color brightness (luminance) is a measure of how light or dark a color appears. It's calculated using a formula that accounts for how the human eye perceives different color components. Higher brightness values indicate lighter colors."
     },
     {
+      question: "How do I generate color shades and tints?",
+      answer: "After selecting or entering a color, scroll down to the 'Color Shades & Tints' section. You'll see 10 darker shades and 10 lighter tints automatically generated. Click any shade or tint to copy its HEX value, or use the export button to save all variations."
+    },
+    {
       question: "Is the color converter free to use?",
       answer: "Yes, completely free! No registration, no limits, no hidden fees. All color conversions happen in your browser - we never see or store your data."
     }
@@ -312,7 +346,7 @@ export default function ColorConverterPage() {
     ),
     generateSoftwareApplicationSchema(
       "Color Converter",
-      "Free online color converter. Convert colors between HEX, RGB, HSL, HSV, and CMYK formats. Get color information, brightness, contrast ratios, and WCAG compliance.",
+      "Free online color converter. Convert colors between HEX, RGB, HSL, HSV, and CMYK formats. Generate color shades and tints. Get color information, brightness, contrast ratios, and WCAG compliance.",
       "https://prylad.pro/color-converter",
       "WebApplication"
     )
@@ -323,7 +357,7 @@ export default function ColorConverterPage() {
       <StructuredData data={structuredData} />
       <Layout
         title="🔄 Color Converter"
-        description="Convert colors between HEX, RGB, HSL, HSV, and CMYK formats. Free online color converter with color information and accessibility tools."
+        description="Convert colors between HEX, RGB, HSL, HSV, and CMYK formats. Generate color shades and tints. Free online color converter with color information and accessibility tools."
         breadcrumbs={breadcrumbs}
       >
       <div className="max-w-6xl mx-auto">
@@ -621,6 +655,138 @@ export default function ColorConverterPage() {
               </div>
             </div>
 
+            {/* Shades and Tints Generator */}
+            <div className="pt-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">Color Shades & Tints</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                Generate darker shades (by adding black) and lighter tints (by adding white) of your color. Perfect for creating color variations for design systems.
+              </p>
+              
+              <div className="space-y-6">
+                {/* Shades (Darker) */}
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Shades (Darker)</label>
+                    <button
+                      onClick={() => {
+                        const shades = generateShades(rgb.r, rgb.g, rgb.b, 10)
+                        const shadesText = shades.map(s => `${s} - ${hexToRgbString(s)}`).join('\n')
+                        copyToClipboard(shadesText)
+                      }}
+                      className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-3 py-1 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                    >
+                      Copy All
+                    </button>
+                  </div>
+                  <div className="flex gap-1 rounded-lg overflow-hidden border-2 border-gray-200 dark:border-gray-700 shadow-sm">
+                    {generateShades(rgb.r, rgb.g, rgb.b, 10).map((shade, index) => (
+                      <div
+                        key={`shade-${index}`}
+                        className="flex-1 h-16 relative group cursor-pointer"
+                        style={{ backgroundColor: shade }}
+                        onClick={() => copyToClipboard(shade)}
+                        title={`${shade} - Click to copy`}
+                      >
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                          <span className="text-xs font-semibold text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg">
+                            {shade}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 text-center">
+                    Click any shade to copy its HEX value
+                  </div>
+                </div>
+
+                {/* Base Color */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 text-center">Base Color</label>
+                  <div className="flex justify-center">
+                    <div
+                      className="h-16 w-full max-w-md rounded-lg border-2 border-gray-200 dark:border-gray-700 shadow-lg relative group cursor-pointer"
+                      style={{ backgroundColor: hex }}
+                      onClick={() => copyToClipboard(hex)}
+                      title={`${hex} - Click to copy`}
+                    >
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center rounded-lg">
+                        <span className="text-sm font-semibold text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg">
+                          {hex}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tints (Lighter) */}
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Tints (Lighter)</label>
+                    <button
+                      onClick={() => {
+                        const tints = generateTints(rgb.r, rgb.g, rgb.b, 10)
+                        const tintsText = tints.map(t => `${t} - ${hexToRgbString(t)}`).join('\n')
+                        copyToClipboard(tintsText)
+                      }}
+                      className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-3 py-1 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                    >
+                      Copy All
+                    </button>
+                  </div>
+                  <div className="flex gap-1 rounded-lg overflow-hidden border-2 border-gray-200 dark:border-gray-700 shadow-sm">
+                    {generateTints(rgb.r, rgb.g, rgb.b, 10).map((tint, index) => (
+                      <div
+                        key={`tint-${index}`}
+                        className="flex-1 h-16 relative group cursor-pointer"
+                        style={{ backgroundColor: tint }}
+                        onClick={() => copyToClipboard(tint)}
+                        title={`${tint} - Click to copy`}
+                      >
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                          <span className="text-xs font-semibold text-gray-900 opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg">
+                            {tint}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 text-center">
+                    Click any tint to copy its HEX value
+                  </div>
+                </div>
+
+                {/* Export Shades & Tints */}
+                <div className="flex gap-2 pt-2 border-t border-gray-200 dark:border-gray-700">
+                  <button
+                    onClick={() => {
+                      const shades = generateShades(rgb.r, rgb.g, rgb.b, 10)
+                      const tints = generateTints(rgb.r, rgb.g, rgb.b, 10)
+                      const content = `Color Shades & Tints for ${hex}\n\n` +
+                        `SHADES (Darker):\n${shades.map((s, i) => `${i + 1}. ${s} - ${hexToRgbString(s)}`).join('\n')}\n\n` +
+                        `BASE COLOR:\n${hex} - ${hexToRgbString(hex)}\n\n` +
+                        `TINTS (Lighter):\n${tints.map((t, i) => `${i + 1}. ${t} - ${hexToRgbString(t)}`).join('\n')}`
+                      const blob = new Blob([content], { type: 'text/plain' })
+                      const url = URL.createObjectURL(blob)
+                      const link = document.createElement('a')
+                      link.href = url
+                      link.download = `color-shades-tints-${hex.replace('#', '')}-${Date.now()}.txt`
+                      document.body.appendChild(link)
+                      link.click()
+                      document.body.removeChild(link)
+                      URL.revokeObjectURL(url)
+                    }}
+                    className="flex-1 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors text-sm font-semibold flex items-center justify-center gap-2"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    Export Shades & Tints
+                  </button>
+                </div>
+              </div>
+            </div>
+
             {/* Action Buttons */}
             <div className="flex gap-2 pt-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
               <button
@@ -656,8 +822,9 @@ export default function ColorConverterPage() {
               </p>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                 Our free color converter instantly converts colors between HEX, RGB, HSL, HSV, and CMYK formats. Simply 
-                pick a color or enter a value in any format, and get instant conversions to all other formats. We also 
-                provide color information like brightness and contrast ratios for accessibility compliance.
+                pick a color or enter a value in any format, and get instant conversions to all other formats. Generate 
+                color shades (darker variations) and tints (lighter variations) for design systems. We also provide color 
+                information like brightness and contrast ratios for accessibility compliance.
               </p>
             </div>
           </section>
@@ -741,6 +908,13 @@ export default function ColorConverterPage() {
                   printed versus on screen.
                 </p>
               </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">🎨 Design Systems</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
+                  Generate color shades and tints for design systems and component libraries. Create consistent color 
+                  variations for buttons, cards, and UI elements.
+                </p>
+              </div>
             </div>
           </section>
 
@@ -799,6 +973,16 @@ export default function ColorConverterPage() {
                 </div>
               </div>
               <div className="flex items-start gap-3">
+                <span className="text-2xl">🌈</span>
+                <div>
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Shades & Tints Generator</h3>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">
+                    Generate darker shades and lighter tints of any color. Perfect for creating color variations 
+                    for design systems, gradients, and UI components.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
                 <span className="text-2xl">🔒</span>
                 <div>
                   <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Privacy First</h3>
@@ -844,6 +1028,14 @@ export default function ColorConverterPage() {
                 <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Yes! You can enter HSL values in the text field or adjust individual H, S, L values using the number 
                   inputs. Changes update all other formats instantly.
+                </p>
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">What are color shades and tints?</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
+                  Shades are darker versions of a color created by adding black, while tints are lighter versions 
+                  created by adding white. Our generator creates 10 shades and 10 tints of your color, perfect for 
+                  design systems and creating color variations.
                 </p>
               </div>
               <div>

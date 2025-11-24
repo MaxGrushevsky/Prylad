@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Layout from '@/components/Layout'
+import HistoryPanel from '@/components/HistoryPanel'
+import { useHistory } from '@/hooks/useHistory'
 
 type Tab = 'case' | 'cleaner' | 'reverser'
 type CaseType = 'uppercase' | 'lowercase' | 'title' | 'sentence' | 'camel' | 'pascal' | 'snake' | 'kebab' | 'constant' | 'alternating' | 'inverse' | 'capitalize' | 'dot' | 'train' | 'cobol' | 'flat' | 'random'
@@ -50,6 +52,24 @@ export default function TextToolsPage() {
   const [reverserOutput, setReverserOutput] = useState('')
   const [reverseMode, setReverseMode] = useState<ReverseMode>('all')
   const [autoConvert, setAutoConvert] = useState(true)
+
+  // ========== HISTORY ==========
+  const { history: caseHistory, addToHistory: addCaseToHistory, removeFromHistory: removeCaseFromHistory, clearHistory: clearCaseHistory } = useHistory<string>('text-case-history', 20)
+  const { history: cleanerHistory, addToHistory: addCleanerToHistory, removeFromHistory: removeCleanerFromHistory, clearHistory: clearCleanerHistory } = useHistory<string>('text-cleaner-history', 20)
+  const { history: reverserHistory, addToHistory: addReverserToHistory, removeFromHistory: removeReverserFromHistory, clearHistory: clearReverserHistory } = useHistory<string>('text-reverser-history', 20)
+
+  // History selection handlers
+  const selectFromCaseHistory = useCallback((item: string) => {
+    setCaseText(item)
+  }, [])
+
+  const selectFromCleanerHistory = useCallback((item: string) => {
+    setCleanerInput(item)
+  }, [])
+
+  const selectFromReverserHistory = useCallback((item: string) => {
+    setReverserInput(item)
+  }, [])
 
   // ========== TEXT CASE FUNCTIONS ==========
   const transformCase = useCallback((type: CaseType) => {
@@ -101,7 +121,10 @@ export default function TextToolsPage() {
     }
     setCaseResult(transformed)
     setSelectedCase(type)
-  }, [caseText])
+    if (transformed) {
+      addCaseToHistory(transformed, `${type} case`)
+    }
+  }, [caseText, addCaseToHistory])
 
   // ========== TEXT CLEANER FUNCTIONS ==========
   const clean = useCallback((type: CleanType) => {
@@ -128,7 +151,10 @@ export default function TextToolsPage() {
     }
     setCleanerResult(cleaned)
     setSelectedClean(type)
-  }, [cleanerInput])
+    if (cleaned) {
+      addCleanerToHistory(cleaned, `${type} clean`)
+    }
+  }, [cleanerInput, addCleanerToHistory])
 
   // ========== TEXT REVERSER FUNCTIONS ==========
   // Вынесено наружу для оптимизации - простая функция не нуждается в useCallback
@@ -146,13 +172,17 @@ export default function TextToolsPage() {
   useEffect(() => {
     if (activeTab === 'reverser' && autoConvert && reverserInput.trim()) {
       const timer = setTimeout(() => {
-        setReverserOutput(reverseText(reverserInput, reverseMode))
+        const reversed = reverseText(reverserInput, reverseMode)
+        setReverserOutput(reversed)
+        if (reversed) {
+          addReverserToHistory(reversed, `${reverseMode} reverse`)
+        }
       }, 100)
       return () => clearTimeout(timer)
     } else if (activeTab === 'reverser' && !reverserInput.trim()) {
       setReverserOutput('')
     }
-  }, [reverserInput, reverseMode, autoConvert, activeTab])
+  }, [reverserInput, reverseMode, autoConvert, activeTab, addReverserToHistory])
 
   const copyToClipboard = async (text: string) => {
     try {
@@ -161,6 +191,62 @@ export default function TextToolsPage() {
       // Silent fail
     }
   }
+
+  const exportToFile = (content: string, filename: string) => {
+    const blob = new Blob([content], { type: 'text/plain' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = filename
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
+
+  // Helper function to transform case
+  const transformCaseText = (text: string, type: CaseType): string => {
+    switch (type) {
+      case 'uppercase': return text.toUpperCase()
+      case 'lowercase': return text.toLowerCase()
+      case 'title': return text.toLowerCase().split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+      case 'sentence': return text.toLowerCase().split(/([.!?]\s+)/).map((p, i) => i === 0 || /[.!?]\s+/.test(p) ? p.charAt(0).toUpperCase() + p.slice(1) : p).join('')
+      case 'camel': return text.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, (_, c) => c.toUpperCase()).replace(/^[A-Z]/, c => c.toLowerCase())
+      case 'pascal': return text.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, (_, c) => c.toUpperCase()).replace(/^[a-z]/, c => c.toUpperCase())
+      case 'snake': return text.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '')
+      case 'kebab': return text.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
+      case 'constant': return text.toUpperCase().replace(/\s+/g, '_').replace(/[^A-Z0-9_]/g, '')
+      case 'alternating': return text.split('').map((c, i) => i % 2 === 0 ? c.toUpperCase() : c.toLowerCase()).join('')
+      case 'inverse': return text.split('').map(c => { if (c === c.toUpperCase() && c !== c.toLowerCase()) return c.toLowerCase(); if (c === c.toLowerCase() && c !== c.toUpperCase()) return c.toUpperCase(); return c }).join('')
+      case 'capitalize': return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase()
+      case 'dot': return text.toLowerCase().replace(/\s+/g, '.').replace(/[^a-z0-9.]/g, '')
+      case 'train': return text.split(/\s+/).map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join('-').replace(/[^a-zA-Z0-9-]/g, '')
+      case 'cobol': return text.toUpperCase().replace(/\s+/g, '-').replace(/[^A-Z0-9-]/g, '')
+      case 'flat': return text.toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9]/g, '')
+      case 'random': return text.split('').map(c => /[a-zA-Z]/.test(c) ? (Math.random() > 0.5 ? c.toUpperCase() : c.toLowerCase()) : c).join('')
+      default: return text
+    }
+  }
+
+  // Helper function to clean text
+  const cleanText = (text: string, type: CleanType): string => {
+    switch (type) {
+      case 'spaces': return text.replace(/\s+/g, ' ').trim()
+      case 'allSpaces': return text.replace(/\s/g, '')
+      case 'duplicates': return Array.from(new Set(text.split('\n'))).join('\n')
+      case 'emptyLines': return text.split('\n').filter(l => l.trim()).join('\n')
+      case 'trim': return text.split('\n').map(l => l.trim()).join('\n')
+      case 'specialChars': return text.replace(/[^a-zA-Z0-9\s]/g, '')
+      case 'numbers': return text.replace(/\d/g, '')
+      case 'letters': return text.replace(/[a-zA-Z]/g, '')
+      case 'all': {
+        const lines = text.replace(/\s+/g, ' ').trim().split('\n').filter(l => l.trim()).map(l => l.trim())
+        return Array.from(new Set(lines)).join('\n')
+      }
+      default: return text
+    }
+  }
+
 
   return (
     <Layout
@@ -259,12 +345,21 @@ export default function TextToolsPage() {
                 <div>
                   <div className="flex justify-between mb-2">
                     <label className="block text-sm font-semibold">Result:</label>
-                    <button
-                      onClick={() => copyToClipboard(caseResult)}
-                      className="text-xs text-primary-600 hover:text-primary-700"
-                    >
-                      Copy
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => exportToFile(caseResult, `text-case-${Date.now()}.txt`)}
+                        className="text-xs text-gray-600 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+                        title="Export to file"
+                      >
+                        Export
+                      </button>
+                      <button
+                        onClick={() => copyToClipboard(caseResult)}
+                        className="text-xs text-primary-600 hover:text-primary-700"
+                      >
+                        Copy
+                      </button>
+                    </div>
                   </div>
                   <textarea
                     value={caseResult}
@@ -325,12 +420,21 @@ export default function TextToolsPage() {
                 <div>
                   <div className="flex justify-between mb-2">
                     <label className="block text-sm font-semibold">Cleaned Text:</label>
-                    <button
-                      onClick={() => copyToClipboard(cleanerResult)}
-                      className="text-xs text-primary-600 hover:text-primary-700"
-                    >
-                      Copy
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => exportToFile(cleanerResult, `text-cleaned-${Date.now()}.txt`)}
+                        className="text-xs text-gray-600 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+                        title="Export to file"
+                      >
+                        Export
+                      </button>
+                      <button
+                        onClick={() => copyToClipboard(cleanerResult)}
+                        className="text-xs text-primary-600 hover:text-primary-700"
+                      >
+                        Copy
+                      </button>
+                    </div>
                   </div>
                   <textarea
                     value={cleanerResult}
@@ -411,12 +515,21 @@ export default function TextToolsPage() {
                 <div>
                   <div className="flex justify-between mb-2">
                     <label className="block text-sm font-semibold">Reversed Text:</label>
-                    <button
-                      onClick={() => copyToClipboard(reverserOutput)}
-                      className="text-xs text-primary-600 hover:text-primary-700"
-                    >
-                      Copy
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => exportToFile(reverserOutput, `text-reversed-${Date.now()}.txt`)}
+                        className="text-xs text-gray-600 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+                        title="Export to file"
+                      >
+                        Export
+                      </button>
+                      <button
+                        onClick={() => copyToClipboard(reverserOutput)}
+                        className="text-xs text-primary-600 hover:text-primary-700"
+                      >
+                        Copy
+                      </button>
+                    </div>
                   </div>
                   <textarea
                     value={reverserOutput}
@@ -426,6 +539,49 @@ export default function TextToolsPage() {
                 </div>
               )}
             </div>
+          </div>
+        )}
+
+        {/* History Panels */}
+        {activeTab === 'case' && caseHistory.length > 0 && (
+          <div className="max-w-6xl mx-auto">
+            <HistoryPanel
+              history={caseHistory}
+              onSelect={selectFromCaseHistory}
+              onRemove={removeCaseFromHistory}
+              onClear={clearCaseHistory}
+              formatItem={(item) => item.substring(0, 50) + (item.length > 50 ? '...' : '')}
+              title="Case Conversion History"
+              maxDisplay={10}
+            />
+          </div>
+        )}
+
+        {activeTab === 'cleaner' && cleanerHistory.length > 0 && (
+          <div className="max-w-6xl mx-auto">
+            <HistoryPanel
+              history={cleanerHistory}
+              onSelect={selectFromCleanerHistory}
+              onRemove={removeCleanerFromHistory}
+              onClear={clearCleanerHistory}
+              formatItem={(item) => item.substring(0, 50) + (item.length > 50 ? '...' : '')}
+              title="Text Cleaning History"
+              maxDisplay={10}
+            />
+          </div>
+        )}
+
+        {activeTab === 'reverser' && reverserHistory.length > 0 && (
+          <div className="max-w-6xl mx-auto">
+            <HistoryPanel
+              history={reverserHistory}
+              onSelect={selectFromReverserHistory}
+              onRemove={removeReverserFromHistory}
+              onClear={clearReverserHistory}
+              formatItem={(item) => item.substring(0, 50) + (item.length > 50 ? '...' : '')}
+              title="Text Reversal History"
+              maxDisplay={10}
+            />
           </div>
         )}
       </div>

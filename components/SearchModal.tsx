@@ -14,12 +14,10 @@ interface Tool {
 }
 
 const allTools: Tool[] = [
-  { name: 'QR Code', path: '/qr-generator', icon: '📱', desc: 'QR code generator (Text, URL, WiFi, Email)', category: 'QR/Network', categoryIcon: '📶' },
-  { name: 'QR Reader', path: '/qr-reader', icon: '📱', desc: 'Scan and decode QR codes from images', category: 'QR/Network', categoryIcon: '📶' },
+  { name: 'QR Tools', path: '/qr-tools', icon: '📱', desc: 'Generate and read QR codes in one place', category: 'QR/Network', categoryIcon: '📶' },
   { name: 'Barcode Generator', path: '/barcode-generator', icon: '📊', desc: 'Create EAN, Code128, Code39 barcodes', category: 'QR/Network', categoryIcon: '📶' },
   { name: 'URL Tools', path: '/url-tools', icon: '🔗', desc: 'URL encoder, parser & query builder', category: 'QR/Network', categoryIcon: '📶' },
-  { name: 'Color Generator', path: '/color-generator', icon: '🎨', desc: 'Random colors and palettes', category: 'Colors', categoryIcon: '🎨' },
-  { name: 'Gradient Generator', path: '/gradient-generator', icon: '🌈', desc: 'Create CSS gradients', category: 'Colors', categoryIcon: '🎨' },
+  { name: 'Color Generator', path: '/color-generator', icon: '🎨', desc: 'Random colors, palettes, and gradients', category: 'Colors', categoryIcon: '🎨' },
   { name: 'Color Converter', path: '/color-converter', icon: '🔄', desc: 'HEX ↔ RGB ↔ HSL', category: 'Colors', categoryIcon: '🎨' },
   { name: 'Palette from Image', path: '/color-palette-from-image', icon: '🖼️', desc: 'Extract color palette from images', category: 'Colors', categoryIcon: '🎨' },
   { name: 'UUID/GUID', path: '/uuid-generator', icon: '🆔', desc: 'Unique identifier generator', category: 'Generators', categoryIcon: '🎲' },
@@ -30,14 +28,16 @@ const allTools: Tool[] = [
   { name: 'Favicon Generator', path: '/favicon-generator', icon: '🎯', desc: 'Create favicons from images', category: 'Images', categoryIcon: '🖼️' },
   { name: 'Avatar Generator', path: '/avatar-generator', icon: '👤', desc: 'Random geometric avatars', category: 'Images', categoryIcon: '🖼️' },
   { name: 'Image Editor', path: '/image-resizer', icon: '🖼️', desc: 'Resize, compress, rotate & flip images', category: 'Images', categoryIcon: '🖼️' },
+  { name: 'Image Format Converter', path: '/image-format-converter', icon: '🔄', desc: 'Convert images between PNG, JPG, WebP, SVG', category: 'Images', categoryIcon: '🖼️' },
   { name: 'Lorem Ipsum', path: '/lorem-generator', icon: '📝', desc: 'Placeholder text for design', category: 'Text', categoryIcon: '📝' },
   { name: 'Word Counter', path: '/word-counter', icon: '🔢', desc: 'Count words and characters', category: 'Text', categoryIcon: '📝' },
-  { name: 'Text Case', path: '/text-case', icon: '⌨️', desc: 'UPPERCASE, lowercase, Title Case', category: 'Text', categoryIcon: '📝' },
-  { name: 'Text Cleaner', path: '/text-cleaner', icon: '🧹', desc: 'Remove spaces and duplicates', category: 'Text', categoryIcon: '📝' },
+  { name: 'Text Tools', path: '/text-tools', icon: '⌨️', desc: 'Case converter, text cleaner, and text reverser', category: 'Text', categoryIcon: '📝' },
   { name: 'Text Diff', path: '/text-diff', icon: '🔍', desc: 'Compare two texts', category: 'Text', categoryIcon: '📝' },
-  { name: 'Text Reverser', path: '/text-reverser', icon: '🔄', desc: 'Reverse text, words, and sentences', category: 'Text', categoryIcon: '📝' },
   { name: 'Slug Generator', path: '/slug-generator', icon: '🔗', desc: 'URL-friendly string generator', category: 'Text', categoryIcon: '📝' },
-      { name: 'Transliteration', path: '/transliteration', icon: '🔄', desc: 'Cyrillic ↔ Latin conversion', category: 'Text', categoryIcon: '📝' },
+  { name: 'Transliteration', path: '/transliteration', icon: '🔄', desc: 'Cyrillic ↔ Latin conversion', category: 'Text', categoryIcon: '📝' },
+  { name: 'Character Reference', path: '/character-reference', icon: '🔤', desc: 'ASCII table, Unicode lookup, and emoji picker', category: 'Text', categoryIcon: '📝' },
+  { name: 'Speech to Text', path: '/speech-to-text', icon: '🎤', desc: 'Convert speech to text using voice recognition', category: 'Text', categoryIcon: '📝' },
+  { name: 'Text to Speech', path: '/text-to-speech', icon: '🔊', desc: 'Convert text to speech with voice selection', category: 'Text', categoryIcon: '📝' },
   { name: 'Base64 Converter', path: '/base64-converter', icon: '📦', desc: 'Text and image encoding', category: 'Converters', categoryIcon: '🔄' },
   { name: 'CSV ↔ JSON', path: '/csv-json-converter', icon: '🔄', desc: 'Convert CSV to JSON and back', category: 'Converters', categoryIcon: '🔄' },
   { name: 'Morse Code', path: '/morse-code-encoder', icon: '📡', desc: 'Encode/decode Morse code with audio', category: 'Converters', categoryIcon: '🔄' },
@@ -47,6 +47,7 @@ const allTools: Tool[] = [
   { name: 'Roman Numerals', path: '/roman-numerals-converter', icon: '🔢', desc: 'Convert numbers to Roman numerals and back', category: 'Converters', categoryIcon: '🔄' },
   { name: 'Number Base Converter', path: '/number-base-converter', icon: '🔢', desc: 'Convert between binary, octal, decimal, and hex', category: 'Converters', categoryIcon: '🔄' },
   { name: 'JSON Formatter', path: '/json-formatter', icon: '📋', desc: 'Format and validate JSON', category: 'Code', categoryIcon: '💻' },
+  { name: 'JSONPath Query', path: '/json-path-query', icon: '🔍', desc: 'Query JSON data using JSONPath expressions', category: 'Code', categoryIcon: '💻' },
   { name: 'CSS Formatter', path: '/css-formatter', icon: '🎨', desc: 'Format and minify CSS code', category: 'Code', categoryIcon: '💻' },
   { name: 'JavaScript Formatter', path: '/js-formatter', icon: '💻', desc: 'Format and minify JavaScript code', category: 'Code', categoryIcon: '💻' },
   { name: 'HTML Entity Encoder', path: '/html-entity-encoder', icon: '🔤', desc: 'Encode/decode HTML entities and format HTML', category: 'Code', categoryIcon: '💻' },
@@ -55,12 +56,11 @@ const allTools: Tool[] = [
   { name: 'YAML Formatter', path: '/yaml-formatter', icon: '📝', desc: 'Format YAML and convert to/from JSON', category: 'Code', categoryIcon: '💻' },
   { name: 'HTTP Status Codes', path: '/http-status-codes', icon: '📡', desc: 'Complete reference of HTTP status codes', category: 'Code', categoryIcon: '💻' },
   { name: 'Test Data Generator', path: '/test-data-generator', icon: '🧪', desc: 'Generate fake data for testing', category: 'Code', categoryIcon: '💻' },
-  { name: 'Regex Tester', path: '/regex-tester', icon: '🔎', desc: 'Regular expression testing', category: 'Code', categoryIcon: '💻' },
+  { name: 'Regex Tools', path: '/regex-tools', icon: '🔎', desc: 'Test and build regular expressions', category: 'Code', categoryIcon: '💻' },
+  { name: 'Cron Expression', path: '/cron-expression-generator', icon: '⏰', desc: 'Generate and parse cron expressions', category: 'Code', categoryIcon: '💻' },
   { name: 'Markdown Preview', path: '/markdown', icon: '📄', desc: 'Markdown preview', category: 'Code', categoryIcon: '💻' },
   { name: 'JWT Decoder & Generator', path: '/jwt-decoder', icon: '🔐', desc: 'Decode and generate JWT tokens with custom payload', category: 'Security', categoryIcon: '🔒' },
-  { name: 'Box Shadow', path: '/box-shadow', icon: '💎', desc: 'CSS shadow generator', category: 'CSS/Design', categoryIcon: '🎨' },
-  { name: 'Border Radius', path: '/border-radius-generator', icon: '🔲', desc: 'Generate CSS border-radius values', category: 'CSS/Design', categoryIcon: '🎨' },
-  { name: 'Text Shadow', path: '/text-shadow-generator', icon: '✨', desc: 'Generate CSS text-shadow values', category: 'CSS/Design', categoryIcon: '🎨' },
+  { name: 'CSS Generators', path: '/css-generators', icon: '💎', desc: 'Box shadow, border radius, and text shadow generators', category: 'CSS/Design', categoryIcon: '🎨' },
   { name: 'Font Pairing', path: '/font-pairing-generator', icon: '🔤', desc: 'Discover beautiful Google Fonts combinations', category: 'CSS/Design', categoryIcon: '🎨' },
   { name: 'Contrast Checker', path: '/contrast-checker', icon: '🎯', desc: 'Check WCAG color contrast ratio', category: 'CSS/Design', categoryIcon: '🎨' },
   { name: 'CSS Animation', path: '/css-animation-generator', icon: '🎬', desc: 'Generate CSS animations and keyframes', category: 'CSS/Design', categoryIcon: '🎨' },
@@ -176,11 +176,11 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl border border-gray-200 dark:border-gray-700 overflow-hidden bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+        className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl border border-gray-200 dark:border-gray-700 overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Search Input */}
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-3">
             <svg className="w-5 h-5 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -194,7 +194,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
               placeholder="Search tools..."
               className="flex-1 text-lg outline-none bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
             />
-            <kbd className="hidden sm:inline-flex items-center px-2 py-1 text-xs font-semibold text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+            <kbd className="hidden sm:inline-flex items-center px-2 py-1 text-xs font-semibold text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded">
               ESC
             </kbd>
           </div>
@@ -246,15 +246,15 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
         </div>
 
         {/* Footer */}
-        <div className="px-4 py-2 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+        <div className="px-4 py-2 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">↑</kbd>
-              <kbd className="px-1.5 py-0.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">↓</kbd>
+              <kbd className="px-1.5 py-0.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded">↑</kbd>
+              <kbd className="px-1.5 py-0.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded">↓</kbd>
               <span>Navigate</span>
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">Enter</kbd>
+              <kbd className="px-1.5 py-0.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded">Enter</kbd>
               <span>Select</span>
             </span>
           </div>

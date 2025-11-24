@@ -121,15 +121,20 @@ export default function RootLayout({
               "url": "https://prylad.pro",
               "applicationCategory": "UtilityApplication",
               "operatingSystem": "Any",
+              "browserRequirements": "Requires JavaScript. Requires HTML5.",
+              "softwareVersion": "1.0",
               "offers": {
                 "@type": "Offer",
                 "price": "0",
-                "priceCurrency": "USD"
+                "priceCurrency": "USD",
+                "availability": "https://schema.org/InStock"
               },
               "aggregateRating": {
                 "@type": "AggregateRating",
                 "ratingValue": "4.8",
-                "ratingCount": "1250"
+                "ratingCount": "1250",
+                "bestRating": "5",
+                "worstRating": "1"
               },
               "featureList": [
                 "QR Code Generator",
@@ -139,8 +144,31 @@ export default function RootLayout({
                 "Code Formatters",
                 "Hash Generators",
                 "UUID Generator",
-                "JSON Formatter"
-              ]
+                "JSON Formatter",
+                "Base64 Converter",
+                "URL Tools",
+                "Character Reference",
+                "CSS Generators"
+              ],
+              "screenshot": "https://prylad.pro/og-image.jpg"
+            })
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "Prylad",
+              "url": "https://prylad.pro",
+              "logo": "https://prylad.pro/og-image.jpg",
+              "description": "Free online tools: generators, converters, text utilities and more. All tools work in the browser.",
+              "contactPoint": {
+                "@type": "ContactPoint",
+                "contactType": "Customer Service",
+                "availableLanguage": ["English", "Russian"]
+              }
             })
           }}
         />

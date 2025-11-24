@@ -1,7 +1,7 @@
-import { generatePageMetadata } from '@/lib/seo'
+import { generateRedirectMetadata } from '@/lib/seo'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = generatePageMetadata({
+export const metadata: Metadata = generateRedirectMetadata({
   title: 'Free Text Reverser - Reverse Text, Words, and Sentences Online',
   description: 'Reverse text, words, sentences, and characters. Flip text backwards, reverse word order, or invert character order. Free online text reverser tool. No registration required.',
   keywords: [
@@ -18,7 +18,7 @@ export const metadata: Metadata = generatePageMetadata({
   ],
   path: '/text-reverser',
   category: 'Text Tools'
-})
+}, '/text-tools#reverser')
 
 export default function TextReverserLayout({
   children,
@@ -27,4 +27,5 @@ export default function TextReverserLayout({
 }) {
   return <>{children}</>
 }
+
 

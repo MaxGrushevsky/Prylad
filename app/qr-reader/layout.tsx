@@ -1,7 +1,7 @@
-import { generatePageMetadata } from '@/lib/seo'
+import { generateRedirectMetadata } from '@/lib/seo'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = generatePageMetadata({
+export const metadata: Metadata = generateRedirectMetadata({
   title: 'Free QR Code Reader - Scan QR Codes from Images Online',
   description: 'Scan and decode QR codes from uploaded images online for free. Read QR codes containing text, URLs, WiFi credentials, email addresses, and more. No registration required.',
   keywords: [
@@ -21,7 +21,7 @@ export const metadata: Metadata = generatePageMetadata({
   ],
   path: '/qr-reader',
   category: 'QR/Network'
-})
+}, '/qr-tools#read')
 
 export default function QRReaderLayout({
   children,
@@ -30,4 +30,5 @@ export default function QRReaderLayout({
 }) {
   return <>{children}</>
 }
+
 

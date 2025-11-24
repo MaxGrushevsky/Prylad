@@ -1,7 +1,7 @@
-import { generatePageMetadata } from '@/lib/seo'
+import { generateRedirectMetadata } from '@/lib/seo'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = generatePageMetadata({
+export const metadata: Metadata = generateRedirectMetadata({
   title: 'Free Regex Tester - Test Regular Expressions Online',
   description: 'Test and debug regular expressions online for free. Real-time matching, flag options, group capture, and syntax highlighting. Perfect for developers and programmers.',
   keywords: [
@@ -18,7 +18,7 @@ export const metadata: Metadata = generatePageMetadata({
   ],
   path: '/regex-tester',
   category: 'Developer Tools'
-})
+}, '/regex-tools#tester')
 
 export default function RegexTesterLayout({
   children,

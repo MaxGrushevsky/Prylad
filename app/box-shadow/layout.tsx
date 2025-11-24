@@ -1,7 +1,7 @@
-import { generatePageMetadata } from '@/lib/seo'
+import { generateRedirectMetadata } from '@/lib/seo'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = generatePageMetadata({
+export const metadata: Metadata = generateRedirectMetadata({
   title: '💎 Box Shadow Generator - Create Beautiful CSS Shadows Online',
   description: 'Generate CSS box-shadow effects with our free online tool. Create single or multiple shadows, adjust blur, spread, color, and opacity. Export CSS code and preview in real-time. Perfect for web designers and developers.',
   keywords: [
@@ -18,7 +18,7 @@ export const metadata: Metadata = generatePageMetadata({
   ],
   path: '/box-shadow',
   category: 'CSS/Design'
-})
+}, '/css-generators#box-shadow')
 
 export default function BoxShadowLayout({
   children,

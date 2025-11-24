@@ -1,7 +1,7 @@
-import { generatePageMetadata } from '@/lib/seo'
+import { generateRedirectMetadata } from '@/lib/seo'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = generatePageMetadata({
+export const metadata: Metadata = generateRedirectMetadata({
   title: 'Free Text Case Converter - Convert Text Case Online',
   description: 'Convert text case online for free. Support for uppercase, lowercase, title case, sentence case, capitalize, camelCase, PascalCase, snake_case, kebab-case, dot.case, Train-Case, COBOL-CASE, flatcase, alternating, random, and inverse case. 17 case types available. Export to file. No registration required.',
   keywords: [
@@ -24,7 +24,7 @@ export const metadata: Metadata = generatePageMetadata({
   ],
   path: '/text-case',
   category: 'Text Tools'
-})
+}, '/text-tools#case')
 
 export default function TextCaseLayout({
   children,

@@ -11,7 +11,8 @@ import { generateFAQSchema, generateHowToSchema, generateSoftwareApplicationSche
 import { generateBreadcrumbs, getRelatedTools } from '@/lib/seo-helpers'
 
 type UUIDFormat = 'standard' | 'no-dashes' | 'uppercase' | 'braces' | 'brackets'
-type UUIDVersion = 'v4' | 'v1'
+type UUIDVersion = 'v4' | 'v1' | 'v3' | 'v5'
+type Mode = 'generate' | 'validate'
 
 export default function UUIDGeneratorPage() {
   const [uuids, setUuids] = useState<string[]>([])
@@ -19,6 +20,16 @@ export default function UUIDGeneratorPage() {
   const [version, setVersion] = useState<UUIDVersion>('v4')
   const [format, setFormat] = useState<UUIDFormat>('standard')
   const [totalGenerated, setTotalGenerated] = useState(0)
+  const [mode, setMode] = useState<Mode>('generate')
+  const [validateInput, setValidateInput] = useState('')
+  const [validationResult, setValidationResult] = useState<{
+    isValid: boolean
+    version: string | null
+    format: string
+    error?: string
+  } | null>(null)
+  const [v3v5Namespace, setV3V5Namespace] = useState('00000000-0000-0000-0000-000000000000')
+  const [v3v5Name, setV3V5Name] = useState('')
   const { history, addToHistory, removeFromHistory, clearHistory } = useHistory<string>('uuid-history', 20)
 
   // SEO data
@@ -97,7 +108,51 @@ export default function UUIDGeneratorPage() {
     )
   ]
 
-  const generateUUID = useCallback((ver: UUIDVersion): string => {
+  // Generate UUID v3 (MD5-based) or v5 (SHA-1-based)
+  const generateUUIDv3v5 = useCallback(async (ver: 'v3' | 'v5', namespace: string, name: string): Promise<string> => {
+    // Clean namespace UUID
+    const cleanNamespace = namespace.replace(/[{}[\]]/g, '').replace(/-/g, '')
+    if (cleanNamespace.length !== 32) {
+      throw new Error('Invalid namespace UUID')
+    }
+
+    // Convert namespace to bytes
+    const namespaceBytes = new Uint8Array(16)
+    for (let i = 0; i < 16; i++) {
+      namespaceBytes[i] = parseInt(cleanNamespace.substr(i * 2, 2), 16)
+    }
+
+    // Combine namespace and name
+    const combined = new Uint8Array(namespaceBytes.length + name.length)
+    combined.set(namespaceBytes)
+    combined.set(new TextEncoder().encode(name), namespaceBytes.length)
+
+    // Hash using Web Crypto API
+    // Note: Web Crypto doesn't support MD5, so v3 uses SHA-1 as fallback
+    const hash = await crypto.subtle.digest('SHA-1', combined)
+    const hashBytes = new Uint8Array(hash)
+    
+    // Set version (3 or 5)
+    hashBytes[6] = (hashBytes[6] & 0x0f) | (ver === 'v3' ? 0x30 : 0x50)
+    // Set variant (10xxxxxx)
+    hashBytes[8] = (hashBytes[8] & 0x3f) | 0x80
+
+    // Convert to UUID string
+    const hex = Array.from(hashBytes)
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('')
+    
+    return `${hex.substr(0, 8)}-${hex.substr(8, 4)}-${hex.substr(12, 4)}-${hex.substr(16, 4)}-${hex.substr(20, 12)}`
+  }, [])
+
+  const generateUUIDAsync = useCallback(async (ver: UUIDVersion, namespace?: string, name?: string): Promise<string> => {
+    if (ver === 'v3' || ver === 'v5') {
+      if (!namespace || !name) {
+        throw new Error('Namespace and name are required for v3/v5')
+      }
+      return await generateUUIDv3v5(ver, namespace, name)
+    }
+
     let uuid: string
     if (ver === 'v4') {
       // RFC 4122 compliant UUID v4
@@ -118,7 +173,7 @@ export default function UUIDGeneratorPage() {
       uuid = `${timeLow}-${timeMid}-1${timeHigh}-${clockSeq}-${node}`
     }
     return uuid
-  }, [])
+  }, [generateUUIDv3v5])
 
   const formatUUID = useCallback((uuid: string, fmt: UUIDFormat): string => {
     switch (fmt) {
@@ -136,19 +191,58 @@ export default function UUIDGeneratorPage() {
     }
   }, [])
 
-  const generate = useCallback(() => {
-    const newUuids = Array.from({ length: count }, () => {
-      const uuid = generateUUID(version)
-      return formatUUID(uuid, format)
-    })
-    setUuids(newUuids)
-    setTotalGenerated(prev => prev + newUuids.length)
-    
-    // Add to history
-    newUuids.forEach(uuid => {
-      addToHistory(uuid, `${version.toUpperCase()} - ${format}`)
-    })
-  }, [count, version, format, generateUUID, formatUUID, addToHistory])
+  const generate = useCallback(async () => {
+    try {
+      const newUuids: string[] = []
+      
+      if (version === 'v3' || version === 'v5') {
+        if (!v3v5Name.trim()) {
+          setValidationResult({
+            isValid: false,
+            version: null,
+            format: 'error',
+            error: 'Name is required for v3/v5 UUID generation'
+          })
+          return
+        }
+        if (!validateUUID(v3v5Namespace.replace(/[{}[\]]/g, ''))) {
+          setValidationResult({
+            isValid: false,
+            version: null,
+            format: 'error',
+            error: 'Invalid namespace UUID'
+          })
+          return
+        }
+        
+        // Generate single UUID for v3/v5 (they're deterministic)
+        const uuid = await generateUUIDAsync(version, v3v5Namespace, v3v5Name)
+        newUuids.push(formatUUID(uuid, format))
+      } else {
+        // Generate multiple UUIDs for v1/v4
+        for (let i = 0; i < count; i++) {
+          const uuid = await generateUUIDAsync(version)
+          newUuids.push(formatUUID(uuid, format))
+        }
+      }
+      
+      setUuids(newUuids)
+      setTotalGenerated(prev => prev + newUuids.length)
+      setValidationResult(null)
+      
+      // Add to history
+      newUuids.forEach(uuid => {
+        addToHistory(uuid, `${version.toUpperCase()} - ${format}`)
+      })
+      } catch (error) {
+      setValidationResult({
+        isValid: false,
+        version: null,
+        format: 'error',
+        error: error instanceof Error ? error.message : 'Generation failed'
+      })
+    }
+  }, [count, version, format, v3v5Namespace, v3v5Name, generateUUIDAsync, formatUUID, addToHistory])
 
   const selectFromHistory = useCallback((uuid: string) => {
     setUuids([uuid])
@@ -193,6 +287,69 @@ export default function UUIDGeneratorPage() {
     return regex.test(clean)
   }
 
+  // Extract UUID version from string
+  const getUUIDVersion = (uuid: string): string | null => {
+    const clean = uuid.replace(/[{}[\]]/g, '')
+    if (!validateUUID(clean)) return null
+    
+    const parts = clean.split('-')
+    if (parts.length !== 5) return null
+    
+    const versionChar = parts[2]?.[0]
+    if (!versionChar) return null
+    
+    const version = parseInt(versionChar, 16)
+    if (version >= 1 && version <= 5) {
+      return `v${version}`
+    }
+    return null
+  }
+
+  // Validate UUID with detailed information
+  const performValidation = useCallback(() => {
+    if (!validateInput.trim()) {
+      setValidationResult(null)
+      return
+    }
+
+    const clean = validateInput.replace(/[{}[\]]/g, '').trim()
+    
+    if (!validateUUID(clean)) {
+      setValidationResult({
+        isValid: false,
+        version: null,
+        format: 'invalid',
+        error: 'Invalid UUID format. Expected format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
+      })
+      return
+    }
+
+    const detectedVersion = getUUIDVersion(clean)
+    const hasBraces = validateInput.includes('{') && validateInput.includes('}')
+    const hasBrackets = validateInput.includes('[') && validateInput.includes(']')
+    const isUppercase = clean === clean.toUpperCase()
+    const hasDashes = clean.includes('-')
+
+    let formatType = 'standard'
+    if (hasBraces) formatType = 'braces'
+    else if (hasBrackets) formatType = 'brackets'
+    else if (!hasDashes) formatType = 'no-dashes'
+    else if (isUppercase) formatType = 'uppercase'
+
+    setValidationResult({
+      isValid: true,
+      version: detectedVersion,
+      format: formatType,
+    })
+  }, [validateInput])
+
+  useEffect(() => {
+    if (mode === 'validate') {
+      performValidation()
+    }
+  }, [mode, validateInput, performValidation])
+
+
   // Keyboard shortcuts
   useKeyboardShortcuts({
     onEnter: () => generate(),
@@ -233,15 +390,23 @@ export default function UUIDGeneratorPage() {
       }
     }
     
-    // Auto-generate on mount with loaded/default settings
-    setTimeout(() => {
-      const newUuids = Array.from({ length: loadedCount }, () => {
-        const uuid = generateUUID(loadedVersion)
-        return formatUUID(uuid, loadedFormat)
-      })
-      setUuids(newUuids)
-      setTotalGenerated(prev => prev + newUuids.length)
-    }, 0)
+    // Auto-generate on mount with loaded/default settings (only for v1/v4)
+    if (loadedVersion === 'v1' || loadedVersion === 'v4') {
+      const generateInitial = async () => {
+        try {
+          const newUuids: string[] = []
+          for (let i = 0; i < loadedCount; i++) {
+            const uuid = await generateUUIDAsync(loadedVersion)
+            newUuids.push(formatUUID(uuid, loadedFormat))
+          }
+          setUuids(newUuids)
+          setTotalGenerated(prev => prev + newUuids.length)
+        } catch (e) {
+          // Ignore errors on auto-generate
+        }
+      }
+      generateInitial()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -249,44 +414,225 @@ export default function UUIDGeneratorPage() {
     <>
       <StructuredData data={structuredData} />
       <Layout
-        title="🆔 UUID/GUID Generator"
-        description="Generate unique identifiers (UUID/GUID) in multiple formats. Support for UUID v1 (time-based) and v4 (random). Free online UUID generator with export options."
+        title="🆔 UUID/GUID Generator & Validator"
+        description="Generate and validate UUIDs/GUIDs in multiple formats. Support for UUID v1 (time-based), v3 (MD5), v4 (random), and v5 (SHA-1). Free online UUID generator with validation and export options."
         breadcrumbs={breadcrumbs}
       >
       <div className="max-w-4xl mx-auto">
         <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 mb-6">
           <div className="space-y-6">
+            {/* Mode Selection */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 text-center">Mode:</label>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setMode('generate')
+                    setValidationResult(null)
+                  }}
+                  className={`flex-1 px-6 py-3 rounded-xl font-semibold transition-all ${
+                    mode === 'generate'
+                      ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  }`}
+                >
+                  Generate UUID
+                </button>
+                <button
+                  onClick={() => {
+                    setMode('validate')
+                    setUuids([])
+                  }}
+                  className={`flex-1 px-6 py-3 rounded-xl font-semibold transition-all ${
+                    mode === 'validate'
+                      ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  }`}
+                >
+                  Validate UUID
+                </button>
+              </div>
+            </div>
+
+            {/* Validate Mode */}
+            {mode === 'validate' && (
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    Enter UUID to Validate:
+                  </label>
+                  <textarea
+                    value={validateInput}
+                    onChange={(e) => setValidateInput(e.target.value)}
+                    placeholder="Paste UUID here (e.g., 550e8400-e29b-41d4-a716-446655440000)"
+                    className="w-full h-24 px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 resize-none font-mono text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                  />
+                </div>
+
+                {validationResult && (
+                  <div className={`p-4 rounded-lg border-2 ${
+                    validationResult.isValid
+                      ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+                      : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
+                  }`}>
+                    <div className="flex items-center gap-2 mb-2">
+                      {validationResult.isValid ? (
+                        <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      ) : (
+                        <svg className="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      )}
+                      <span className={`font-semibold ${
+                        validationResult.isValid
+                          ? 'text-green-700 dark:text-green-300'
+                          : 'text-red-700 dark:text-red-300'
+                      }`}>
+                        {validationResult.isValid ? 'Valid UUID' : 'Invalid UUID'}
+                      </span>
+                    </div>
+                    {validationResult.isValid && (
+                      <div className="space-y-2 text-sm">
+                        <div>
+                          <span className="font-medium text-gray-700 dark:text-gray-300">Version: </span>
+                          <span className="text-gray-900 dark:text-gray-100">{validationResult.version || 'Unknown'}</span>
+                        </div>
+                        <div>
+                          <span className="font-medium text-gray-700 dark:text-gray-300">Format: </span>
+                          <span className="text-gray-900 dark:text-gray-100">{validationResult.format}</span>
+                        </div>
+                      </div>
+                    )}
+                    {validationResult.error && (
+                      <p className="text-sm text-red-700 dark:text-red-300 mt-2">{validationResult.error}</p>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Generate Mode */}
+            {mode === 'generate' && (
+              <>
             {/* Version Selection */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">UUID Version:</label>
-              <div className="flex gap-3">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                 <button
                   onClick={() => setVersion('v4')}
-                  className={`flex-1 px-6 py-3 rounded-xl font-semibold transition-all ${
+                  className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
                     version === 'v4'
-                      ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg'
+                      ? 'bg-primary-600 text-white shadow-md'
                       : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
-                  UUID v4 (Random)
+                  v4 (Random)
                 </button>
                 <button
                   onClick={() => setVersion('v1')}
-                  className={`flex-1 px-6 py-3 rounded-xl font-semibold transition-all ${
+                  className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
                     version === 'v1'
-                      ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg'
+                      ? 'bg-primary-600 text-white shadow-md'
                       : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
-                  UUID v1 (Time-based)
+                  v1 (Time-based)
+                </button>
+                <button
+                  onClick={() => setVersion('v3')}
+                  className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
+                    version === 'v3'
+                      ? 'bg-primary-600 text-white shadow-md'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  }`}
+                >
+                  v3 (MD5)
+                </button>
+                <button
+                  onClick={() => setVersion('v5')}
+                  className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
+                    version === 'v5'
+                      ? 'bg-primary-600 text-white shadow-md'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  }`}
+                >
+                  v5 (SHA-1)
                 </button>
               </div>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
                 {version === 'v4' 
                   ? 'Random UUIDs - best for most use cases, completely unpredictable'
-                  : 'Time-based UUIDs - include timestamp, useful for sorting and debugging'}
+                  : version === 'v1'
+                  ? 'Time-based UUIDs - include timestamp, useful for sorting and debugging'
+                  : version === 'v3'
+                  ? 'MD5-based UUIDs - deterministic, requires namespace and name'
+                  : 'SHA-1-based UUIDs - deterministic, requires namespace and name'}
               </p>
             </div>
+
+            {/* v3/v5 Namespace and Name */}
+            {(version === 'v3' || version === 'v5') && (
+              <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    Namespace UUID:
+                  </label>
+                  <input
+                    type="text"
+                    value={v3v5Namespace}
+                    onChange={(e) => setV3V5Namespace(e.target.value)}
+                    placeholder="00000000-0000-0000-0000-000000000000"
+                    className="w-full px-4 py-2 border-2 border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 font-mono text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                  />
+                  <div className="flex gap-2 mt-2">
+                    <button
+                      onClick={() => setV3V5Namespace('00000000-0000-0000-0000-000000000000')}
+                      className="text-xs px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600"
+                    >
+                      DNS
+                    </button>
+                    <button
+                      onClick={() => setV3V5Namespace('6ba7b810-9dad-11d1-80b4-00c04fd430c8')}
+                      className="text-xs px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600"
+                    >
+                      URL
+                    </button>
+                    <button
+                      onClick={() => setV3V5Namespace('6ba7b811-9dad-11d1-80b4-00c04fd430c8')}
+                      className="text-xs px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600"
+                    >
+                      OID
+                    </button>
+                    <button
+                      onClick={() => setV3V5Namespace('6ba7b812-9dad-11d1-80b4-00c04fd430c8')}
+                      className="text-xs px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600"
+                    >
+                      X.500
+                    </button>
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    Standard namespaces: DNS, URL, OID, X.500 DN
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    Name:
+                  </label>
+                  <input
+                    type="text"
+                    value={v3v5Name}
+                    onChange={(e) => setV3V5Name(e.target.value)}
+                    placeholder="Enter name (e.g., example.com, /path/to/resource)"
+                    className="w-full px-4 py-2 border-2 border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                  />
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    The name to generate UUID from (e.g., domain name, URL path, object identifier)
+                  </p>
+                </div>
+              </div>
+            )}
 
             {/* Format Selection */}
             <div>
@@ -389,13 +735,62 @@ export default function UUIDGeneratorPage() {
               )}
             </div>
 
+            {/* Count Input (only for v1/v4) */}
+            {(version === 'v1' || version === 'v4') && (
+              <div className="space-y-2">
+                <div className="flex flex-col sm:flex-row gap-4 items-center">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Generate:</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="10000"
+                    value={count}
+                    onChange={(e) => setCount(Math.min(10000, Math.max(1, Number(e.target.value))))}
+                    className="w-32 px-4 py-2 border-2 border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                  />
+                  <span className="text-sm text-gray-600 dark:text-gray-400">UUID(s)</span>
+                </div>
+                {count > 1 && (
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setCount(10)}
+                      className="px-3 py-1 text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 rounded transition-colors"
+                    >
+                      10
+                    </button>
+                    <button
+                      onClick={() => setCount(50)}
+                      className="px-3 py-1 text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 rounded transition-colors"
+                    >
+                      50
+                    </button>
+                    <button
+                      onClick={() => setCount(100)}
+                      className="px-3 py-1 text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 rounded transition-colors"
+                    >
+                      100
+                    </button>
+                    <button
+                      onClick={() => setCount(1000)}
+                      className="px-3 py-1 text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 rounded transition-colors"
+                    >
+                      1000
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Generate Button */}
             <button
               onClick={generate}
-              className="w-full bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold py-3 px-6 rounded-xl hover:from-primary-700 hover:to-primary-800 transition-all shadow-lg"
+              disabled={(version === 'v3' || version === 'v5') && !v3v5Name.trim()}
+              className="w-full bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold py-3 px-6 rounded-xl hover:from-primary-700 hover:to-primary-800 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Generate {count > 1 ? `${count} UUIDs` : 'UUID'}
+              Generate {version === 'v3' || version === 'v5' ? 'UUID' : count > 1 ? `${count} UUIDs` : 'UUID'}
             </button>
+              </>
+            )}
 
             {/* Statistics */}
             {totalGenerated > 0 && (

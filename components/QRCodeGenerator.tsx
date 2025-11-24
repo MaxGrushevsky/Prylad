@@ -35,6 +35,11 @@ export default function QRCodeGenerator() {
   const [wifiSecurity, setWifiSecurity] = useState<'WPA' | 'WEP' | 'nopass'>('WPA')
   const [wifiHidden, setWifiHidden] = useState(false)
 
+  // Logo specific state
+  const [logoImage, setLogoImage] = useState<string | null>(null)
+  const [logoSize, setLogoSize] = useState(60) // Percentage of QR code size
+  const [logoFile, setLogoFile] = useState<File | null>(null)
+
   // Generate QR code content based on type
   const getQRContent = useCallback(() => {
     switch (qrType) {
@@ -61,6 +66,56 @@ export default function QRCodeGenerator() {
     }
   }, [qrType, text, wifiSsid, wifiPassword, wifiSecurity, wifiHidden])
 
+  // Function to overlay logo on QR code
+  const overlayLogoOnQR = useCallback(async (qrDataUrl: string): Promise<string> => {
+    if (!logoImage) return qrDataUrl
+
+    return new Promise((resolve, reject) => {
+      const canvas = document.createElement('canvas')
+      const ctx = canvas.getContext('2d')
+      if (!ctx) {
+        reject(new Error('Could not get canvas context'))
+        return
+      }
+
+      const qrImg = new Image()
+      qrImg.onload = () => {
+        canvas.width = qrImg.width
+        canvas.height = qrImg.height
+
+        // Draw QR code
+        ctx.drawImage(qrImg, 0, 0)
+
+        // Draw logo in center
+        const logoImg = new Image()
+        logoImg.onload = () => {
+          const logoSizePx = (qrImg.width * logoSize) / 100
+          const x = (qrImg.width - logoSizePx) / 2
+          const y = (qrImg.height - logoSizePx) / 2
+
+          // Draw white background for logo
+          const padding = logoSizePx * 0.1
+          ctx.fillStyle = options.color.light
+          ctx.fillRect(
+            x - padding,
+            y - padding,
+            logoSizePx + padding * 2,
+            logoSizePx + padding * 2
+          )
+
+          // Draw logo
+          ctx.drawImage(logoImg, x, y, logoSizePx, logoSizePx)
+
+          resolve(canvas.toDataURL('image/png'))
+        }
+        logoImg.onerror = () => reject(new Error('Failed to load logo'))
+        logoImg.src = logoImage
+      }
+      qrImg.onerror = () => reject(new Error('Failed to load QR code'))
+      qrImg.src = qrDataUrl
+    })
+  }, [logoImage, logoSize, options.color.light])
+
   // Debounce for QR code generation
   useEffect(() => {
     const content = getQRContent()
@@ -73,6 +128,9 @@ export default function QRCodeGenerator() {
     setIsGenerating(true)
     const timer = setTimeout(async () => {
       try {
+        // Use high error correction when logo is present
+        const errorCorrectionLevel = logoImage ? 'H' : options.errorCorrectionLevel
+        
         const qrOptions: QRCode.QRCodeToDataURLOptions = {
           width: options.width,
           margin: options.margin,
@@ -80,11 +138,14 @@ export default function QRCodeGenerator() {
             dark: options.color.dark,
             light: options.color.light,
           },
-          errorCorrectionLevel: options.errorCorrectionLevel,
+          errorCorrectionLevel: errorCorrectionLevel as 'L' | 'M' | 'Q' | 'H',
         }
 
         const dataUrl = await QRCode.toDataURL(content, qrOptions)
-        setQrCodeUrl(dataUrl)
+        
+        // Overlay logo if present
+        const finalDataUrl = await overlayLogoOnQR(dataUrl)
+        setQrCodeUrl(finalDataUrl)
       } catch (error) {
         console.error('Error generating QR code:', error)
       } finally {
@@ -93,7 +154,7 @@ export default function QRCodeGenerator() {
     }, 300)
 
     return () => clearTimeout(timer)
-  }, [getQRContent, options, ])
+  }, [getQRContent, options, logoImage, logoSize, overlayLogoOnQR])
 
   const downloadQRCode = useCallback(() => {
     if (!qrCodeUrl) return
@@ -172,6 +233,46 @@ export default function QRCodeGenerator() {
         email: 'mailto:example@email.com?subject=Hello&body=Hi there!',
       }
       setText(presets[preset])
+    }
+  }, [])
+
+  const handleLogoUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file')
+      return
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image size should be less than 5MB')
+      return
+    }
+
+    setLogoFile(file)
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const result = e.target?.result
+      if (typeof result === 'string') {
+        setLogoImage(result)
+      }
+    }
+    reader.onerror = () => {
+      alert('Failed to load image')
+    }
+    reader.readAsDataURL(file)
+  }, [])
+
+  const handleRemoveLogo = useCallback(() => {
+    setLogoImage(null)
+    setLogoFile(null)
+    // Reset file input
+    const fileInput = document.getElementById('logo-upload') as HTMLInputElement
+    if (fileInput) {
+      fileInput.value = ''
     }
   }, [])
 
@@ -401,10 +502,104 @@ export default function QRCodeGenerator() {
               </div>
             </div>
 
+            {/* Logo upload */}
+            <div className="mb-6">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                Logo (optional)
+              </label>
+              {!logoImage ? (
+                <div>
+                  <label
+                    htmlFor="logo-upload"
+                    className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-xl cursor-pointer bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                      <svg
+                        className="w-10 h-10 mb-3 text-gray-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                        />
+                      </svg>
+                      <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                        <span className="font-semibold">Click to upload</span> or drag and drop
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">PNG, JPG, SVG (MAX. 5MB)</p>
+                    </div>
+                    <input
+                      id="logo-upload"
+                      type="file"
+                      className="hidden"
+                      accept="image/*"
+                      onChange={handleLogoUpload}
+                    />
+                  </label>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="relative">
+                    <img
+                      src={logoImage}
+                      alt="Logo preview"
+                      className="w-full h-32 object-contain rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
+                    />
+                    <button
+                      onClick={handleRemoveLogo}
+                      className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1.5 hover:bg-red-600 transition-colors shadow-lg"
+                      aria-label="Remove logo"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                  <div>
+                    <label htmlFor="logo-size" className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
+                      Logo size: <span className="text-primary-600 font-bold">{logoSize}%</span>
+                    </label>
+                    <input
+                      id="logo-size"
+                      type="range"
+                      min="20"
+                      max="40"
+                      step="5"
+                      value={logoSize}
+                      onChange={(e) => setLogoSize(Number(e.target.value))}
+                      className="w-full h-2 bg-gradient-to-r from-gray-200 to-gray-300 rounded-lg appearance-none cursor-pointer accent-primary-600"
+                      style={{
+                        background: `linear-gradient(to right, rgb(37, 99, 235) 0%, rgb(37, 99, 235) ${((logoSize - 20) / 20) * 100}%, rgb(229, 231, 235) ${((logoSize - 20) / 20) * 100}%, rgb(229, 231, 235) 100%)`
+                      }}
+                      aria-label="Logo size"
+                    />
+                    <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      <span>20%</span>
+                      <span>40%</span>
+                    </div>
+                  </div>
+                  {options.errorCorrectionLevel !== 'H' && (
+                    <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3">
+                      <p className="text-xs text-yellow-800 dark:text-yellow-200">
+                        <strong>Note:</strong> Error correction is automatically set to H (Maximum) when using a logo to ensure scannability.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
             {/* Error correction level */}
             <div className="mb-6">
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
                 Error correction level
+                {logoImage && (
+                  <span className="ml-2 text-xs text-primary-600 dark:text-primary-400">(Auto: H with logo)</span>
+                )}
               </label>
               <div className="grid grid-cols-2 gap-3">
                 <button
@@ -414,11 +609,12 @@ export default function QRCodeGenerator() {
                       errorCorrectionLevel: 'L',
                     }))
                   }
+                  disabled={!!logoImage}
                   className={`px-4 py-3 rounded-xl font-semibold transition-all ${
                     options.errorCorrectionLevel === 'L'
                       ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg'
                       : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
+                  } ${logoImage ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   L - Low (~7%)
                 </button>
@@ -429,11 +625,12 @@ export default function QRCodeGenerator() {
                       errorCorrectionLevel: 'M',
                     }))
                   }
+                  disabled={!!logoImage}
                   className={`px-4 py-3 rounded-xl font-semibold transition-all ${
                     options.errorCorrectionLevel === 'M'
                       ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg'
                       : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
+                  } ${logoImage ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   M - Medium (~15%)
                 </button>
@@ -444,11 +641,12 @@ export default function QRCodeGenerator() {
                       errorCorrectionLevel: 'Q',
                     }))
                   }
+                  disabled={!!logoImage}
                   className={`px-4 py-3 rounded-xl font-semibold transition-all ${
                     options.errorCorrectionLevel === 'Q'
                       ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg'
                       : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
+                  } ${logoImage ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   Q - High (~25%)
                 </button>

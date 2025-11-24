@@ -1,7 +1,7 @@
-import { generatePageMetadata } from '@/lib/seo'
+import { generateRedirectMetadata } from '@/lib/seo'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = generatePageMetadata({
+export const metadata: Metadata = generateRedirectMetadata({
   title: 'Free Border Radius Generator - CSS Border Radius Tool Online',
   description: 'Generate CSS border-radius values with visual preview. Create rounded corners for any element. Copy CSS code instantly. No registration required.',
   keywords: [
@@ -15,7 +15,7 @@ export const metadata: Metadata = generatePageMetadata({
   ],
   path: '/border-radius-generator',
   category: 'CSS/Design'
-})
+}, '/css-generators#border-radius')
 
 export default function BorderRadiusGeneratorLayout({
   children,

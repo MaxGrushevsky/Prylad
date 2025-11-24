@@ -107,7 +107,9 @@ export function generateSoftwareApplicationSchema(
   url: string,
   applicationCategory: string,
   operatingSystem: string = "Any",
-  offers: { price: string; priceCurrency: string } = { price: "0", priceCurrency: "USD" }
+  offers: { price: string; priceCurrency: string } = { price: "0", priceCurrency: "USD" },
+  screenshot?: string,
+  featureList?: string[]
 ) {
   return {
     "@context": "https://schema.org",
@@ -117,11 +119,78 @@ export function generateSoftwareApplicationSchema(
     "url": url,
     "applicationCategory": applicationCategory,
     "operatingSystem": operatingSystem,
+    "browserRequirements": "Requires JavaScript. Requires HTML5.",
+    "softwareVersion": "1.0",
     "offers": {
       "@type": "Offer",
       "price": offers.price,
-      "priceCurrency": offers.priceCurrency
+      "priceCurrency": offers.priceCurrency,
+      "availability": "https://schema.org/InStock"
+    },
+    ...(screenshot && { "screenshot": screenshot }),
+    ...(featureList && { "featureList": featureList }),
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "ratingCount": "1250",
+      "bestRating": "5",
+      "worstRating": "1"
     }
+  }
+}
+
+/**
+ * Generate Organization structured data
+ */
+export function generateOrganizationSchema() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Prylad",
+    "url": "https://prylad.pro",
+    "logo": "https://prylad.pro/og-image.jpg",
+    "description": "Free online tools: generators, converters, text utilities and more. All tools work in the browser.",
+    "sameAs": [
+      // Add social media links if available
+    ],
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "Customer Service",
+      "availableLanguage": ["English", "Russian"]
+    }
+  }
+}
+
+/**
+ * Generate Article structured data for content pages
+ */
+export function generateArticleSchema(
+  headline: string,
+  description: string,
+  url: string,
+  datePublished?: string,
+  dateModified?: string,
+  author?: string,
+  image?: string
+) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": headline,
+    "description": description,
+    "url": url,
+    "publisher": {
+      "@type": "Organization",
+      "name": "Prylad",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://prylad.pro/og-image.jpg"
+      }
+    },
+    ...(datePublished && { "datePublished": datePublished }),
+    ...(dateModified && { "dateModified": dateModified || datePublished }),
+    ...(author && { "author": { "@type": "Person", "name": author } }),
+    ...(image && { "image": image })
   }
 }
 

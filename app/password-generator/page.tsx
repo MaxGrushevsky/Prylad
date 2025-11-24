@@ -11,7 +11,8 @@ import Tooltip from '@/components/Tooltip'
 import { generateFAQSchema, generateHowToSchema, generateSoftwareApplicationSchema } from '@/lib/structured-data'
 import { generateBreadcrumbs, getRelatedTools } from '@/lib/seo-helpers'
 
-type Mode = 'generate' | 'check'
+type Mode = 'generate' | 'check' | 'passphrase'
+type PassphraseSeparator = 'space' | 'hyphen' | 'dot' | 'none'
 
 const commonPasswords = [
   'password', '123456', '123456789', '12345678', '12345', '1234567',
@@ -19,11 +20,71 @@ const commonPasswords = [
   'trustno1', 'dragon', 'baseball', 'iloveyou', 'master', 'sunshine',
   'ashley', 'bailey', 'passw0rd', 'shadow', '123123', '654321',
   'superman', 'qazwsx', 'michael', 'football', 'welcome', 'jesus',
-  'ninja', 'mustang', 'password1', '123qwe', 'admin', 'qwerty123'
+  'ninja', 'mustang', 'password1', '123qwe', 'admin', 'qwerty123',
+  'password123', 'admin123', 'root', 'toor', 'pass', 'test', 'guest'
+]
+
+const keyboardPatterns = [
+  'qwerty', 'qwertyuiop', 'asdfgh', 'asdfghjkl', 'zxcvbn', 'zxcvbnm',
+  '123456', '654321', 'qwerty123', 'abc123', 'password', 'admin',
+  'qazwsx', 'wsxedc', 'edcrfv', 'rfvtgb', 'tgbyhn', 'yhnujm'
+]
+
+const sequentialPatterns = [
+  'abcdef', 'bcdefg', 'cdefgh', 'defghi', 'efghij', 'fghijk', 'ghijkl', 'hijklm',
+  'ijklmn', 'jklmno', 'klmnop', 'lmnopq', 'mnopqr', 'nopqrs', 'opqrst', 'pqrstu',
+  'qrstuv', 'rstuvw', 'stuvwx', 'tuvwxy', 'uvwxyz',
+  'ABCDEF', 'BCDEFG', 'CDEFGH', 'DEFGHI', 'EFGHIJ', 'FGHIJK', 'GHIJKL', 'HIJKLM',
+  'IJKLMN', 'JKLMNO', 'KLMNOP', 'LMNOPQ', 'MNOPQR', 'NOPQRS', 'OPQRST', 'PQRSTU',
+  'QRSTUV', 'RSTUVW', 'STUVWX', 'TUVWXY', 'UVWXYZ',
+  '012345', '123456', '234567', '345678', '456789', '567890',
+  '987654', '876543', '765432', '654321', '543210'
+]
+
+const wordList = [
+  'apple', 'banana', 'cherry', 'dolphin', 'elephant', 'forest', 'guitar', 'hammer',
+  'island', 'jungle', 'knight', 'lighthouse', 'mountain', 'nature', 'ocean', 'piano',
+  'quasar', 'rainbow', 'sunset', 'tiger', 'umbrella', 'volcano', 'waterfall', 'xylophone',
+  'yacht', 'zebra', 'anchor', 'bridge', 'castle', 'diamond', 'eagle', 'falcon',
+  'galaxy', 'horizon', 'iceberg', 'jaguar', 'kangaroo', 'leopard', 'monkey', 'nebula',
+  'octopus', 'penguin', 'quiver', 'rabbit', 'sapphire', 'tornado', 'unicorn', 'vortex',
+  'whale', 'xenon', 'yogurt', 'zephyr', 'asteroid', 'butterfly', 'crystal', 'dragon',
+  'eclipse', 'flamingo', 'giraffe', 'hurricane', 'iguana', 'jellyfish', 'koala', 'lobster',
+  'meteor', 'narwhal', 'ostrich', 'peacock', 'quokka', 'rhinoceros', 'seahorse', 'toucan',
+  'urchin', 'vulture', 'walrus', 'xenops', 'yak', 'zucchini', 'acorn', 'bamboo',
+  'cactus', 'dandelion', 'elm', 'fern', 'ginkgo', 'hibiscus', 'iris', 'jasmine',
+  'kale', 'lavender', 'maple', 'narcissus', 'orchid', 'petunia', 'quince', 'rose',
+  'sunflower', 'tulip', 'umbra', 'violet', 'willow', 'xerophyte', 'yucca', 'zinnia',
+  'amber', 'bronze', 'copper', 'diamond', 'emerald', 'flint', 'gold', 'hematite',
+  'iron', 'jade', 'krypton', 'lapis', 'marble', 'nickel', 'opal', 'pearl',
+  'quartz', 'ruby', 'silver', 'topaz', 'uranium', 'vanadium', 'wax', 'xenon',
+  'yttrium', 'zinc', 'alpine', 'beach', 'canyon', 'desert', 'estuary', 'fjord',
+  'glacier', 'harbor', 'isthmus', 'jungle', 'kettle', 'lagoon', 'meadow', 'nook',
+  'oasis', 'plateau', 'quarry', 'reef', 'savanna', 'tundra', 'upland', 'valley',
+  'wetland', 'xeric', 'yardang', 'zenith', 'arrow', 'blade', 'crown', 'dagger',
+  'emblem', 'flame', 'gem', 'helmet', 'icon', 'jewel', 'key', 'lance',
+  'medal', 'necklace', 'orb', 'plume', 'quiver', 'ring', 'shield', 'trophy',
+  'urn', 'vessel', 'wand', 'xiphos', 'yoke', 'zither', 'azure', 'beige',
+  'crimson', 'denim', 'emerald', 'fuchsia', 'gold', 'honey', 'indigo', 'jade',
+  'khaki', 'lime', 'magenta', 'navy', 'olive', 'peach', 'quartz', 'ruby',
+  'sapphire', 'teal', 'umber', 'violet', 'wheat', 'xanthic', 'yellow', 'zircon'
 ]
 
 export default function PasswordGeneratorPage() {
   const [mode, setMode] = useState<Mode>('generate')
+  
+  // Check URL hash for mode switching
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const hash = window.location.hash
+      if (hash === '#check') {
+        setMode('check')
+      } else if (hash === '#generate') {
+        setMode('generate')
+      }
+    }
+  }, [])
+
   const [length, setLength] = useState(16)
   const [includeUppercase, setIncludeUppercase] = useState(true)
   const [includeLowercase, setIncludeLowercase] = useState(true)
@@ -48,18 +109,33 @@ export default function PasswordGeneratorPage() {
     strength: 'very-weak' | 'weak' | 'fair' | 'good' | 'strong' | 'very-strong'
     score: number
     feedback: string[]
+    suggestions: string[]
     timeToCrack: string
     entropy: number
     checks: {
-      length: boolean
+      length: { passed: boolean; value: number; min: number }
       uppercase: boolean
       lowercase: boolean
       numbers: boolean
       symbols: boolean
       common: boolean
       repeated: boolean
+      sequential: boolean
+      keyboardPattern: boolean
+    }
+    characterDistribution: {
+      uppercase: number
+      lowercase: number
+      numbers: number
+      symbols: number
+      total: number
     }
   } | null>(null)
+  const [passphraseWordCount, setPassphraseWordCount] = useState(4)
+  const [passphraseSeparator, setPassphraseSeparator] = useState<PassphraseSeparator>('space')
+  const [passphraseCapitalize, setPassphraseCapitalize] = useState(false)
+  const [passphraseAddNumber, setPassphraseAddNumber] = useState(false)
+  const [passphraseAddSymbol, setPassphraseAddSymbol] = useState(false)
   const { history, addToHistory, removeFromHistory, clearHistory } = useHistory<string>('password-history', 20)
 
   // SEO data
@@ -224,6 +300,61 @@ export default function PasswordGeneratorPage() {
     setPasswordStats(stats)
   }, [])
 
+  const generatePassphrase = useCallback(() => {
+    const words: string[] = []
+    for (let i = 0; i < passphraseWordCount; i++) {
+      const randomIndex = Math.floor(Math.random() * wordList.length)
+      let word = wordList[randomIndex]
+      
+      if (passphraseCapitalize) {
+        word = word.charAt(0).toUpperCase() + word.slice(1)
+      }
+      words.push(word)
+    }
+
+    let separator = ''
+    switch (passphraseSeparator) {
+      case 'space': separator = ' '; break
+      case 'hyphen': separator = '-'; break
+      case 'dot': separator = '.'; break
+      case 'none': separator = ''; break
+    }
+
+    let passphrase = words.join(separator)
+
+    if (passphraseAddNumber) {
+      const randomNum = Math.floor(Math.random() * 1000)
+      const insertPos = Math.floor(Math.random() * (passphrase.length + 1))
+      passphrase = passphrase.slice(0, insertPos) + randomNum + passphrase.slice(insertPos)
+    }
+
+    if (passphraseAddSymbol) {
+      const symbols = '!@#$%^&*'
+      const randomSymbol = symbols[Math.floor(Math.random() * symbols.length)]
+      const insertPos = Math.floor(Math.random() * (passphrase.length + 1))
+      passphrase = passphrase.slice(0, insertPos) + randomSymbol + passphrase.slice(insertPos)
+    }
+
+    setPassword(passphrase)
+    setPasswords([passphrase])
+    
+    // Calculate strength for passphrase
+    const pwdLength = passphrase.length
+    calculateStrengthWithSettings(passphrase, true, true, passphraseAddNumber, passphraseAddSymbol, false, pwdLength)
+    
+    // Add to history
+    addToHistory(passphrase, `Passphrase: ${passphraseWordCount} words`)
+    
+    // Calculate stats
+    const stats = {
+      uppercase: (passphrase.match(/[A-Z]/g) || []).length,
+      lowercase: (passphrase.match(/[a-z]/g) || []).length,
+      numbers: (passphrase.match(/[0-9]/g) || []).length,
+      symbols: (passphrase.match(/[^a-zA-Z0-9]/g) || []).length
+    }
+    setPasswordStats(stats)
+  }, [passphraseWordCount, passphraseSeparator, passphraseCapitalize, passphraseAddNumber, passphraseAddSymbol, addToHistory])
+
   const generatePassword = useCallback((single: boolean = false) => {
     generatePasswordWithSettings(length, includeUppercase, includeLowercase, includeNumbers, includeSymbols, excludeSimilar, single ? 1 : count)
   }, [length, includeUppercase, includeLowercase, includeNumbers, includeSymbols, excludeSimilar, count, generatePasswordWithSettings])
@@ -325,14 +456,29 @@ export default function PasswordGeneratorPage() {
       return
     }
 
+    const pwdLower = pwd.toLowerCase()
+    const length = pwd.length
+
+    // Character distribution
+    const uppercase = (pwd.match(/[A-Z]/g) || []).length
+    const lowercase = (pwd.match(/[a-z]/g) || []).length
+    const numbers = (pwd.match(/[0-9]/g) || []).length
+    const symbols = (pwd.match(/[^a-zA-Z0-9]/g) || []).length
+
     const checks = {
-      length: pwd.length >= 8,
-      uppercase: /[A-Z]/.test(pwd),
-      lowercase: /[a-z]/.test(pwd),
-      numbers: /\d/.test(pwd),
-      symbols: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pwd),
-      common: commonPasswords.some(common => pwd.toLowerCase().includes(common.toLowerCase())),
-      repeated: /(.)\1{2,}/.test(pwd)
+      length: {
+        passed: length >= 8,
+        value: length,
+        min: 8
+      },
+      uppercase: uppercase > 0,
+      lowercase: lowercase > 0,
+      numbers: numbers > 0,
+      symbols: symbols > 0,
+      common: commonPasswords.some(common => pwdLower.includes(common.toLowerCase())),
+      repeated: /(.)\1{2,}/.test(pwd),
+      sequential: sequentialPatterns.some(pattern => pwdLower.includes(pattern.toLowerCase())),
+      keyboardPattern: keyboardPatterns.some(pattern => pwdLower.includes(pattern.toLowerCase()))
     }
 
     let charsetSize = 0
@@ -340,42 +486,85 @@ export default function PasswordGeneratorPage() {
     if (checks.uppercase) charsetSize += 26
     if (checks.numbers) charsetSize += 10
     if (checks.symbols) charsetSize += 32
-    const entropy = pwd.length * Math.log2(charsetSize || 1)
+    const entropy = length * Math.log2(charsetSize || 1)
 
     let score = 0
     const feedback: string[] = []
+    const suggestions: string[] = []
 
-    if (pwd.length >= 12) score += 25
-    else if (pwd.length >= 8) score += 15
-    else if (pwd.length >= 6) score += 5
-    else feedback.push('Use at least 8 characters')
+    // Length scoring
+    if (length >= 16) {
+      score += 30
+    } else if (length >= 12) {
+      score += 25
+    } else if (length >= 8) {
+      score += 15
+    } else if (length >= 6) {
+      score += 5
+      feedback.push('Password is too short')
+      suggestions.push('Use at least 8 characters, preferably 12 or more')
+    } else {
+      feedback.push('Password is very short')
+      suggestions.push('Use at least 8 characters for basic security')
+    }
 
+    // Character variety scoring
     let varietyCount = 0
     if (checks.uppercase) varietyCount++
     if (checks.lowercase) varietyCount++
     if (checks.numbers) varietyCount++
     if (checks.symbols) varietyCount++
-    score += varietyCount * 15
+    score += varietyCount * 10
 
-    if (varietyCount < 3) {
-      feedback.push('Use a mix of letters, numbers, and symbols')
+    if (varietyCount < 2) {
+      feedback.push('Use more character types')
+      suggestions.push('Include uppercase, lowercase, numbers, and symbols')
+    } else if (varietyCount < 4) {
+      feedback.push('Good variety, but could be better')
+      suggestions.push('Add more character types for stronger security')
     }
 
-    if (entropy >= 60) score += 20
-    else if (entropy >= 40) score += 15
-    else if (entropy >= 20) score += 10
-    else feedback.push('Password is too predictable')
+    // Entropy scoring
+    if (entropy >= 80) {
+      score += 25
+    } else if (entropy >= 60) {
+      score += 20
+    } else if (entropy >= 40) {
+      score += 15
+    } else if (entropy >= 20) {
+      score += 10
+    } else {
+      feedback.push('Password is too predictable')
+      suggestions.push('Use random characters instead of patterns')
+    }
 
+    // Penalties
     if (checks.common) {
-      score -= 30
-      feedback.push('Avoid common passwords')
+      score -= 40
+      feedback.push('Password contains common words or patterns')
+      suggestions.push('Avoid common passwords like "password" or "123456"')
     }
+
     if (checks.repeated) {
-      score -= 10
-      feedback.push('Avoid repeated characters')
+      score -= 15
+      feedback.push('Password contains repeated characters')
+      suggestions.push('Avoid repeating the same character multiple times')
     }
-    if (pwd.length < 8) {
+
+    if (checks.sequential) {
       score -= 20
+      feedback.push('Password contains sequential characters')
+      suggestions.push('Avoid sequences like "abc123" or "123456"')
+    }
+
+    if (checks.keyboardPattern) {
+      score -= 25
+      feedback.push('Password contains keyboard patterns')
+      suggestions.push('Avoid keyboard patterns like "qwerty" or "asdfgh"')
+    }
+
+    if (length < 8) {
+      score -= 30
     }
 
     score = Math.max(0, Math.min(100, score))
@@ -388,30 +577,66 @@ export default function PasswordGeneratorPage() {
     else if (score >= 10) strength = 'weak'
     else strength = 'very-weak'
 
-    const combinations = Math.pow(charsetSize || 1, pwd.length)
-    const guessesPerSecond = 1e9
+    // Calculate crack time
+    const combinations = Math.pow(charsetSize || 1, length)
+    const guessesPerSecond = 1e10 // 10 billion guesses per second (offline attack)
     const seconds = combinations / guessesPerSecond
-    let timeToCrack = 'Instant'
-    
-    if (seconds < 1) timeToCrack = 'Less than a second'
-    else if (seconds < 60) timeToCrack = `${Math.round(seconds)} seconds`
-    else if (seconds < 3600) timeToCrack = `${Math.round(seconds / 60)} minutes`
-    else if (seconds < 86400) timeToCrack = `${Math.round(seconds / 3600)} hours`
-    else if (seconds < 31536000) timeToCrack = `${Math.round(seconds / 86400)} days`
-    else if (seconds < 31536000000) timeToCrack = `${Math.round(seconds / 31536000)} years`
-    else timeToCrack = 'Centuries'
 
-    if (feedback.length === 0) {
-      feedback.push('Password looks good!')
+    let timeToCrack = 'Instant'
+    if (seconds >= 31536000000000000) {
+      const billions = (seconds / 31536000000000000).toFixed(1)
+      timeToCrack = `${billions} billion years`
+    } else if (seconds >= 31536000000000) {
+      const millions = (seconds / 31536000000000).toFixed(1)
+      timeToCrack = `${millions} million years`
+    } else if (seconds >= 31536000000) {
+      const millennia = Math.round(seconds / 31536000000)
+      if (millennia < 1000) {
+        timeToCrack = `${millennia} thousand years`
+      } else {
+        const millions = (seconds / 31536000000000).toFixed(1)
+        timeToCrack = `${millions} million years`
+      }
+    } else if (seconds >= 31536000) {
+      const years = Math.round(seconds / 31536000)
+      timeToCrack = `${years} year${years !== 1 ? 's' : ''}`
+    } else if (seconds >= 86400) {
+      const days = Math.round(seconds / 86400)
+      timeToCrack = `${days} day${days !== 1 ? 's' : ''}`
+    } else if (seconds >= 3600) {
+      const hours = Math.round(seconds / 3600)
+      timeToCrack = `${hours} hour${hours !== 1 ? 's' : ''}`
+    } else if (seconds >= 60) {
+      const minutes = Math.round(seconds / 60)
+      timeToCrack = `${minutes} minute${minutes !== 1 ? 's' : ''}`
+    } else if (seconds >= 1) {
+      timeToCrack = `${Math.round(seconds)} second${Math.round(seconds) !== 1 ? 's' : ''}`
+    } else {
+      timeToCrack = 'Less than a second'
+    }
+
+    // Positive feedback
+    if (feedback.length === 0 && score >= 60) {
+      feedback.push('Excellent password!')
+    } else if (feedback.length === 0) {
+      feedback.push('Password is acceptable but could be stronger')
     }
 
     setCheckAnalysis({
       strength,
       score,
       feedback,
+      suggestions,
       timeToCrack,
       entropy: Math.round(entropy * 10) / 10,
-      checks
+      checks,
+      characterDistribution: {
+        uppercase,
+        lowercase,
+        numbers,
+        symbols,
+        total: length
+      }
     })
   }, [])
 
@@ -505,6 +730,42 @@ export default function PasswordGeneratorPage() {
     const link = document.createElement('a')
     link.href = url
     link.download = `passwords-${Date.now()}.txt`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
+
+  const exportToCSV = () => {
+    if (passwords.length === 0) return
+    
+    const csvContent = passwords.map((pwd, i) => `Password ${i + 1},${pwd}`).join('\n')
+    const header = 'Title,Password\n'
+    const blob = new Blob([header + csvContent], { type: 'text/csv' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `passwords-${Date.now()}.csv`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
+
+  const exportToJSON = () => {
+    if (passwords.length === 0) return
+    
+    const jsonContent = passwords.map((pwd, i) => ({
+      title: `Password ${i + 1}`,
+      password: pwd,
+      length: pwd.length,
+      createdAt: new Date().toISOString()
+    }))
+    const blob = new Blob([JSON.stringify(jsonContent, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `passwords-${Date.now()}.json`
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
@@ -745,51 +1006,251 @@ export default function PasswordGeneratorPage() {
 
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                      Requirements
+                      Security Checks
                     </label>
                     <div className="space-y-2">
-                      <div className={`flex items-center gap-2 ${checkAnalysis.checks.length ? 'text-green-600 dark:text-green-400' : 'text-gray-400'}`}>
-                        <span>{checkAnalysis.checks.length ? '✓' : '✗'}</span>
-                        <span className="text-sm">At least 8 characters</span>
+                      <div className={`flex items-center gap-2 ${checkAnalysis.checks.length.passed ? 'text-green-600 dark:text-green-400' : 'text-gray-400'}`}>
+                        <span className="text-lg">{checkAnalysis.checks.length.passed ? '✓' : '✗'}</span>
+                        <span className="text-sm">
+                          At least {checkAnalysis.checks.length.min} characters ({checkAnalysis.checks.length.value}/{checkAnalysis.checks.length.min})
+                        </span>
                       </div>
                       <div className={`flex items-center gap-2 ${checkAnalysis.checks.uppercase ? 'text-green-600 dark:text-green-400' : 'text-gray-400'}`}>
-                        <span>{checkAnalysis.checks.uppercase ? '✓' : '✗'}</span>
-                        <span className="text-sm">Contains uppercase letters</span>
+                        <span className="text-lg">{checkAnalysis.checks.uppercase ? '✓' : '✗'}</span>
+                        <span className="text-sm">Contains uppercase letters (A-Z)</span>
                       </div>
                       <div className={`flex items-center gap-2 ${checkAnalysis.checks.lowercase ? 'text-green-600 dark:text-green-400' : 'text-gray-400'}`}>
-                        <span>{checkAnalysis.checks.lowercase ? '✓' : '✗'}</span>
-                        <span className="text-sm">Contains lowercase letters</span>
+                        <span className="text-lg">{checkAnalysis.checks.lowercase ? '✓' : '✗'}</span>
+                        <span className="text-sm">Contains lowercase letters (a-z)</span>
                       </div>
                       <div className={`flex items-center gap-2 ${checkAnalysis.checks.numbers ? 'text-green-600 dark:text-green-400' : 'text-gray-400'}`}>
-                        <span>{checkAnalysis.checks.numbers ? '✓' : '✗'}</span>
-                        <span className="text-sm">Contains numbers</span>
+                        <span className="text-lg">{checkAnalysis.checks.numbers ? '✓' : '✗'}</span>
+                        <span className="text-sm">Contains numbers (0-9)</span>
                       </div>
                       <div className={`flex items-center gap-2 ${checkAnalysis.checks.symbols ? 'text-green-600 dark:text-green-400' : 'text-gray-400'}`}>
-                        <span>{checkAnalysis.checks.symbols ? '✓' : '✗'}</span>
-                        <span className="text-sm">Contains symbols</span>
+                        <span className="text-lg">{checkAnalysis.checks.symbols ? '✓' : '✗'}</span>
+                        <span className="text-sm">Contains symbols (!@#$%...)</span>
                       </div>
                       <div className={`flex items-center gap-2 ${!checkAnalysis.checks.common ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                        <span>{!checkAnalysis.checks.common ? '✓' : '✗'}</span>
+                        <span className="text-lg">{!checkAnalysis.checks.common ? '✓' : '✗'}</span>
                         <span className="text-sm">Not a common password</span>
                       </div>
                       <div className={`flex items-center gap-2 ${!checkAnalysis.checks.repeated ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                        <span>{!checkAnalysis.checks.repeated ? '✓' : '✗'}</span>
+                        <span className="text-lg">{!checkAnalysis.checks.repeated ? '✓' : '✗'}</span>
                         <span className="text-sm">No repeated characters</span>
+                      </div>
+                      <div className={`flex items-center gap-2 ${!checkAnalysis.checks.sequential ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                        <span className="text-lg">{!checkAnalysis.checks.sequential ? '✓' : '✗'}</span>
+                        <span className="text-sm">No sequential patterns</span>
+                      </div>
+                      <div className={`flex items-center gap-2 ${!checkAnalysis.checks.keyboardPattern ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                        <span className="text-lg">{!checkAnalysis.checks.keyboardPattern ? '✓' : '✗'}</span>
+                        <span className="text-sm">No keyboard patterns</span>
                       </div>
                     </div>
                   </div>
 
+                  {/* Character Distribution */}
+                  {checkAnalysis.characterDistribution && (
+                    <div>
+                      <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                        Character Distribution
+                      </h3>
+                      <div className="grid grid-cols-4 gap-3">
+                        <div className="text-center bg-gray-50 dark:bg-gray-900/50 rounded-lg p-3">
+                          <div className="text-lg font-bold text-blue-600">{checkAnalysis.characterDistribution.uppercase}</div>
+                          <div className="text-xs text-gray-600 dark:text-gray-400">A-Z</div>
+                        </div>
+                        <div className="text-center bg-gray-50 dark:bg-gray-900/50 rounded-lg p-3">
+                          <div className="text-lg font-bold text-green-600">{checkAnalysis.characterDistribution.lowercase}</div>
+                          <div className="text-xs text-gray-600 dark:text-gray-400">a-z</div>
+                        </div>
+                        <div className="text-center bg-gray-50 dark:bg-gray-900/50 rounded-lg p-3">
+                          <div className="text-lg font-bold text-purple-600">{checkAnalysis.characterDistribution.numbers}</div>
+                          <div className="text-xs text-gray-600 dark:text-gray-400">0-9</div>
+                        </div>
+                        <div className="text-center bg-gray-50 dark:bg-gray-900/50 rounded-lg p-3">
+                          <div className="text-lg font-bold text-orange-600">{checkAnalysis.characterDistribution.symbols}</div>
+                          <div className="text-xs text-gray-600 dark:text-gray-400">Symbols</div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
-                    <h3 className="font-semibold text-yellow-900 dark:text-yellow-100 mb-2">Feedback</h3>
+                    <h3 className="font-semibold text-yellow-900 dark:text-yellow-100 mb-2">Analysis</h3>
                     <ul className="space-y-1 text-sm text-yellow-800 dark:text-yellow-200">
                       {checkAnalysis.feedback.map((item, index) => (
                         <li key={index}>• {item}</li>
                       ))}
                     </ul>
                   </div>
+
+                  {/* Suggestions */}
+                  {checkAnalysis.suggestions && checkAnalysis.suggestions.length > 0 && (
+                    <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                      <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">Suggestions to Improve</h3>
+                      <ul className="space-y-1 text-sm text-blue-800 dark:text-blue-200">
+                        {checkAnalysis.suggestions.map((item, index) => (
+                          <li key={index}>• {item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
+          )}
+
+          {/* Passphrase Mode */}
+          {mode === 'passphrase' && (
+            <>
+              <div className="space-y-6 mb-8">
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                      Number of Words: <span className="text-primary-600 font-bold">{passphraseWordCount}</span>
+                    </label>
+                  </div>
+                  <input
+                    type="range"
+                    min="3"
+                    max="10"
+                    value={passphraseWordCount}
+                    onChange={(e) => setPassphraseWordCount(Number(e.target.value))}
+                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none accent-primary-600"
+                  />
+                  <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    <span>3</span>
+                    <span>10</span>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Separator:</label>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                    {(['space', 'hyphen', 'dot', 'none'] as PassphraseSeparator[]).map((sep) => (
+                      <button
+                        key={sep}
+                        onClick={() => setPassphraseSeparator(sep)}
+                        className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
+                          passphraseSeparator === sep
+                            ? 'bg-primary-600 text-white shadow-md'
+                            : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                        }`}
+                      >
+                        {sep === 'space' ? 'Space' : sep === 'hyphen' ? 'Hyphen (-)' : sep === 'dot' ? 'Dot (.)' : 'None'}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={passphraseCapitalize}
+                      onChange={(e) => setPassphraseCapitalize(e.target.checked)}
+                      className="w-4 h-4 accent-primary-600"
+                    />
+                    <span className="text-sm text-gray-700 dark:text-gray-300">Capitalize first letter of each word</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={passphraseAddNumber}
+                      onChange={(e) => setPassphraseAddNumber(e.target.checked)}
+                      className="w-4 h-4 accent-primary-600"
+                    />
+                    <span className="text-sm text-gray-700 dark:text-gray-300">Add random number</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={passphraseAddSymbol}
+                      onChange={(e) => setPassphraseAddSymbol(e.target.checked)}
+                      className="w-4 h-4 accent-primary-600"
+                    />
+                    <span className="text-sm text-gray-700 dark:text-gray-300">Add random symbol</span>
+                  </label>
+                </div>
+
+                <button
+                  onClick={generatePassphrase}
+                  className="w-full bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold py-3 px-6 rounded-xl hover:from-primary-700 hover:to-primary-800 transition-all shadow-lg"
+                >
+                  Generate Passphrase
+                </button>
+              </div>
+
+              {/* Passphrase Result */}
+              {passwords.length > 0 && mode === 'passphrase' && (
+                <div className="space-y-4">
+                  <div className="bg-gray-50 rounded-xl p-4 border-2 border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <code className="flex-1 text-lg font-mono break-all min-w-0">{password}</code>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={exportToFile}
+                          className="bg-gray-600 text-white px-3 py-2 rounded-lg hover:bg-gray-700 transition-colors flex items-center gap-1"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => copyToClipboard()}
+                          className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors"
+                        >
+                          Copy
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Password Analysis for Passphrase */}
+                  <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 border border-gray-200 space-y-4">
+                    <div>
+                      <div className="flex justify-between text-sm mb-2">
+                        <span className="font-medium">Passphrase strength:</span>
+                        <span className={`font-bold ${
+                          strength <= 2 ? 'text-red-500' :
+                          strength <= 4 ? 'text-yellow-500' :
+                          'text-green-500'
+                        }`}>
+                          {strength <= 2 ? 'Weak' : strength <= 4 ? 'Medium' : 'Strong'}
+                        </span>
+                      </div>
+                      <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full transition-all ${
+                            strength <= 2 ? 'bg-red-500' :
+                            strength <= 4 ? 'bg-yellow-500' :
+                            'bg-green-500'
+                          }`}
+                          style={{ width: `${(strength / 6) * 100}%` }}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-gray-200 dark:border-gray-700">
+                      <div>
+                        <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">Entropy</div>
+                        <div className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                          {entropy.toFixed(1)} <span className="text-sm font-normal text-gray-600 dark:text-gray-400">bits</span>
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">Crack Time (offline)</div>
+                        <div className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                          {crackTime || 'N/A'}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </>
           )}
 
           {/* Generate Password Mode */}
@@ -986,16 +1447,38 @@ export default function PasswordGeneratorPage() {
                   <div className="flex items-center gap-3 flex-wrap">
                     <code className="flex-1 text-lg font-mono break-all min-w-0">{password}</code>
                     <div className="flex gap-2">
-                      <Tooltip content="Export to file (Ctrl+S / Cmd+S)" position="top">
-                        <button
-                          onClick={exportToFile}
-                          className="bg-gray-600 text-white px-3 py-2 rounded-lg hover:bg-gray-700 transition-colors flex items-center gap-1"
-                        >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                          </svg>
-                        </button>
-                      </Tooltip>
+                      <div className="flex gap-1">
+                        <Tooltip content="Export to TXT" position="top">
+                          <button
+                            onClick={exportToFile}
+                            className="bg-gray-600 text-white px-3 py-2 rounded-lg hover:bg-gray-700 transition-colors flex items-center gap-1"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                          </button>
+                        </Tooltip>
+                        <Tooltip content="Export to CSV" position="top">
+                          <button
+                            onClick={exportToCSV}
+                            className="bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center gap-1"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                          </button>
+                        </Tooltip>
+                        <Tooltip content="Export to JSON" position="top">
+                          <button
+                            onClick={exportToJSON}
+                            className="bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-1"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                            </svg>
+                          </button>
+                        </Tooltip>
+                      </div>
                       <Tooltip content="Copy password to clipboard" position="top">
                         <button
                           onClick={() => copyToClipboard()}

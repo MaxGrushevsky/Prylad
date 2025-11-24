@@ -3,6 +3,8 @@
 import Link from 'next/link'
 import Navigation from '@/components/Navigation'
 import AdBanner from '@/components/AdBanner'
+import StructuredData from '@/components/StructuredData'
+import { generateItemListSchema, generateOrganizationSchema } from '@/lib/structured-data'
 
 const categories = [
   {
@@ -10,8 +12,7 @@ const categories = [
     icon: '📶',
     color: 'from-violet-500 to-purple-500',
     tools: [
-      { name: 'QR Code', path: '/qr-generator', icon: '📱', desc: 'QR code generator (Text, URL, WiFi, Email)' },
-      { name: 'QR Reader', path: '/qr-reader', icon: '📱', desc: 'Scan and decode QR codes from images' },
+      { name: 'QR Tools', path: '/qr-tools', icon: '📱', desc: 'Generate and read QR codes in one place' },
       { name: 'Barcode Generator', path: '/barcode-generator', icon: '📊', desc: 'Create EAN, Code128, Code39 barcodes' },
       { name: 'URL Tools', path: '/url-tools', icon: '🔗', desc: 'URL encoder, parser & query builder' },
     ]
@@ -21,8 +22,7 @@ const categories = [
     icon: '🎨',
     color: 'from-pink-500 to-rose-500',
     tools: [
-      { name: 'Color Generator', path: '/color-generator', icon: '🎨', desc: 'Random colors and palettes' },
-      { name: 'Gradient Generator', path: '/gradient-generator', icon: '🌈', desc: 'Create CSS gradients' },
+      { name: 'Color Generator', path: '/color-generator', icon: '🎨', desc: 'Random colors, palettes, and gradients' },
       { name: 'Color Converter', path: '/color-converter', icon: '🔄', desc: 'HEX ↔ RGB ↔ HSL' },
       { name: 'Palette from Image', path: '/color-palette-from-image', icon: '🖼️', desc: 'Extract color palette from images' },
     ]
@@ -56,10 +56,8 @@ const categories = [
     tools: [
       { name: 'Lorem Ipsum', path: '/lorem-generator', icon: '📝', desc: 'Placeholder text for design' },
       { name: 'Word Counter', path: '/word-counter', icon: '🔢', desc: 'Count words and characters' },
-      { name: 'Text Case', path: '/text-case', icon: '⌨️', desc: 'UPPERCASE, lowercase, Title Case' },
-      { name: 'Text Cleaner', path: '/text-cleaner', icon: '🧹', desc: 'Remove spaces and duplicates' },
+      { name: 'Text Tools', path: '/text-tools', icon: '⌨️', desc: 'Case converter, text cleaner, and text reverser' },
       { name: 'Text Diff', path: '/text-diff', icon: '🔍', desc: 'Compare two texts' },
-      { name: 'Text Reverser', path: '/text-reverser', icon: '🔄', desc: 'Reverse text, words, and sentences' },
       { name: 'Slug Generator', path: '/slug-generator', icon: '🔗', desc: 'URL-friendly string generator' },
       { name: 'Transliteration', path: '/transliteration', icon: '🔄', desc: 'Cyrillic ↔ Latin conversion' },
     ]
@@ -93,7 +91,7 @@ const categories = [
       { name: 'YAML Formatter', path: '/yaml-formatter', icon: '📝', desc: 'Format YAML and convert to/from JSON' },
       { name: 'HTTP Status Codes', path: '/http-status-codes', icon: '📡', desc: 'Complete reference of HTTP status codes' },
       { name: 'Test Data Generator', path: '/test-data-generator', icon: '🧪', desc: 'Generate fake data for testing' },
-      { name: 'Regex Tester', path: '/regex-tester', icon: '🔎', desc: 'Regular expression testing' },
+      { name: 'Regex Tools', path: '/regex-tools', icon: '🔎', desc: 'Test and build regular expressions' },
       { name: 'Markdown Preview', path: '/markdown', icon: '📄', desc: 'Markdown preview' },
       { name: 'JWT Decoder & Generator', path: '/jwt-decoder', icon: '🔐', desc: 'Decode and generate JWT tokens' },
     ]
@@ -103,9 +101,7 @@ const categories = [
     icon: '🎨',
     color: 'from-pink-500 to-rose-500',
     tools: [
-      { name: 'Box Shadow', path: '/box-shadow', icon: '💎', desc: 'CSS shadow generator' },
-      { name: 'Border Radius', path: '/border-radius-generator', icon: '🔲', desc: 'Generate CSS border-radius values' },
-      { name: 'Text Shadow', path: '/text-shadow-generator', icon: '✨', desc: 'Generate CSS text-shadow values' },
+      { name: 'CSS Generators', path: '/css-generators', icon: '💎', desc: 'Box shadow, border radius, and text shadow generators' },
       { name: 'Font Pairing', path: '/font-pairing-generator', icon: '🔤', desc: 'Discover beautiful Google Fonts combinations' },
       { name: 'Contrast Checker', path: '/contrast-checker', icon: '🎯', desc: 'Check WCAG color contrast ratio' },
       { name: 'CSS Animation', path: '/css-animation-generator', icon: '🎬', desc: 'Generate CSS animations and keyframes' },
@@ -151,8 +147,27 @@ const categories = [
 ]
 
 export default function Home() {
+  // Generate structured data for homepage
+  const allTools = categories.flatMap(category => 
+    category.tools.map(tool => ({
+      name: tool.name,
+      url: `https://prylad.pro${tool.path}`,
+      description: tool.desc
+    }))
+  )
+
+  const structuredData = [
+    generateItemListSchema(
+      'Free Online Tools - Prylad',
+      'Complete collection of free online tools for development, design, and data work. All tools work in your browser without registration.',
+      allTools
+    ),
+    generateOrganizationSchema()
+  ]
+
   return (
     <>
+      <StructuredData data={structuredData} />
       <Navigation />
       <main className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 lg:ml-80">
         {/* Header */}

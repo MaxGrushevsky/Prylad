@@ -49,6 +49,7 @@ export const toolCategories: Record<string, { name: string; path: string; tools:
       { name: 'Slug Generator', path: '/slug-generator', description: 'URL-friendly string generator', icon: '🔗' },
       { name: 'Transliteration', path: '/transliteration', description: 'Cyrillic ↔ Latin conversion', icon: '🔄' },
       { name: 'Lorem Generator', path: '/lorem-generator', description: 'Placeholder text for design', icon: '📝' },
+      { name: 'Emoji Picker', path: '/emoji-picker', description: 'Search and copy emojis by category', icon: '😀' },
     ]
   },
   'converters': {
@@ -77,8 +78,12 @@ export const toolCategories: Record<string, { name: string; path: string; tools:
       { name: 'XML Formatter', path: '/xml-formatter', description: 'Format, minify and validate XML', icon: '📄' },
       { name: 'YAML Formatter', path: '/yaml-formatter', description: 'Format YAML and convert to/from JSON', icon: '📝' },
       { name: 'Regex Tester', path: '/regex-tester', description: 'Regular expression testing', icon: '🔎' },
+      { name: 'Regex Builder', path: '/regex-builder', description: 'Visual regex constructor and builder', icon: '🔨' },
       { name: 'Markdown Preview', path: '/markdown', description: 'Markdown preview and editor', icon: '📄' },
       { name: 'JWT Decoder', path: '/jwt-decoder', description: 'Decode and generate JWT tokens', icon: '🔐' },
+      { name: 'Cron Expression Generator', path: '/cron-expression-generator', description: 'Generate and parse cron expressions', icon: '⏰' },
+      { name: 'ASCII Table Generator', path: '/ascii-table-generator', description: 'Complete ASCII character codes table', icon: '📊' },
+      { name: 'Unicode Character Lookup', path: '/unicode-character-lookup', description: 'Lookup Unicode characters by code or name', icon: '🔍' },
     ]
   },
   'security': {
@@ -98,6 +103,18 @@ export const toolCategories: Record<string, { name: string; path: string; tools:
       { name: 'Date Calculator', path: '/date-calculator', description: 'Calculate date differences & age', icon: '📅' },
       { name: 'Timezone Converter', path: '/timezone-converter', description: 'Time converter between zones', icon: '🌍' },
       { name: 'Unix Timestamp', path: '/unix-timestamp-converter', description: 'Convert timestamp to date and time', icon: '⏰' },
+    ]
+  },
+  'image': {
+    name: 'Images',
+    path: '/images',
+    tools: [
+      { name: 'Image Format Converter', path: '/image-format-converter', description: 'Convert PNG, JPG, WebP, SVG formats', icon: '🖼️' },
+      { name: 'Image Editor', path: '/image-resizer', description: 'Resize, rotate, flip, and compress images', icon: '✂️' },
+      { name: 'Image Compressor', path: '/image-compressor', description: 'Compress images to reduce file size', icon: '🗜️' },
+      { name: 'Watermark Generator', path: '/watermark', description: 'Add text or image watermarks', icon: '💧' },
+      { name: 'Color Palette from Image', path: '/color-palette-from-image', description: 'Extract color palette from images', icon: '🎨' },
+      { name: 'Color Blindness Simulator', path: '/color-blindness-simulator', description: 'Simulate color blindness', icon: '👁️' },
     ]
   },
 }

@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
+import { useState, useEffect, useLayoutEffect, useRef, useMemo, useCallback } from 'react'
 import SearchModal from './SearchModal'
 import { useTheme } from '@/contexts/ThemeContext'
 
@@ -11,8 +11,7 @@ const categories = [
     name: 'QR/Network',
     icon: '📶',
     tools: [
-      { name: 'QR Code', path: '/qr-generator', icon: '📱' },
-      { name: 'QR Reader', path: '/qr-reader', icon: '📱' },
+      { name: 'QR Tools', path: '/qr-tools', icon: '📱' },
       { name: 'Barcode', path: '/barcode-generator', icon: '📊' },
       { name: 'URL Tools', path: '/url-tools', icon: '🔗' },
     ]
@@ -22,7 +21,6 @@ const categories = [
     icon: '🎨',
     tools: [
       { name: 'Color Generator', path: '/color-generator', icon: '🎨' },
-      { name: 'Gradient Generator', path: '/gradient-generator', icon: '🌈' },
       { name: 'Color Converter', path: '/color-converter', icon: '🔄' },
       { name: 'Palette from Image', path: '/color-palette-from-image', icon: '🖼️' },
     ]
@@ -45,6 +43,7 @@ const categories = [
       { name: 'Favicon', path: '/favicon-generator', icon: '🎯' },
       { name: 'Avatar', path: '/avatar-generator', icon: '👤' },
       { name: 'Image Editor', path: '/image-resizer', icon: '🖼️' },
+      { name: 'Image Format Converter', path: '/image-format-converter', icon: '🔄' },
     ]
   },
   {
@@ -53,12 +52,13 @@ const categories = [
     tools: [
       { name: 'Lorem Ipsum', path: '/lorem-generator', icon: '📝' },
       { name: 'Word Counter', path: '/word-counter', icon: '🔢' },
-      { name: 'Text Case', path: '/text-case', icon: '⌨️' },
-      { name: 'Text Cleaner', path: '/text-cleaner', icon: '🧹' },
+      { name: 'Text Tools', path: '/text-tools', icon: '⌨️' },
       { name: 'Text Diff', path: '/text-diff', icon: '🔍' },
-      { name: 'Text Reverser', path: '/text-reverser', icon: '🔄' },
       { name: 'Slug Generator', path: '/slug-generator', icon: '🔗' },
       { name: 'Transliteration', path: '/transliteration', icon: '🔄' },
+      { name: 'Character Reference', path: '/character-reference', icon: '🔤' },
+      { name: 'Speech to Text', path: '/speech-to-text', icon: '🎤' },
+      { name: 'Text to Speech', path: '/text-to-speech', icon: '🔊' },
     ]
   },
   {
@@ -88,7 +88,7 @@ const categories = [
       { name: 'YAML Formatter', path: '/yaml-formatter', icon: '📝' },
       { name: 'HTTP Status Codes', path: '/http-status-codes', icon: '📡' },
       { name: 'Test Data Generator', path: '/test-data-generator', icon: '🧪' },
-      { name: 'Regex Tester', path: '/regex-tester', icon: '🔎' },
+      { name: 'Regex Tools', path: '/regex-tools', icon: '🔎' },
       { name: 'Markdown', path: '/markdown', icon: '📄' },
       { name: 'JWT Decoder & Generator', path: '/jwt-decoder', icon: '🔐' },
     ]
@@ -97,9 +97,7 @@ const categories = [
     name: 'CSS/Design',
     icon: '🎨',
     tools: [
-      { name: 'Box Shadow', path: '/box-shadow', icon: '💎' },
-      { name: 'Border Radius', path: '/border-radius-generator', icon: '🔲' },
-      { name: 'Text Shadow', path: '/text-shadow-generator', icon: '✨' },
+      { name: 'CSS Generators', path: '/css-generators', icon: '💎' },
       { name: 'Font Pairing', path: '/font-pairing-generator', icon: '🔤' },
       { name: 'Contrast Checker', path: '/contrast-checker', icon: '🎯' },
       { name: 'CSS Animation', path: '/css-animation-generator', icon: '🎬' },
@@ -210,49 +208,209 @@ export default function Navigation() {
     })
   }, [])
 
-  // Restore scroll position immediately when container is mounted
+  // Save scroll position function
+  const saveScrollPosition = useCallback(() => {
+    const container = scrollContainerRef.current
+    if (container && container.scrollTop > 0) {
+      localStorage.setItem('navScrollPosition', container.scrollTop.toString())
+    }
+  }, [])
+
+  // Save scroll position before navigation (on mouse down for earlier capture)
+  const handleLinkMouseDown = useCallback(() => {
+    // Save position immediately and synchronously before navigation starts
+    saveScrollPosition()
+  }, [saveScrollPosition])
+
+  // Save scroll position before navigation
+  const handleLinkClick = useCallback((e: React.MouseEvent) => {
+    // Save position immediately and synchronously
+    saveScrollPosition()
+    // Mark that we need to restore on next render
+    scrollRestoredRef.current = false
+    setIsOpen(false)
+  }, [saveScrollPosition])
+
+  // Restore scroll position function
+  const restoreScrollPosition = useCallback(() => {
+    const container = scrollContainerRef.current
+    if (!container) return false
+
+    const savedScrollPosition = localStorage.getItem('navScrollPosition')
+    if (!savedScrollPosition) return false
+
+    const scrollPos = parseInt(savedScrollPosition, 10)
+    if (isNaN(scrollPos)) return false
+
+    // Only restore if content is tall enough
+    if (container.scrollHeight < scrollPos) return false
+
+    container.scrollTop = scrollPos
+    return true
+  }, [])
+
+  // Set scroll container ref and restore position
   const setScrollContainerRef = (element: HTMLDivElement | null) => {
     scrollContainerRef.current = element
     
-    if (element && !scrollRestoredRef.current) {
+    if (element) {
+      // Always try to restore when container is set
+      scrollRestoredRef.current = false
+      
+      // Try immediate restoration
       const savedScrollPosition = localStorage.getItem('navScrollPosition')
       if (savedScrollPosition) {
         const scrollPos = parseInt(savedScrollPosition, 10)
-        
-        // Set immediately to prevent visual jump
-        element.scrollTop = scrollPos
-        
-        // Verify and fix position after content is rendered (max 3 attempts)
-        let attempts = 0
-        const maxAttempts = 3
-        const verifyScroll = () => {
-          attempts++
-          if (element && element.scrollTop !== scrollPos && attempts < maxAttempts) {
-            // Only restore if content height allows it
+        if (!isNaN(scrollPos)) {
+          // Try multiple times with delays
+          const tryRestore = (attempt = 0) => {
             if (element.scrollHeight >= scrollPos) {
               element.scrollTop = scrollPos
+              scrollRestoredRef.current = true
+            } else if (attempt < 10) {
+              setTimeout(() => tryRestore(attempt + 1), 50)
+            } else {
+              scrollRestoredRef.current = true
             }
-            requestAnimationFrame(verifyScroll)
-          } else {
-            scrollRestoredRef.current = true
           }
+          tryRestore()
+        } else {
+          scrollRestoredRef.current = true
         }
-        
-        requestAnimationFrame(verifyScroll)
       } else {
         scrollRestoredRef.current = true
       }
     }
   }
 
-  // Save scroll position to localStorage
+  // Restore scroll position when pathname changes - use useLayoutEffect for earlier restoration
+  useLayoutEffect(() => {
+    const container = scrollContainerRef.current
+    if (!container) {
+      // Container not ready, reset flag to allow restoration later
+      scrollRestoredRef.current = false
+      return
+    }
+
+    // Always reset flag to allow restoration
+    scrollRestoredRef.current = false
+
+    // Try to restore immediately
+    const savedScrollPosition = localStorage.getItem('navScrollPosition')
+    if (savedScrollPosition) {
+      const scrollPos = parseInt(savedScrollPosition, 10)
+      if (!isNaN(scrollPos)) {
+        // Try to restore even if content height is not enough yet
+        if (container.scrollHeight >= scrollPos) {
+          container.scrollTop = scrollPos
+          scrollRestoredRef.current = true
+        } else {
+          // Content not ready, will be restored by other effects
+          scrollRestoredRef.current = false
+        }
+      } else {
+        scrollRestoredRef.current = true
+      }
+    } else {
+      scrollRestoredRef.current = true
+    }
+  }, [pathname])
+
+  // Restore scroll position when content updates (expandedCategories changes)
   useEffect(() => {
     const container = scrollContainerRef.current
     if (!container) return
 
+    // Only restore if we haven't restored yet
+    if (scrollRestoredRef.current) return
+
+    // Try multiple times to ensure content is rendered
+    let attempts = 0
+    const maxAttempts = 20
+    let timeoutId: NodeJS.Timeout | null = null
+    
+    const tryRestore = () => {
+      attempts++
+      const restored = restoreScrollPosition()
+      
+      if (restored) {
+        scrollRestoredRef.current = true
+        if (timeoutId) {
+          clearTimeout(timeoutId)
+        }
+      } else if (attempts < maxAttempts) {
+        // Retry after a delay
+        timeoutId = setTimeout(tryRestore, 50)
+      } else {
+        // Give up after max attempts
+        scrollRestoredRef.current = true
+      }
+    }
+
+    // Start restoration
+    requestAnimationFrame(() => {
+      tryRestore()
+    })
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
+    }
+  }, [expandedCategories, restoreScrollPosition])
+
+  // Use MutationObserver to restore scroll when DOM changes
+  useEffect(() => {
+    const container = scrollContainerRef.current
+    if (!container) return
+
+    // Only observe if we haven't restored yet
+    if (scrollRestoredRef.current) return
+
+    const observer = new MutationObserver(() => {
+      // DOM changed, try to restore scroll position
+      if (!scrollRestoredRef.current) {
+        const restored = restoreScrollPosition()
+        if (restored) {
+          scrollRestoredRef.current = true
+        }
+      }
+    })
+
+    observer.observe(container, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['style', 'class']
+    })
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [restoreScrollPosition])
+
+  // Save scroll position to localStorage on scroll
+  useEffect(() => {
+    const container = scrollContainerRef.current
+    if (!container) return
+
+    let scrollTimeout: NodeJS.Timeout | null = null
+    let lastSavedPosition = container.scrollTop
+
     const handleScroll = () => {
-      if (scrollRestoredRef.current) {
-        localStorage.setItem('navScrollPosition', container.scrollTop.toString())
+      const currentPosition = container.scrollTop
+      
+      // Only save if position actually changed and is greater than 0
+      // Also only save after initial restoration to avoid overwriting
+      if (currentPosition !== lastSavedPosition && currentPosition > 0 && scrollRestoredRef.current) {
+        // Debounce saves to avoid too many writes
+        if (scrollTimeout) {
+          clearTimeout(scrollTimeout)
+        }
+        scrollTimeout = setTimeout(() => {
+          localStorage.setItem('navScrollPosition', currentPosition.toString())
+          lastSavedPosition = currentPosition
+        }, 100)
       }
     }
 
@@ -260,6 +418,9 @@ export default function Navigation() {
     
     return () => {
       container.removeEventListener('scroll', handleScroll)
+      if (scrollTimeout) {
+        clearTimeout(scrollTimeout)
+      }
     }
   }, [])
 
@@ -267,6 +428,25 @@ export default function Navigation() {
   useEffect(() => {
     localStorage.setItem('navExpandedCategories', JSON.stringify(expandedCategories))
   }, [expandedCategories])
+
+  // Save scroll position when page becomes hidden (user navigates away)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        saveScrollPosition()
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    
+    // Also save on beforeunload as backup
+    window.addEventListener('beforeunload', saveScrollPosition)
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('beforeunload', saveScrollPosition)
+    }
+  }, [saveScrollPosition])
 
   // Keyboard shortcut for search (Ctrl+K / Cmd+K)
   useEffect(() => {
@@ -296,7 +476,7 @@ export default function Navigation() {
       {/* Mobile menu button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="lg:hidden fixed top-4 right-4 z-50 bg-white dark:bg-gray-800 p-3 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+        className="lg:hidden fixed top-4 right-4 z-50 bg-white dark:bg-gray-800 p-3 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100"
         aria-label="Menu"
       >
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -318,48 +498,44 @@ export default function Navigation() {
         <div className="p-6 pb-4 flex-shrink-0 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
           <div className="mb-6">
             <div className="flex items-center justify-between gap-2 mb-1">
-              <Link href="/" onClick={() => setIsOpen(false)} className="flex-1">
+              <Link href="/" onMouseDown={handleLinkMouseDown} onClick={handleLinkClick} className="flex-1">
                 <h1 className="text-2xl font-bold flex items-center gap-2 overflow-visible">
                   <span>🛠️</span>
                   <span className="bg-gradient-to-r from-primary-600 to-purple-600 bg-clip-text text-transparent whitespace-nowrap leading-tight" style={{ WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', display: 'inline-block', padding: '0 1px' }}>Prylad</span>
                 </h1>
               </Link>
-              {/* Theme Toggle - Small button */}
-              <button
-                onClick={toggleTheme}
-                className="p-2.5 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
-                title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} mode`}
-              >
-                {theme === 'dark' ? (
+              {/* Search and Theme Toggle buttons */}
+              <div className="flex items-center gap-2 flex-shrink-0">
+                {/* Search Icon Button */}
+                <button
+                  onClick={() => setIsSearchOpen(true)}
+                  className="p-2.5 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                  title="Search tools (⌘K)"
+                  aria-label="Search tools"
+                >
                   <svg className="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
-                ) : (
-                  <svg className="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                  </svg>
-                )}
-              </button>
+                </button>
+                {/* Theme Toggle - Small button */}
+                <button
+                  onClick={toggleTheme}
+                  className="p-2.5 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                  title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} mode`}
+                >
+                  {theme === 'dark' ? (
+                    <svg className="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                  ) : (
+                    <svg className="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                  )}
+                </button>
+              </div>
             </div>
             <p className="text-sm text-gray-500 dark:text-gray-400">All tools in one place</p>
-          </div>
-
-          {/* Search Button */}
-          <div className="mb-4">
-            <button
-              onClick={() => setIsSearchOpen(true)}
-              className="flex items-center justify-between w-full px-4 py-3 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors text-left"
-            >
-              <div className="flex items-center gap-3">
-                <svg className="w-5 h-5 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                <span className="text-sm text-gray-600 dark:text-gray-300">Search tools...</span>
-              </div>
-              <kbd className="hidden sm:inline-flex items-center px-2 py-1 text-xs font-semibold text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-                {navigator.platform.includes('Mac') ? '⌘' : 'Ctrl'}K
-              </kbd>
-            </button>
           </div>
 
           {/* Buy Me a Coffee Button */}
@@ -416,7 +592,8 @@ export default function Navigation() {
                         <Link
                           key={tool.path}
                           href={tool.path}
-                          onClick={() => setIsOpen(false)}
+                          onMouseDown={handleLinkMouseDown}
+                          onClick={handleLinkClick}
                           className={`flex items-center justify-between gap-2 px-4 py-2 rounded-lg transition-all group ${
                             isActive
                               ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-md'
@@ -491,17 +668,18 @@ export default function Navigation() {
                           <Link
                             key={tool.path}
                             href={tool.path}
-                            onClick={() => setIsOpen(false)}
-                            className={`flex items-center justify-between gap-2 px-4 py-2 rounded-lg transition-all group ${
-                              isActive
-                                ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-md'
-                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
-                            }`}
-                          >
-                            <div className="flex items-center gap-3 flex-1 min-w-0">
-                              <span className="text-lg flex-shrink-0">{tool.icon}</span>
-                              <span className="font-medium text-sm truncate">{tool.name}</span>
-                            </div>
+                          onMouseDown={handleLinkMouseDown}
+                          onClick={handleLinkClick}
+                          className={`flex items-center justify-between gap-2 px-4 py-2 rounded-lg transition-all group ${
+                            isActive
+                              ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-md'
+                              : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3 flex-1 min-w-0">
+                            <span className="text-lg flex-shrink-0">{tool.icon}</span>
+                            <span className="font-medium text-sm truncate">{tool.name}</span>
+                          </div>
                             <button
                               onClick={(e) => toggleFavorite(tool.path, e)}
                               className={`flex-shrink-0 p-1 rounded hover:bg-opacity-20 transition-all ${

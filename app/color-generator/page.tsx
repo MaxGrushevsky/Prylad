@@ -18,6 +18,16 @@ export default function ColorGeneratorPage() {
   const [baseColor, setBaseColor] = useState('#3b82f6')
   const [useHarmony, setUseHarmony] = useState(false)
   const [totalGenerated, setTotalGenerated] = useState(0)
+  const [savedPalettes, setSavedPalettes] = useState<Array<{ id: string; name: string; colors: string[]; createdAt: number }>>([])
+  const [showSavePalette, setShowSavePalette] = useState(false)
+  const [paletteName, setPaletteName] = useState('')
+  const [showGradientGenerator, setShowGradientGenerator] = useState(false)
+  const [gradientType, setGradientType] = useState<'linear' | 'radial'>('linear')
+  const [gradientAngle, setGradientAngle] = useState(90)
+  const [gradientColors, setGradientColors] = useState<string[]>(['#3b82f6', '#8b5cf6'])
+  const [gradientStops, setGradientStops] = useState<number[]>([0, 100])
+  const [generatedGradient, setGeneratedGradient] = useState('')
+  const [contrastCheck, setContrastCheck] = useState<{ foreground: string; background: string; ratio: number; level: 'AA' | 'AAA' | 'AA-Large' | 'AAA-Large' | 'fail'; passes: boolean } | null>(null)
 
   // SEO data
   const toolPath = '/color-generator'
@@ -353,6 +363,153 @@ export default function ColorGeneratorPage() {
     URL.revokeObjectURL(url)
   }
 
+  const exportToJSON = () => {
+    if (colors.length === 0) return
+    
+    const colorData = colors.map((c, i) => ({
+      hex: c,
+      rgb: hexToRgb(c),
+      hsl: hexToHsl(c),
+      name: `color-${i + 1}`
+    }))
+    const content = JSON.stringify({ colors: colorData, palette: colors }, null, 2)
+    const blob = new Blob([content], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `colors-${Date.now()}.json`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
+
+  const exportToSCSS = () => {
+    if (colors.length === 0) return
+    
+    const scssVars = colors.map((c, i) => `$color-${i + 1}: ${c};`).join('\n')
+    const content = `// Color Palette\n${scssVars}\n\n// Usage:\n// color: $color-1;`
+    const blob = new Blob([content], { type: 'text/scss' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `colors-${Date.now()}.scss`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
+
+  const exportToLESS = () => {
+    if (colors.length === 0) return
+    
+    const lessVars = colors.map((c, i) => `@color-${i + 1}: ${c};`).join('\n')
+    const content = `// Color Palette\n${lessVars}\n\n// Usage:\n// color: @color-1;`
+    const blob = new Blob([content], { type: 'text/less' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `colors-${Date.now()}.less`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
+
+  // Generate gradient
+  const generateGradient = useCallback(() => {
+    if (gradientColors.length < 2) return
+    
+    const stops = gradientColors.map((color, i) => {
+      const stop = gradientStops[i] ?? (i * (100 / (gradientColors.length - 1)))
+      return `${color} ${stop}%`
+    }).join(', ')
+    
+    let gradient = ''
+    if (gradientType === 'linear') {
+      gradient = `linear-gradient(${gradientAngle}deg, ${stops})`
+    } else {
+      gradient = `radial-gradient(circle, ${stops})`
+    }
+    
+    setGeneratedGradient(gradient)
+  }, [gradientColors, gradientStops, gradientType, gradientAngle])
+
+  useEffect(() => {
+    if (showGradientGenerator && gradientColors.length >= 2) {
+      generateGradient()
+    }
+  }, [showGradientGenerator, gradientColors, gradientStops, gradientType, gradientAngle, generateGradient])
+
+  const addGradientColor = () => {
+    const newColor = generateColor('random')
+    setGradientColors([...gradientColors, newColor])
+    setGradientStops([...gradientStops, gradientStops[gradientStops.length - 1] + 10])
+  }
+
+  const removeGradientColor = (index: number) => {
+    if (gradientColors.length <= 2) return
+    setGradientColors(gradientColors.filter((_, i) => i !== index))
+    setGradientStops(gradientStops.filter((_, i) => i !== index))
+  }
+
+  const exportGradientToCSS = () => {
+    if (!generatedGradient) return
+    const content = `.gradient {\n  background: ${generatedGradient};\n}`
+    const blob = new Blob([content], { type: 'text/css' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `gradient-${Date.now()}.css`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
+
+  // Save palette
+  const savePalette = useCallback(() => {
+    if (!paletteName.trim() || colors.length === 0) return
+    
+    const newPalette = {
+      id: Date.now().toString(),
+      name: paletteName.trim(),
+      colors: [...colors],
+      createdAt: Date.now()
+    }
+    
+    const updated = [...savedPalettes, newPalette]
+    setSavedPalettes(updated)
+    localStorage.setItem('savedColorPalettes', JSON.stringify(updated))
+    setShowSavePalette(false)
+    setPaletteName('')
+  }, [paletteName, colors, savedPalettes])
+
+  // Load saved palettes
+  useEffect(() => {
+    const saved = localStorage.getItem('savedColorPalettes')
+    if (saved) {
+      try {
+        setSavedPalettes(JSON.parse(saved))
+      } catch (e) {
+        // Ignore parse errors
+      }
+    }
+  }, [])
+
+  // Load palette
+  const loadPalette = useCallback((palette: { colors: string[] }) => {
+    setColors(palette.colors)
+    setShowSavePalette(false)
+  }, [])
+
+  // Delete palette
+  const deletePalette = useCallback((id: string) => {
+    const updated = savedPalettes.filter(p => p.id !== id)
+    setSavedPalettes(updated)
+    localStorage.setItem('savedColorPalettes', JSON.stringify(updated))
+  }, [savedPalettes])
+
   // Save settings to localStorage
   useEffect(() => {
     const settings = {
@@ -549,28 +706,61 @@ export default function ColorGeneratorPage() {
               <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">
                 {colors.length === 1 ? 'Generated Color' : `Color Palette (${colors.length} colors)`}
               </h3>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <button
                   onClick={exportToFile}
-                  className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors text-sm flex items-center gap-1"
+                  className="bg-gray-600 text-white px-3 py-2 rounded-lg hover:bg-gray-700 transition-colors text-sm flex items-center gap-1"
+                  title="Export as TXT"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                   </svg>
-                  Export TXT
+                  TXT
                 </button>
                 <button
                   onClick={exportToCSS}
-                  className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors text-sm flex items-center gap-1"
+                  className="bg-purple-600 text-white px-3 py-2 rounded-lg hover:bg-purple-700 transition-colors text-sm flex items-center gap-1"
+                  title="Export as CSS variables"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
                   </svg>
-                  Export CSS
+                  CSS
+                </button>
+                <button
+                  onClick={exportToJSON}
+                  className="bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm flex items-center gap-1"
+                  title="Export as JSON"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                  </svg>
+                  JSON
+                </button>
+                <button
+                  onClick={exportToSCSS}
+                  className="bg-pink-600 text-white px-3 py-2 rounded-lg hover:bg-pink-700 transition-colors text-sm flex items-center gap-1"
+                  title="Export as SCSS variables"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                  </svg>
+                  SCSS
+                </button>
+                <button
+                  onClick={exportToLESS}
+                  className="bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm flex items-center gap-1"
+                  title="Export as LESS variables"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                  </svg>
+                  LESS
                 </button>
                 <button
                   onClick={copyAll}
                   className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors text-sm"
+                  title="Copy all colors to clipboard"
                 >
                   Copy All
                 </button>
@@ -674,6 +864,83 @@ export default function ColorGeneratorPage() {
                 </div>
               </div>
             )}
+          </div>
+        )}
+
+        {/* Save Palette Modal */}
+        {showSavePalette && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6 max-w-md w-full">
+              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">Save Color Palette</h3>
+              <input
+                type="text"
+                value={paletteName}
+                onChange={(e) => setPaletteName(e.target.value)}
+                placeholder="Enter palette name..."
+                className="w-full px-4 py-2 border-2 border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 mb-4 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                onKeyPress={(e) => e.key === 'Enter' && savePalette()}
+                autoFocus
+              />
+              <div className="flex gap-2">
+                <button
+                  onClick={savePalette}
+                  disabled={!paletteName.trim()}
+                  className="flex-1 bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Save
+                </button>
+                <button
+                  onClick={() => {
+                    setShowSavePalette(false)
+                    setPaletteName('')
+                  }}
+                  className="flex-1 bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Saved Palettes */}
+        {savedPalettes.length > 0 && (
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">Saved Palettes</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {savedPalettes.map((palette) => (
+                <div
+                  key={palette.id}
+                  className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="font-semibold text-gray-900 dark:text-gray-100 text-sm">{palette.name}</h4>
+                    <button
+                      onClick={() => deletePalette(palette.id)}
+                      className="text-red-500 hover:text-red-700 text-sm"
+                      title="Delete palette"
+                    >
+                      ×
+                    </button>
+                  </div>
+                  <div className="flex gap-1 mb-2">
+                    {palette.colors.map((color, i) => (
+                      <div
+                        key={i}
+                        className="flex-1 h-8 rounded border border-gray-300 dark:border-gray-600"
+                        style={{ backgroundColor: color }}
+                      />
+                    ))}
+                  </div>
+                  <button
+                    onClick={() => loadPalette(palette)}
+                    className="w-full text-xs bg-primary-600 text-white px-3 py-1 rounded hover:bg-primary-700 transition-colors"
+                  >
+                    Load
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 

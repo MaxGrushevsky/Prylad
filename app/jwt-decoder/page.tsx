@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import Layout from '@/components/Layout'
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
 interface DecodedJWT {
@@ -22,9 +22,41 @@ interface JWTClaims {
 }
 
 export default function JWTDecoderPage() {
+  const [mode, setMode] = useState<'decode' | 'generate'>('decode')
   const [token, setToken] = useState('')
   const [decoded, setDecoded] = useState<DecodedJWT | null>(null)
   const [totalDecoded, setTotalDecoded] = useState(0)
+  
+  // Generation state
+  const [headerJson, setHeaderJson] = useState('{\n  "alg": "HS256",\n  "typ": "JWT"\n}')
+  const [payloadJson, setPayloadJson] = useState('{\n  "sub": "1234567890",\n  "name": "John Doe",\n  "iat": 1516239022\n}')
+  const [secret, setSecret] = useState('')
+  const [algorithm, setAlgorithm] = useState<'HS256' | 'HS384' | 'HS512'>('HS256')
+  const [generatedToken, setGeneratedToken] = useState('')
+  const [generateError, setGenerateError] = useState('')
+
+  // Check URL hash for mode switching
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const hash = window.location.hash
+      if (hash === '#generate') {
+        setMode('generate')
+      } else if (hash === '#decode') {
+        setMode('decode')
+      }
+    }
+  }, [])
+
+  // Update URL hash when mode changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const hash = mode === 'decode' ? '' : '#generate'
+      if (window.location.hash !== hash) {
+        window.history.replaceState(null, '', hash || window.location.pathname)
+      }
+    }
+  }, [mode])
+
   const base64UrlDecode = useCallback((str: string): string => {
     try {
       // Replace URL-safe characters
@@ -42,6 +74,82 @@ export default function JWTDecoderPage() {
       throw new Error('Invalid base64 encoding')
     }
   }, [])
+
+  const base64UrlEncode = useCallback((str: string): string => {
+    try {
+      const base64 = btoa(str)
+      return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '')
+    } catch (e) {
+      throw new Error('Invalid encoding')
+    }
+  }, [])
+
+  // Generate JWT token
+  const generateJWT = useCallback(async () => {
+    setGenerateError('')
+    setGeneratedToken('')
+    
+    if (!secret.trim()) {
+      setGenerateError('Secret key is required')
+      return
+    }
+
+    try {
+      // Parse header and payload
+      const header = JSON.parse(headerJson)
+      const payload = JSON.parse(payloadJson)
+
+      // Encode header and payload
+      const encodedHeader = base64UrlEncode(JSON.stringify(header))
+      const encodedPayload = base64UrlEncode(JSON.stringify(payload))
+
+      // Create signature
+      const data = `${encodedHeader}.${encodedPayload}`
+      const encoder = new TextEncoder()
+      const keyData = encoder.encode(secret)
+      const messageData = encoder.encode(data)
+
+      // Get algorithm name for Web Crypto API
+      let algorithmName: string
+      switch (algorithm) {
+        case 'HS256':
+          algorithmName = 'HS256'
+          break
+        case 'HS384':
+          algorithmName = 'HS384'
+          break
+        case 'HS512':
+          algorithmName = 'HS512'
+          break
+        default:
+          algorithmName = 'HS256'
+      }
+
+      // Import key
+      const key = await crypto.subtle.importKey(
+        'raw',
+        keyData,
+        {
+          name: 'HMAC',
+          hash: { name: algorithmName === 'HS256' ? 'SHA-256' : algorithmName === 'HS384' ? 'SHA-384' : 'SHA-512' }
+        },
+        false,
+        ['sign']
+      )
+
+      // Sign
+      const signature = await crypto.subtle.sign('HMAC', key, messageData)
+      const signatureArray = Array.from(new Uint8Array(signature))
+      const signatureBase64 = btoa(String.fromCharCode(...signatureArray))
+      const encodedSignature = signatureBase64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '')
+
+      // Combine
+      const jwt = `${encodedHeader}.${encodedPayload}.${encodedSignature}`
+      setGeneratedToken(jwt)
+    } catch (e) {
+      setGenerateError(`Generation error: ${(e as Error).message}`)
+    }
+  }, [headerJson, payloadJson, secret, algorithm, base64UrlEncode])
 
   const decodeJWT = useCallback((jwtToken: string): DecodedJWT => {
     if (!jwtToken.trim()) {
@@ -169,13 +277,41 @@ export default function JWTDecoderPage() {
       description="Decode and validate JWT (JSON Web Token) tokens online. View header, payload, and signature. Check expiration and claims."
     >
       <div className="max-w-6xl mx-auto">
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 mb-6">
-          <div className="space-y-6">
-            {/* Input */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                JWT Token
-              </label>
+        {/* Tabs */}
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-2 mb-6 border border-gray-100 dark:border-gray-700">
+          <div className="flex gap-2">
+            <button
+              onClick={() => setMode('decode')}
+              className={`flex-1 px-6 py-3 rounded-xl font-semibold transition-all ${
+                mode === 'decode'
+                  ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+              }`}
+            >
+              Decode JWT
+            </button>
+            <button
+              onClick={() => setMode('generate')}
+              className={`flex-1 px-6 py-3 rounded-xl font-semibold transition-all ${
+                mode === 'generate'
+                  ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+              }`}
+            >
+              Generate JWT
+            </button>
+          </div>
+        </div>
+
+        {/* Decode Mode */}
+        {mode === 'decode' && (
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 mb-6">
+            <div className="space-y-6">
+              {/* Input */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  JWT Token
+                </label>
               <textarea
                 value={token}
                 onChange={(e) => setToken(e.target.value)}
@@ -183,7 +319,7 @@ export default function JWTDecoderPage() {
                 className="w-full h-32 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent font-mono text-sm resize-none"
               />
               <div className="flex items-center justify-between mt-2">
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-gray-500 dark:text-gray-400">
                   Enter a JWT token to decode (header.payload.signature)
                 </p>
                 <button
@@ -197,9 +333,9 @@ export default function JWTDecoderPage() {
 
             {/* Error */}
             {decoded && !decoded.valid && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                <p className="text-red-800 font-medium">Error</p>
-                <p className="text-red-600 text-sm mt-1">{decoded.error}</p>
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+                <p className="text-red-800 dark:text-red-200 font-medium">Error</p>
+                <p className="text-red-600 dark:text-red-400 text-sm mt-1">{decoded.error}</p>
               </div>
             )}
 
@@ -208,53 +344,53 @@ export default function JWTDecoderPage() {
               <div className="space-y-6">
                 {/* Claims Summary */}
                 {claims && (
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <h3 className="font-semibold text-blue-900 mb-3">Token Claims</h3>
+                  <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                    <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-3">Token Claims</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
                       {claims.exp && (
                         <div>
-                          <span className="font-medium text-blue-800">Expiration:</span>
-                          <span className={`ml-2 ${expired ? 'text-red-600' : 'text-blue-600'}`}>
+                          <span className="font-medium text-blue-800 dark:text-blue-200">Expiration:</span>
+                          <span className={`ml-2 ${expired ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-300'}`}>
                             {formatDate(claims.exp)} {expired ? '(Expired)' : '(Valid)'}
                           </span>
                         </div>
                       )}
                       {claims.iat && (
                         <div>
-                          <span className="font-medium text-blue-800">Issued At:</span>
-                          <span className="ml-2 text-blue-600">{formatDate(claims.iat)}</span>
+                          <span className="font-medium text-blue-800 dark:text-blue-200">Issued At:</span>
+                          <span className="ml-2 text-blue-600 dark:text-blue-300">{formatDate(claims.iat)}</span>
                         </div>
                       )}
                       {claims.nbf && (
                         <div>
-                          <span className="font-medium text-blue-800">Not Before:</span>
-                          <span className="ml-2 text-blue-600">{formatDate(claims.nbf)}</span>
+                          <span className="font-medium text-blue-800 dark:text-blue-200">Not Before:</span>
+                          <span className="ml-2 text-blue-600 dark:text-blue-300">{formatDate(claims.nbf)}</span>
                         </div>
                       )}
                       {claims.iss && (
                         <div>
-                          <span className="font-medium text-blue-800">Issuer:</span>
-                          <span className="ml-2 text-blue-600">{claims.iss}</span>
+                          <span className="font-medium text-blue-800 dark:text-blue-200">Issuer:</span>
+                          <span className="ml-2 text-blue-600 dark:text-blue-300">{claims.iss}</span>
                         </div>
                       )}
                       {claims.sub && (
                         <div>
-                          <span className="font-medium text-blue-800">Subject:</span>
-                          <span className="ml-2 text-blue-600">{claims.sub}</span>
+                          <span className="font-medium text-blue-800 dark:text-blue-200">Subject:</span>
+                          <span className="ml-2 text-blue-600 dark:text-blue-300">{claims.sub}</span>
                         </div>
                       )}
                       {claims.aud && (
                         <div>
-                          <span className="font-medium text-blue-800">Audience:</span>
-                          <span className="ml-2 text-blue-600">
+                          <span className="font-medium text-blue-800 dark:text-blue-200">Audience:</span>
+                          <span className="ml-2 text-blue-600 dark:text-blue-300">
                             {Array.isArray(claims.aud) ? claims.aud.join(', ') : claims.aud}
                           </span>
                         </div>
                       )}
                       {claims.jti && (
                         <div>
-                          <span className="font-medium text-blue-800">JWT ID:</span>
-                          <span className="ml-2 text-blue-600">{claims.jti}</span>
+                          <span className="font-medium text-blue-800 dark:text-blue-200">JWT ID:</span>
+                          <span className="ml-2 text-blue-600 dark:text-blue-300">{claims.jti}</span>
                         </div>
                       )}
                     </div>
@@ -264,7 +400,7 @@ export default function JWTDecoderPage() {
                 {/* Header */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <label className="block text-sm font-semibold text-gray-700">
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
                       Header
                     </label>
                     <button
@@ -274,7 +410,7 @@ export default function JWTDecoderPage() {
                       Copy
                     </button>
                   </div>
-                  <pre className="bg-gray-50 border border-gray-200 rounded-lg p-4 overflow-x-auto text-sm font-mono">
+                  <pre className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 overflow-x-auto text-sm font-mono text-gray-800 dark:text-gray-200">
                     {JSON.stringify(decoded.header, null, 2)}
                   </pre>
                 </div>
@@ -282,7 +418,7 @@ export default function JWTDecoderPage() {
                 {/* Payload */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <label className="block text-sm font-semibold text-gray-700">
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
                       Payload
                     </label>
                     <button
@@ -292,7 +428,7 @@ export default function JWTDecoderPage() {
                       Copy
                     </button>
                   </div>
-                  <pre className="bg-gray-50 border border-gray-200 rounded-lg p-4 overflow-x-auto text-sm font-mono">
+                  <pre className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 overflow-x-auto text-sm font-mono text-gray-800 dark:text-gray-200">
                     {JSON.stringify(decoded.payload, null, 2)}
                   </pre>
                 </div>
@@ -300,7 +436,7 @@ export default function JWTDecoderPage() {
                 {/* Signature */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <label className="block text-sm font-semibold text-gray-700">
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
                       Signature
                     </label>
                     <button
@@ -310,10 +446,10 @@ export default function JWTDecoderPage() {
                       Copy
                     </button>
                   </div>
-                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                    <code className="text-sm font-mono break-all">{decoded.signature}</code>
+                  <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                    <code className="text-sm font-mono break-all text-gray-800 dark:text-gray-200">{decoded.signature}</code>
                   </div>
-                  <p className="text-xs text-gray-500 mt-2">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
                     Note: Signature verification requires the secret key and is not performed here.
                   </p>
                 </div>
@@ -322,7 +458,7 @@ export default function JWTDecoderPage() {
                 <div className="flex gap-3">
                   <button
                     onClick={exportToFile}
-                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+                    className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-medium"
                   >
                     Export to File
                   </button>
@@ -331,11 +467,113 @@ export default function JWTDecoderPage() {
             )}
           </div>
         </div>
+        )}
+
+        {/* Generate Mode */}
+        {mode === 'generate' && (
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 mb-6">
+            <div className="space-y-6">
+              {/* Header */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Header (JSON)
+                </label>
+                <textarea
+                  value={headerJson}
+                  onChange={(e) => setHeaderJson(e.target.value)}
+                  className="w-full h-32 px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent font-mono text-sm resize-none bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                  placeholder='{"alg": "HS256", "typ": "JWT"}'
+                />
+              </div>
+
+              {/* Payload */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Payload (JSON)
+                </label>
+                <textarea
+                  value={payloadJson}
+                  onChange={(e) => setPayloadJson(e.target.value)}
+                  className="w-full h-48 px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent font-mono text-sm resize-none bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                  placeholder='{"sub": "1234567890", "name": "John Doe", "iat": 1516239022}'
+                />
+              </div>
+
+              {/* Algorithm and Secret */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    Algorithm
+                  </label>
+                  <select
+                    value={algorithm}
+                    onChange={(e) => setAlgorithm(e.target.value as 'HS256' | 'HS384' | 'HS512')}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                  >
+                    <option value="HS256">HS256 (HMAC SHA-256)</option>
+                    <option value="HS384">HS384 (HMAC SHA-384)</option>
+                    <option value="HS512">HS512 (HMAC SHA-512)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    Secret Key
+                  </label>
+                  <input
+                    type="text"
+                    value={secret}
+                    onChange={(e) => setSecret(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-mono text-sm"
+                    placeholder="Enter secret key"
+                  />
+                </div>
+              </div>
+
+              {/* Generate Button */}
+              <button
+                onClick={generateJWT}
+                className="w-full px-4 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium"
+              >
+                Generate JWT Token
+              </button>
+
+              {/* Error */}
+              {generateError && (
+                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+                  <p className="text-red-800 dark:text-red-200 font-medium">Error</p>
+                  <p className="text-red-600 dark:text-red-400 text-sm mt-1">{generateError}</p>
+                </div>
+              )}
+
+              {/* Generated Token */}
+              {generatedToken && (
+                <div className="space-y-4">
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                        Generated JWT Token
+                      </label>
+                      <button
+                        onClick={() => copyToClipboard(generatedToken)}
+                        className="text-xs text-primary-600 hover:text-primary-700 font-medium"
+                      >
+                        Copy
+                      </button>
+                    </div>
+                    <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                      <code className="text-sm font-mono break-all text-gray-800 dark:text-gray-200">{generatedToken}</code>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Stats */}
-        {totalDecoded > 0 && (
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 border border-gray-100">
-            <p className="text-sm text-gray-600">
+        {mode === 'decode' && totalDecoded > 0 && (
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 border border-gray-100 dark:border-gray-700">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
               Total tokens decoded: <span className="font-semibold text-primary-600">{totalDecoded}</span>
             </p>
           </div>
