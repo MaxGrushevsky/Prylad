@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import Navigation from '@/components/Navigation'
-import AdBanner from '@/components/AdBanner'
 import StructuredData from '@/components/StructuredData'
 import { generateItemListSchema, generateOrganizationSchema } from '@/lib/structured-data'
 
@@ -187,12 +186,6 @@ export default function Home() {
           </div>
         </header>
 
-        {/* Top ad banner */}
-        <div className="container mx-auto px-4 mb-8">
-          <AdBanner position="top" />
-        </div>
-
-        {/* Tools by categories */}
         <div className="container mx-auto px-4 py-8">
           <div className="space-y-12">
             {categories.map((category) => (
@@ -229,12 +222,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Bottom ad banner */}
-        <div className="container mx-auto px-4 mt-12 mb-8">
-          <AdBanner position="bottom" />
-        </div>
-
-        {/* Footer */}
         <footer className="container mx-auto px-4 py-8 mt-16 border-t border-gray-200 dark:border-gray-700/50 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
           <div className="text-center text-gray-600 dark:text-gray-400">
             <p className="mb-2 font-medium">© 2025 Prylad</p>

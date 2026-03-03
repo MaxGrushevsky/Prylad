@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from '@/contexts/ThemeContext'
-import { Analytics } from '@vercel/analytics/next'
 
 const inter = Inter({ subsets: ['latin', 'cyrillic'] })
 
@@ -80,10 +79,6 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  verification: {
-    google: '0qz8454fxihYk_A5ciGziuC4ByYZi7JyxMbR-nWLWSc',
-    yandex: 'your-yandex-verification-code',
-  },
   alternates: {
     canonical: 'https://prylad.pro',
   },
@@ -101,15 +96,9 @@ export default function RootLayout({
         <link rel="canonical" href="https://prylad.pro" />
         <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
         <meta name="theme-color" content="#0ea5e9" />
-        <meta name="google-site-verification" content="0qz8454fxihYk_A5ciGziuC4ByYZi7JyxMbR-nWLWSc" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="Prylad" />
-        <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3205919903681434"
-          crossOrigin="anonymous"
-        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -193,7 +182,6 @@ export default function RootLayout({
         <ThemeProvider>
           {children}
         </ThemeProvider>
-        <Analytics />
       </body>
     </html>
   )

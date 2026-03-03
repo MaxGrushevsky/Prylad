@@ -26,13 +26,11 @@ export default function TextToSpeechPage() {
   const [isSupported, setIsSupported] = useState(false)
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null)
 
-  // Check browser support
   useEffect(() => {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       setIsSupported(true)
       loadVoices()
-      
-      // Some browsers load voices asynchronously
+
       if (window.speechSynthesis.onvoiceschanged !== undefined) {
         window.speechSynthesis.onvoiceschanged = loadVoices
       }
@@ -46,8 +44,7 @@ export default function TextToSpeechPage() {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       const availableVoices = window.speechSynthesis.getVoices()
       setVoices(availableVoices)
-      
-      // Set default voice (prefer English, non-local service)
+
       if (availableVoices.length > 0 && !selectedVoice) {
         const defaultVoice = availableVoices.find(v => 
           v.lang.startsWith('en') && !v.localService
@@ -68,25 +65,21 @@ export default function TextToSpeechPage() {
       return
     }
 
-    // Stop any current speech
     window.speechSynthesis.cancel()
 
     setError(null)
     setIsPlaying(true)
 
     const utterance = new SpeechSynthesisUtterance(text)
-    
-    // Set voice
+
     if (selectedVoice) {
       utterance.voice = selectedVoice
     }
 
-    // Set properties
     utterance.rate = rate
     utterance.pitch = pitch
     utterance.volume = volume
 
-    // Event handlers
     utterance.onend = () => {
       setIsPlaying(false)
       utteranceRef.current = null
@@ -128,7 +121,7 @@ export default function TextToSpeechPage() {
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(text)
-    } catch (err) {
+    } catch {
       setError('Failed to copy to clipboard')
     }
   }
@@ -196,7 +189,6 @@ export default function TextToSpeechPage() {
     'Web Browser'
   )
 
-  // Group voices by language
   const voicesByLang = voices.reduce((acc, voice) => {
     const lang = voice.lang.split('-')[0]
     if (!acc[lang]) {
@@ -217,7 +209,6 @@ export default function TextToSpeechPage() {
       <div className="max-w-4xl mx-auto">
         <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 mb-6">
           <div className="space-y-6">
-            {/* Browser Support Warning */}
             {!isSupported && (
               <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
                 <p className="text-red-800 dark:text-red-200 text-sm">
@@ -226,7 +217,6 @@ export default function TextToSpeechPage() {
               </div>
             )}
 
-            {/* Text Input */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Enter Text to Speak
@@ -260,7 +250,6 @@ export default function TextToSpeechPage() {
               </div>
             </div>
 
-            {/* Voice Selection */}
             {isSupported && voices.length > 0 && (
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
@@ -292,7 +281,6 @@ export default function TextToSpeechPage() {
               </div>
             )}
 
-            {/* Settings */}
             {isSupported && (
               <div className="space-y-4">
                 <div>
@@ -357,14 +345,12 @@ export default function TextToSpeechPage() {
               </div>
             )}
 
-            {/* Error Message */}
             {error && (
               <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
                 <p className="text-red-800 dark:text-red-200 text-sm">{error}</p>
               </div>
             )}
 
-            {/* Controls */}
             {isSupported && (
               <div className="flex gap-3">
                 <button
@@ -396,10 +382,8 @@ export default function TextToSpeechPage() {
         </div>
       </div>
 
-      {/* Related Tools */}
       <RelatedTools tools={relatedTools} />
 
-      {/* SEO Content */}
       <div className="max-w-4xl mx-auto mt-16 space-y-8">
         <section className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">What is Text-to-Speech?</h2>

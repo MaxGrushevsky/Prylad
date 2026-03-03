@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 
 interface Tool {
   name: string
@@ -91,17 +90,20 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const [query, setQuery] = useState('')
   const [selectedIndex, setSelectedIndex] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
+  const selectedItemRef = useRef<HTMLButtonElement>(null)
   const router = useRouter()
+  const trimmedQuery = query.trim()
+  const hasQuery = trimmedQuery.length > 0
 
-  const filteredTools = query.trim()
-    ? allTools.filter(tool =>
-        tool.name.toLowerCase().includes(query.toLowerCase()) ||
-        tool.desc.toLowerCase().includes(query.toLowerCase()) ||
-        tool.category.toLowerCase().includes(query.toLowerCase())
+  const filteredTools = hasQuery
+    ? allTools.filter(
+        (tool) =>
+          tool.name.toLowerCase().includes(trimmedQuery.toLowerCase()) ||
+          tool.desc.toLowerCase().includes(trimmedQuery.toLowerCase()) ||
+          tool.category.toLowerCase().includes(trimmedQuery.toLowerCase())
       )
     : []
 
-  // Load recent tools from localStorage
   const [recentTools, setRecentTools] = useState<Tool[]>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('recentTools')
@@ -109,10 +111,10 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
         try {
           const paths = JSON.parse(saved)
           return paths
-            .map((path: string) => allTools.find(t => t.path === path))
+            .map((path: string) => allTools.find((t) => t.path === path))
             .filter((t: Tool | undefined): t is Tool => t !== undefined)
             .slice(0, 5)
-        } catch (e) {
+        } catch {
           return []
         }
       }
@@ -129,49 +131,61 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   }, [isOpen])
 
   useEffect(() => {
-    if (query.trim()) {
-      setSelectedIndex(0)
-    }
-  }, [query])
+    if (hasQuery) setSelectedIndex(0)
+  }, [hasQuery])
 
   const handleSelect = useCallback((tool: Tool) => {
-    // Save to recent tools
-    const currentRecent = recentTools.filter(t => t.path !== tool.path)
+    const currentRecent = recentTools.filter((t) => t.path !== tool.path)
     const newRecent = [tool, ...currentRecent].slice(0, 5)
     setRecentTools(newRecent)
-    localStorage.setItem('recentTools', JSON.stringify(newRecent.map(t => t.path)))
+    localStorage.setItem('recentTools', JSON.stringify(newRecent.map((t) => t.path)))
 
     onClose()
     router.push(tool.path)
   }, [recentTools, onClose, router])
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    const tools = query.trim() ? filteredTools : recentTools
+    const tools = hasQuery ? filteredTools : recentTools
+
+    if (e.key === 'Escape') {
+      e.preventDefault()
+      onClose()
+      return
+    }
+
+    if (tools.length === 0) return
 
     if (e.key === 'ArrowDown') {
       e.preventDefault()
-      setSelectedIndex(prev => (prev + 1) % tools.length)
+      setSelectedIndex((prev) => (prev + 1) % tools.length)
     } else if (e.key === 'ArrowUp') {
       e.preventDefault()
-      setSelectedIndex(prev => (prev - 1 + tools.length) % tools.length)
+      setSelectedIndex((prev) => (prev - 1 + tools.length) % tools.length)
     } else if (e.key === 'Enter') {
       e.preventDefault()
-      if (tools[selectedIndex]) {
-        handleSelect(tools[selectedIndex])
-      }
-    } else if (e.key === 'Escape') {
-      e.preventDefault()
-      onClose()
+      const tool = tools[selectedIndex] ?? tools[tools.length - 1]
+      if (tool) handleSelect(tool)
     }
-  }, [query, filteredTools, recentTools, selectedIndex, handleSelect, onClose])
+  }, [hasQuery, filteredTools, recentTools, selectedIndex, handleSelect, onClose])
+
+  const displayTools = hasQuery ? filteredTools : recentTools
+  const showRecent = !hasQuery && recentTools.length > 0
+  const safeSelectedIndex =
+    displayTools.length > 0 ? Math.min(selectedIndex, displayTools.length - 1) : 0
+
+  useEffect(() => {
+    if (displayTools.length > 0) {
+      selectedItemRef.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+    }
+  }, [safeSelectedIndex, displayTools.length])
 
   if (!isOpen) return null
 
-  const displayTools = query.trim() ? filteredTools : recentTools
-  const showRecent = !query.trim() && recentTools.length > 0
-
   return (
     <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Search tools"
       className="fixed inset-0 z-50 flex items-start justify-center pt-[10vh] px-4"
       onClick={onClose}
     >
@@ -179,7 +193,6 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
         className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl border border-gray-200 dark:border-gray-700 overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Search Input */}
         <div className="p-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-3">
             <svg className="w-5 h-5 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -200,9 +213,8 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
           </div>
         </div>
 
-        {/* Results */}
         <div className="max-h-[60vh] overflow-y-auto">
-          {displayTools.length === 0 && query.trim() ? (
+          {displayTools.length === 0 && hasQuery ? (
             <div className="p-8 text-center text-gray-500 dark:text-gray-400">
               <p className="text-lg font-semibold mb-2">No tools found</p>
               <p className="text-sm">Try a different search term</p>
@@ -221,10 +233,12 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
               )}
               {displayTools.map((tool, index) => (
                 <button
+                  type="button"
+                  ref={index === safeSelectedIndex ? selectedItemRef : undefined}
                   key={tool.path}
                   onClick={() => handleSelect(tool)}
                   className={`w-full flex items-center gap-4 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left ${
-                    index === selectedIndex ? 'bg-primary-50 dark:bg-primary-900/30 border-l-4 border-primary-600' : ''
+                    index === safeSelectedIndex ? 'bg-primary-50 dark:bg-primary-900/30 border-l-4 border-primary-600' : ''
                   }`}
                 >
                   <span className="text-2xl">{tool.icon}</span>
@@ -245,7 +259,6 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
           )}
         </div>
 
-        {/* Footer */}
         <div className="px-4 py-2 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1">

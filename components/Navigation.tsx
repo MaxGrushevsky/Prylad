@@ -147,14 +147,13 @@ export default function Navigation() {
   const scrollRestoredRef = useRef(false)
   const { theme, toggleTheme } = useTheme()
   
-  // Load saved expanded categories from localStorage on mount
   const [expandedCategories, setExpandedCategories] = useState<{ [key: string]: boolean }>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('navExpandedCategories')
       if (saved) {
         try {
           return JSON.parse(saved)
-        } catch (e) {
+        } catch {
           return {}
         }
       }
@@ -162,14 +161,13 @@ export default function Navigation() {
     return {}
   })
 
-  // Load saved favorites from localStorage on mount
   const [favorites, setFavorites] = useState<string[]>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('navFavorites')
       if (saved) {
         try {
           return JSON.parse(saved)
-        } catch (e) {
+        } catch {
           return []
         }
       }
@@ -177,25 +175,21 @@ export default function Navigation() {
     return []
   })
 
-  // Save favorites to localStorage
   useEffect(() => {
     localStorage.setItem('navFavorites', JSON.stringify(favorites))
   }, [favorites])
 
-  // Get all tools from all categories - мемоизировано (categories - константа, но мемоизация не повредит)
   const allTools = useMemo(() => 
     categories.flatMap(category => 
       category.tools.map(tool => ({ ...tool, category: category.name, categoryIcon: category.icon }))
     ), []
   )
 
-  // Get favorite tools - мемоизировано
   const favoriteTools = useMemo(() => 
     allTools.filter(tool => favorites.includes(tool.path)), 
     [allTools, favorites]
   )
 
-  // Toggle favorite - мемоизировано
   const toggleFavorite = useCallback((path: string, e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
@@ -208,7 +202,6 @@ export default function Navigation() {
     })
   }, [])
 
-  // Save scroll position function
   const saveScrollPosition = useCallback(() => {
     const container = scrollContainerRef.current
     if (container && container.scrollTop > 0) {
@@ -216,22 +209,16 @@ export default function Navigation() {
     }
   }, [])
 
-  // Save scroll position before navigation (on mouse down for earlier capture)
   const handleLinkMouseDown = useCallback(() => {
-    // Save position immediately and synchronously before navigation starts
     saveScrollPosition()
   }, [saveScrollPosition])
 
-  // Save scroll position before navigation
   const handleLinkClick = useCallback((e: React.MouseEvent) => {
-    // Save position immediately and synchronously
     saveScrollPosition()
-    // Mark that we need to restore on next render
     scrollRestoredRef.current = false
     setIsOpen(false)
   }, [saveScrollPosition])
 
-  // Restore scroll position function
   const restoreScrollPosition = useCallback(() => {
     const container = scrollContainerRef.current
     if (!container) return false
@@ -242,27 +229,22 @@ export default function Navigation() {
     const scrollPos = parseInt(savedScrollPosition, 10)
     if (isNaN(scrollPos)) return false
 
-    // Only restore if content is tall enough
     if (container.scrollHeight < scrollPos) return false
 
     container.scrollTop = scrollPos
     return true
   }, [])
 
-  // Set scroll container ref and restore position
   const setScrollContainerRef = (element: HTMLDivElement | null) => {
     scrollContainerRef.current = element
-    
+
     if (element) {
-      // Always try to restore when container is set
       scrollRestoredRef.current = false
-      
-      // Try immediate restoration
+
       const savedScrollPosition = localStorage.getItem('navScrollPosition')
       if (savedScrollPosition) {
         const scrollPos = parseInt(savedScrollPosition, 10)
         if (!isNaN(scrollPos)) {
-          // Try multiple times with delays
           const tryRestore = (attempt = 0) => {
             if (element.scrollHeight >= scrollPos) {
               element.scrollTop = scrollPos
@@ -283,29 +265,23 @@ export default function Navigation() {
     }
   }
 
-  // Restore scroll position when pathname changes - use useLayoutEffect for earlier restoration
   useLayoutEffect(() => {
     const container = scrollContainerRef.current
     if (!container) {
-      // Container not ready, reset flag to allow restoration later
       scrollRestoredRef.current = false
       return
     }
 
-    // Always reset flag to allow restoration
     scrollRestoredRef.current = false
 
-    // Try to restore immediately
     const savedScrollPosition = localStorage.getItem('navScrollPosition')
     if (savedScrollPosition) {
       const scrollPos = parseInt(savedScrollPosition, 10)
       if (!isNaN(scrollPos)) {
-        // Try to restore even if content height is not enough yet
         if (container.scrollHeight >= scrollPos) {
           container.scrollTop = scrollPos
           scrollRestoredRef.current = true
         } else {
-          // Content not ready, will be restored by other effects
           scrollRestoredRef.current = false
         }
       } else {
@@ -316,15 +292,12 @@ export default function Navigation() {
     }
   }, [pathname])
 
-  // Restore scroll position when content updates (expandedCategories changes)
   useEffect(() => {
     const container = scrollContainerRef.current
     if (!container) return
 
-    // Only restore if we haven't restored yet
     if (scrollRestoredRef.current) return
 
-    // Try multiple times to ensure content is rendered
     let attempts = 0
     const maxAttempts = 20
     let timeoutId: NodeJS.Timeout | null = null
@@ -339,15 +312,12 @@ export default function Navigation() {
           clearTimeout(timeoutId)
         }
       } else if (attempts < maxAttempts) {
-        // Retry after a delay
         timeoutId = setTimeout(tryRestore, 50)
       } else {
-        // Give up after max attempts
         scrollRestoredRef.current = true
       }
     }
 
-    // Start restoration
     requestAnimationFrame(() => {
       tryRestore()
     })
@@ -359,16 +329,13 @@ export default function Navigation() {
     }
   }, [expandedCategories, restoreScrollPosition])
 
-  // Use MutationObserver to restore scroll when DOM changes
   useEffect(() => {
     const container = scrollContainerRef.current
     if (!container) return
 
-    // Only observe if we haven't restored yet
     if (scrollRestoredRef.current) return
 
     const observer = new MutationObserver(() => {
-      // DOM changed, try to restore scroll position
       if (!scrollRestoredRef.current) {
         const restored = restoreScrollPosition()
         if (restored) {
@@ -389,7 +356,6 @@ export default function Navigation() {
     }
   }, [restoreScrollPosition])
 
-  // Save scroll position to localStorage on scroll
   useEffect(() => {
     const container = scrollContainerRef.current
     if (!container) return
@@ -399,11 +365,8 @@ export default function Navigation() {
 
     const handleScroll = () => {
       const currentPosition = container.scrollTop
-      
-      // Only save if position actually changed and is greater than 0
-      // Also only save after initial restoration to avoid overwriting
+
       if (currentPosition !== lastSavedPosition && currentPosition > 0 && scrollRestoredRef.current) {
-        // Debounce saves to avoid too many writes
         if (scrollTimeout) {
           clearTimeout(scrollTimeout)
         }
@@ -424,12 +387,10 @@ export default function Navigation() {
     }
   }, [])
 
-  // Save expanded categories to localStorage
   useEffect(() => {
     localStorage.setItem('navExpandedCategories', JSON.stringify(expandedCategories))
   }, [expandedCategories])
 
-  // Save scroll position when page becomes hidden (user navigates away)
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.hidden) {
@@ -438,8 +399,6 @@ export default function Navigation() {
     }
 
     document.addEventListener('visibilitychange', handleVisibilityChange)
-    
-    // Also save on beforeunload as backup
     window.addEventListener('beforeunload', saveScrollPosition)
     
     return () => {
@@ -448,7 +407,6 @@ export default function Navigation() {
     }
   }, [saveScrollPosition])
 
-  // Keyboard shortcut for search (Ctrl+K / Cmd+K)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
@@ -473,7 +431,6 @@ export default function Navigation() {
 
   return (
     <>
-      {/* Mobile menu button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="lg:hidden fixed top-4 right-4 z-50 bg-white dark:bg-gray-800 p-3 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100"
@@ -488,13 +445,11 @@ export default function Navigation() {
         </svg>
       </button>
 
-      {/* Navigation */}
       <nav
         className={`fixed left-0 top-0 h-full w-80 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 shadow-xl z-40 transform transition-transform duration-300 ease-in-out lg:translate-x-0 flex flex-col ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        {/* Fixed top section */}
         <div className="p-6 pb-4 flex-shrink-0 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
           <div className="mb-6">
             <div className="flex items-center justify-between gap-2 mb-1">
@@ -504,9 +459,7 @@ export default function Navigation() {
                   <span className="bg-gradient-to-r from-primary-600 to-purple-600 bg-clip-text text-transparent whitespace-nowrap leading-tight" style={{ WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', display: 'inline-block', padding: '0 1px' }}>Prylad</span>
                 </h1>
               </Link>
-              {/* Search and Theme Toggle buttons */}
               <div className="flex items-center gap-2 flex-shrink-0">
-                {/* Search Icon Button */}
                 <button
                   onClick={() => setIsSearchOpen(true)}
                   className="p-2.5 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
@@ -517,7 +470,6 @@ export default function Navigation() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                 </button>
-                {/* Theme Toggle - Small button */}
                 <button
                   onClick={toggleTheme}
                   className="p-2.5 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
@@ -538,7 +490,6 @@ export default function Navigation() {
             <p className="text-sm text-gray-500 dark:text-gray-400">All tools in one place</p>
           </div>
 
-          {/* Buy Me a Coffee Button */}
           <div className="mb-0">
             <p className="text-xs text-gray-600 dark:text-gray-300 text-center mb-1.5">
               Do you like it?
@@ -558,10 +509,8 @@ export default function Navigation() {
           </div>
         </div>
 
-        {/* Scrollable categories section */}
         <div ref={setScrollContainerRef} className="flex-1 overflow-y-auto p-6 pt-4">
           <div className="space-y-2">
-            {/* Favorites Section */}
             {favoriteTools.length > 0 ? (
               <div className="mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
                 <button
@@ -717,7 +666,6 @@ export default function Navigation() {
         </div>
       </nav>
 
-      {/* Mobile menu overlay */}
       {isOpen && (
         <div
           className="fixed inset-0 bg-black/50 z-30 lg:hidden"
@@ -725,7 +673,6 @@ export default function Navigation() {
         />
       )}
 
-      {/* Search Modal */}
       <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </>
   )
